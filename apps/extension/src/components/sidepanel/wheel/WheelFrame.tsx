@@ -71,10 +71,4 @@ export function drawWheelFrame({ ctx, canvasWidth, viewportHeight }: WheelFrameP
   ctx.fillRect(24, 44, canvasWidth - 48, viewportHeight / 3);
 
   ctx.restore();
-
-  // Draw title
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 20px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('RAFFLE SPINNER', canvasWidth / 2, 25);
 }

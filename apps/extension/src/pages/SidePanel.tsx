@@ -1,14 +1,12 @@
 /**
- * Side Panel Component
+ * Side Panel Component (Clean Audience View)
  *
- * Purpose: Interactive side panel interface for conducting raffle spins, selecting
- * competitions, entering ticket numbers, and displaying winners with animations.
+ * Purpose: Minimal interface for live raffle presentations, optimized for
+ * audience viewing without instructions or unnecessary UI elements.
  *
  * SRS Reference:
  * - FR-2.1: Side Panel Interface
  * - FR-2.2: Winner Selection and Animation
- * - FR-2.3: Ticket Number Input and Validation
- * - FR-2.4: Winner Display and Session History
  */
 
 import { useState } from 'react';
@@ -18,8 +16,7 @@ import { SlotMachineWheel } from '@/components/sidepanel/SlotMachineWheel';
 import { SessionWinners, Winner } from '@/components/sidepanel/SessionWinners';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -75,13 +72,16 @@ function SidePanelContent() {
     setIsSpinning(false);
     setCurrentWinner(winner);
 
+    // Add to session winners
     setSessionWinners((prev) => [
-      ...prev,
       {
-        ...winner,
+        firstName: winner.firstName,
+        lastName: winner.lastName,
+        ticketNumber: winner.ticketNumber,
         competition: selectedCompetition!.name,
         timestamp: Date.now(),
       },
+      ...prev,
     ]);
 
     // Trigger confetti animation
@@ -99,91 +99,96 @@ function SidePanelContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-xl mx-auto space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Raffle Winner Spinner</CardTitle>
-            <CardDescription>
-              Select a competition and enter the winning ticket number
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="competition">Competition</Label>
-              <Select
-                value={selectedCompetition?.id || ''}
-                onValueChange={(id) => {
-                  const comp = competitions.find((c) => c.id === id);
-                  if (comp) selectCompetition(id);
-                }}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black p-4">
+      <div className="max-w-2xl mx-auto space-y-4">
+        {/* Competition Selector - Minimal UI */}
+        <div className="flex gap-2">
+          <Select
+            value={selectedCompetition?.id || ''}
+            onValueChange={(id) => {
+              const comp = competitions.find((c) => c.id === id);
+              if (comp) selectCompetition(id);
+            }}
+          >
+            <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+              <SelectValue placeholder="Select Competition" />
+            </SelectTrigger>
+            <SelectContent>
+              {competitions.map((comp) => (
+                <SelectItem key={comp.id} value={comp.id}>
+                  {comp.name} ({comp.participants.length})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Main Spinner Area */}
+        {selectedCompetition && (
+          <>
+            <SlotMachineWheel
+              participants={selectedCompetition.participants}
+              targetTicketNumber={ticketNumber}
+              settings={settings}
+              isSpinning={isSpinning}
+              onSpinComplete={handleSpinComplete}
+            />
+
+            {/* Winner Display */}
+            {currentWinner && (
+              <Card className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/50">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="h-8 w-8 text-yellow-500 animate-pulse" />
+                    <div className="flex-1">
+                      <p className="text-2xl font-bold text-white">
+                        🎉 {currentWinner.firstName} {currentWinner.lastName}
+                      </p>
+                      <p className="text-lg text-gray-300">Ticket #{currentWinner.ticketNumber}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Spin Controls */}
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="Enter ticket number"
+                value={ticketNumber}
+                onChange={(e) => setTicketNumber(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !isSpinning && handleSpin()}
+                disabled={isSpinning}
+                className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500"
+              />
+              <Button
+                onClick={handleSpin}
+                disabled={isSpinning || !ticketNumber}
+                size="lg"
+                className="min-w-[120px]"
               >
-                <SelectTrigger id="competition">
-                  <SelectValue placeholder="Select a competition" />
-                </SelectTrigger>
-                <SelectContent>
-                  {competitions.map((comp) => (
-                    <SelectItem key={comp.id} value={comp.id}>
-                      {comp.name} ({comp.participants.length} participants)
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {isSpinning ? 'Spinning...' : 'Spin'}
+              </Button>
             </div>
 
-            {selectedCompetition && (
-              <div className="space-y-4">
-                <SlotMachineWheel
-                  participants={selectedCompetition.participants}
-                  targetTicketNumber={ticketNumber}
-                  settings={settings}
-                  isSpinning={isSpinning}
-                  onSpinComplete={handleSpinComplete}
-                />
-
-                {currentWinner && (
-                  <Alert className="border-green-500 bg-green-50">
-                    <Sparkles className="h-4 w-4 text-green-600" />
-                    <AlertDescription className="text-green-900 font-semibold text-lg">
-                      Winner: {currentWinner.firstName} {currentWinner.lastName} - Ticket #
-                      {currentWinner.ticketNumber}
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                <div className="space-y-2">
-                  <Label htmlFor="ticket">Enter Winning Ticket Number</Label>
-                  <Input
-                    id="ticket"
-                    type="text"
-                    value={ticketNumber}
-                    onChange={(e) => setTicketNumber(e.target.value.replace(/\D/g, ''))}
-                    placeholder="Enter ticket number"
-                    disabled={isSpinning}
-                  />
-                </div>
-
-                <Button
-                  onClick={handleSpin}
-                  disabled={!ticketNumber || isSpinning}
-                  className="w-full"
-                  size="lg"
-                >
-                  {isSpinning ? 'Spinning...' : 'Spin to Reveal Winner'}
-                </Button>
-              </div>
+            {error && (
+              <Alert variant="destructive" className="bg-red-900/20 border-red-500/50">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
             )}
-          </CardContent>
-        </Card>
+          </>
+        )}
 
-        <SessionWinners winners={sessionWinners} />
+        {/* Session Winners */}
+        {sessionWinners.length > 0 && (
+          <Card className="bg-gray-800/30 border-gray-700">
+            <CardContent className="p-4">
+              <SessionWinners winners={sessionWinners} />
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
