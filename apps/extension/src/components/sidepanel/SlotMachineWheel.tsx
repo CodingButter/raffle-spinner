@@ -71,11 +71,18 @@ export function SlotMachineWheel({
 
       // Draw wheel segments
       for (let i = -2; i <= VISIBLE_ITEMS + 2; i++) {
-        const itemIndex = (startIndex + i) % participants.length;
-        const participant =
-          participants[itemIndex < 0 ? itemIndex + participants.length : itemIndex];
+        const itemIndex = (startIndex + i + participants.length) % participants.length;
+        const participant = participants[itemIndex];
 
         const yPos = i * ITEM_HEIGHT - offset + 40;
+
+        // The center item is at i = 2 (middle of 5 visible items)
+        if (i === 2) {
+          // This is the participant in the center
+          if (!isAnimatingRef.current) {
+            console.log('Center participant:', participant.ticketNumber, 'at index:', itemIndex);
+          }
+        }
 
         drawWheelSegment({
           participant,

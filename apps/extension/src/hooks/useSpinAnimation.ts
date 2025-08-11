@@ -74,16 +74,15 @@ export function useSpinAnimation({
       return;
     }
 
-    // Calculate target position (center of viewport)
-    const targetPosition = targetIndex * itemHeight;
+    // Target position calculation moved below for proper centering
 
     // For slot machine style, we'll create our own animation config
     // instead of using the angle-based physics
     const duration = settings.minSpinDuration * 1000; // Convert to milliseconds
     const easingFunction = {
-      slow: (t: number) => 1 - Math.pow(1 - t, 3),
-      medium: (t: number) => 1 - Math.pow(1 - t, 2),
-      fast: (t: number) => 1 - Math.pow(1 - t, 2), // Simplified for now
+      slow: (t: number) => 1 - Math.pow(1 - t, 3), // Cubic ease out
+      medium: (t: number) => 1 - Math.pow(1 - t, 2), // Quadratic ease out
+      fast: (t: number) => t, // Linear (no easing)
     }[settings.decelerationRate];
 
     console.log('Animation config:', {
@@ -97,12 +96,37 @@ export function useSpinAnimation({
 
     // Add extra rotations for effect
     const extraRotations = 3 + Math.random() * 2;
-    const totalDistance =
-      extraRotations * wheelCircumference + targetPosition - (startPosition % wheelCircumference);
 
-    console.log('Animation details:', {
+    // The drawing loop shows items at positions:
+    // i=-2: startIndex - 2
+    // i=-1: startIndex - 1
+    // i=0:  startIndex
+    // i=1:  startIndex + 1
+    // i=2:  startIndex + 2  <- CENTER (this should be our target)
+    // i=3:  startIndex + 3
+    // i=4:  startIndex + 4
+    //
+    // So for the target to be in center, we need: startIndex + 2 = targetIndex
+    // Therefore: startIndex = targetIndex - 2
+    // And position = startIndex * itemHeight = (targetIndex - 2) * itemHeight
+
+    const finalPosition = (targetIndex - 2) * itemHeight;
+
+    // Make sure final position is positive
+    const adjustedFinalPosition =
+      finalPosition < 0 ? finalPosition + wheelCircumference : finalPosition;
+
+    // Calculate total distance to travel
+    const totalDistance =
+      extraRotations * wheelCircumference +
+      (adjustedFinalPosition - (startPosition % wheelCircumference));
+
+    console.log('Position calculation:', {
+      targetIndex,
+      participant: participants[targetIndex],
+      finalPosition,
+      adjustedFinalPosition,
       startPosition,
-      targetPosition,
       totalDistance,
       duration,
       wheelCircumference,
