@@ -9,6 +9,7 @@ A Chrome Extension that provides a fair and transparent way to select raffle win
 ## Features
 
 ### Options Page
+
 - CSV file upload with drag-and-drop support
 - Intelligent column mapping with auto-detection
 - Competition management (create, edit, delete)
@@ -16,6 +17,7 @@ A Chrome Extension that provides a fair and transparent way to select raffle win
 - Settings configuration
 
 ### Side Panel
+
 - Interactive spinning wheel visualization
 - Real-time winner selection with physics-based animation
 - Session tracking and winner history
@@ -27,6 +29,7 @@ A Chrome Extension that provides a fair and transparent way to select raffle win
 ### Development
 
 1. Build the extension:
+
 ```bash
 pnpm build
 ```
@@ -71,6 +74,7 @@ Jane Smith,67890,jane@example.com
 ```
 
 Supported column variations:
+
 - Name: "name", "participant", "customer", "winner"
 - Ticket: "ticket", "number", "entry", "code"
 - Email: "email", "mail", "contact" (optional)
@@ -164,16 +168,14 @@ pnpm build
 
 ```json
 {
-  "permissions": [
-    "storage",
-    "sidePanel"
-  ]
+  "permissions": ["storage", "sidePanel"]
 }
 ```
 
 ### Build Configuration
 
 The extension uses Vite for building with the following optimizations:
+
 - Code splitting for options and side panel
 - Tree shaking for smaller bundle size
 - Minification for production builds
@@ -193,6 +195,7 @@ The extension uses Vite for building with the following optimizations:
 ### Test Data
 
 Sample CSV files are provided in the `test-data/` directory:
+
 - `small-raffle.csv`: 10 participants
 - `medium-raffle.csv`: 100 participants
 - `large-raffle.csv`: 5000+ participants
@@ -219,16 +222,19 @@ Sample CSV files are provided in the `test-data/` directory:
 ### Common Issues
 
 #### Extension Not Loading
+
 - Ensure developer mode is enabled
 - Check for manifest syntax errors
 - Verify all required files are present
 
 #### CSV Upload Fails
+
 - Check CSV file encoding (UTF-8 recommended)
 - Ensure required columns are present
 - Verify no special characters in headers
 
 #### Spinner Performance Issues
+
 - Reduce participant count if needed
 - Close other Chrome tabs
 - Check Chrome GPU acceleration settings

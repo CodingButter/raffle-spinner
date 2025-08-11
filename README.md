@@ -207,6 +207,7 @@ Each package has its own README with detailed documentation:
 ## Roadmap
 
 ### Version 1.0 (Current)
+
 - ✅ CSV import and parsing
 - ✅ Competition management
 - ✅ Spinning wheel with physics
@@ -214,6 +215,7 @@ Each package has its own README with detailed documentation:
 - ✅ Chrome extension
 
 ### Version 2.0 (Planned)
+
 - [ ] Multiple wheel themes
 - [ ] Sound effects and music
 - [ ] Prize tier support
@@ -221,6 +223,7 @@ Each package has its own README with detailed documentation:
 - [ ] Export to various formats
 
 ### Version 3.0 (Future)
+
 - [ ] Cloud sync support
 - [ ] Team collaboration
 - [ ] Mobile companion app

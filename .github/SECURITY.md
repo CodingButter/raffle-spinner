@@ -39,7 +39,7 @@ When reporting a vulnerability, please include:
 
 - **Initial Response**: Within 48 hours
 - **Status Update**: Within 5 business days
-- **Resolution Target**: 
+- **Resolution Target**:
   - Critical: 7 days
   - High: 14 days
   - Medium: 30 days
@@ -52,7 +52,7 @@ When reporting a vulnerability, please include:
 1. **Keep the Extension Updated**: Always use the latest version
 2. **Verify Source**: Only install from the official Chrome Web Store
 3. **Review Permissions**: Understand what permissions the extension requests
-4. **Protect Your Data**: 
+4. **Protect Your Data**:
    - Don't upload CSV files with sensitive personal information
    - Use test data when possible
    - Clear competition data when no longer needed
@@ -112,7 +112,8 @@ When we receive a security report, we will:
 We thank the following individuals for responsibly disclosing security issues:
 
 <!-- Add contributors here as issues are reported and fixed -->
-- *No security vulnerabilities reported yet*
+
+- _No security vulnerabilities reported yet_
 
 ## Contact
 

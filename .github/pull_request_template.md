@@ -19,6 +19,7 @@
 ## Related Issues
 
 <!-- Link to relevant issues -->
+
 Fixes #(issue number)
 Related to #(issue number)
 
@@ -26,9 +27,9 @@ Related to #(issue number)
 
 <!-- List the main changes made in this PR -->
 
-- 
-- 
-- 
+-
+-
+-
 
 ## Screenshots
 

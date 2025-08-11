@@ -26,8 +26,8 @@ pnpm add @raffle-spinner/csv-parser
 ## Usage
 
 ```typescript
-import { CSVParser } from '@raffle-spinner/csv-parser';
-import type { ColumnMapping, ParseResult } from '@raffle-spinner/csv-parser';
+import { CSVParser } from "@raffle-spinner/csv-parser";
+import type { ColumnMapping, ParseResult } from "@raffle-spinner/csv-parser";
 
 const parser = new CSVParser();
 
@@ -36,9 +36,9 @@ const result = await parser.parse(file);
 
 // Parse with manual column mapping
 const mapping: ColumnMapping = {
-  name: 'Full Name',
-  ticketNumber: 'Ticket',
-  email: 'Email Address' // optional
+  name: "Full Name",
+  ticketNumber: "Ticket",
+  email: "Email Address", // optional
 };
 
 const resultWithMapping = await parser.parse(file, mapping);
@@ -47,7 +47,7 @@ const resultWithMapping = await parser.parse(file, mapping);
 if (result.participants.length > 0) {
   console.log(`Parsed ${result.participants.length} participants`);
   console.log(`Total tickets: ${result.totalTickets}`);
-  
+
   if (result.duplicates.length > 0) {
     console.warn(`Found ${result.duplicates.length} duplicate tickets`);
   }
@@ -61,6 +61,7 @@ if (result.participants.length > 0) {
 #### Methods
 
 ##### `parse(file: File, mapping?: ColumnMapping): Promise<ParseResult>`
+
 Parses a CSV file and returns structured participant data.
 
 - `file`: The CSV file to parse
@@ -68,6 +69,7 @@ Parses a CSV file and returns structured participant data.
 - Returns: Promise resolving to ParseResult
 
 ##### `detectColumns(headers: string[]): ColumnMapping`
+
 Automatically detects column mappings from CSV headers.
 
 - `headers`: Array of column headers from the CSV
@@ -109,7 +111,9 @@ interface ParseError {
 The parser uses intelligent pattern matching to automatically identify columns:
 
 ### Name Column Detection
+
 Looks for headers containing:
+
 - "name"
 - "participant"
 - "winner"
@@ -118,7 +122,9 @@ Looks for headers containing:
 - "attendee"
 
 ### Ticket Column Detection
+
 Looks for headers containing:
+
 - "ticket"
 - "number"
 - "entry"
@@ -127,7 +133,9 @@ Looks for headers containing:
 - "code"
 
 ### Email Column Detection
+
 Looks for headers containing:
+
 - "email"
 - "mail"
 - "contact"
@@ -155,14 +163,14 @@ The parser performs the following validations:
 
 ```typescript
 const parser = new CSVParser();
-const fileInput = document.getElementById('csvFile') as HTMLInputElement;
+const fileInput = document.getElementById("csvFile") as HTMLInputElement;
 const file = fileInput.files[0];
 
 try {
   const result = await parser.parse(file);
-  console.log('Participants:', result.participants);
+  console.log("Participants:", result.participants);
 } catch (error) {
-  console.error('Parse error:', error);
+  console.error("Parse error:", error);
 }
 ```
 
@@ -170,9 +178,9 @@ try {
 
 ```typescript
 const mapping: ColumnMapping = {
-  name: 'Customer Name',
-  ticketNumber: 'Entry Code',
-  email: 'Contact Email'
+  name: "Customer Name",
+  ticketNumber: "Entry Code",
+  email: "Contact Email",
 };
 
 const result = await parser.parse(file, mapping);
@@ -186,9 +194,9 @@ const result = await parser.parse(file);
 if (result.duplicates.length > 0) {
   // Show warning to user
   alert(`Warning: ${result.duplicates.length} duplicate tickets found!`);
-  
+
   // Log duplicate ticket numbers
-  result.duplicates.forEach(ticket => {
+  result.duplicates.forEach((ticket) => {
     console.warn(`Duplicate ticket: ${ticket}`);
   });
 }
@@ -221,15 +229,15 @@ The parser provides detailed error information:
 ```typescript
 try {
   const result = await parser.parse(file);
-  
+
   if (result.errors.length > 0) {
-    result.errors.forEach(error => {
+    result.errors.forEach((error) => {
       console.error(`Row ${error.row}: ${error.message}`);
     });
   }
 } catch (error) {
   // File read error or parse failure
-  console.error('Failed to parse CSV:', error);
+  console.error("Failed to parse CSV:", error);
 }
 ```
 

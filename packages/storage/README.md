@@ -59,27 +59,35 @@ await storage.updateSettings({
 #### Methods
 
 ##### `getCompetitions(): Promise<Competition[]>`
+
 Returns all stored competitions.
 
 ##### `getCompetition(id: string): Promise<Competition | null>`
+
 Returns a specific competition by ID.
 
 ##### `saveCompetition(competition: Competition): Promise<void>`
+
 Saves or updates a competition.
 
 ##### `deleteCompetition(id: string): Promise<void>`
+
 Deletes a competition.
 
 ##### `setActiveCompetition(id: string | null): Promise<void>`
+
 Sets the active competition.
 
 ##### `getActiveCompetition(): Promise<Competition | null>`
+
 Returns the currently active competition.
 
 ##### `getSettings(): Promise<Settings>`
+
 Returns application settings.
 
 ##### `updateSettings(settings: Partial<Settings>): Promise<void>`
+
 Updates application settings.
 
 ### Types
@@ -109,7 +117,7 @@ interface Settings {
   soundEnabled: boolean;
   autoRemoveWinners: boolean;
   showTicketNumbers: boolean;
-  theme: 'light' | 'dark' | 'system';
+  theme: "light" | "dark" | "system";
 }
 ```
 

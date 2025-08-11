@@ -5,6 +5,7 @@ Welcome to the official wiki for the Raffle Winner Spinner Chrome Extension! Thi
 ## 📚 Table of Contents
 
 ### For Users
+
 - [Installation Guide](Installation-Guide)
 - [Quick Start Tutorial](Quick-Start)
 - [CSV Format Guide](CSV-Format-Guide)
@@ -13,6 +14,7 @@ Welcome to the official wiki for the Raffle Winner Spinner Chrome Extension! Thi
 - [FAQ](FAQ)
 
 ### For Developers
+
 - [Development Setup](Development-Setup)
 - [Architecture Overview](Architecture-Overview)
 - [API Documentation](API-Documentation)
@@ -20,6 +22,7 @@ Welcome to the official wiki for the Raffle Winner Spinner Chrome Extension! Thi
 - [Performance Optimization](Performance-Optimization)
 
 ### For Contributors
+
 - [Contributing Guidelines](Contributing-Guidelines)
 - [Code Style Guide](Code-Style-Guide)
 - [Pull Request Process](Pull-Request-Process)
@@ -80,18 +83,21 @@ We are committed to providing a welcoming and inclusive environment. Please read
 ## 📈 Roadmap
 
 ### Version 1.0 (Current)
+
 - ✅ Core functionality
 - ✅ CSV import
 - ✅ Spinner wheel
 - ✅ Competition management
 
 ### Version 1.1 (Next)
+
 - 🎨 Dark mode theme
 - 🔊 Sound effects
 - ⌨️ Keyboard shortcuts
 - 🌐 Internationalization
 
 ### Version 2.0 (Future)
+
 - ☁️ Cloud sync
 - 📱 Mobile companion
 - 🎁 Prize tiers
@@ -107,4 +113,4 @@ Special thanks to all contributors who make this project possible!
 
 ---
 
-*Last updated: January 2024*
+_Last updated: January 2024_

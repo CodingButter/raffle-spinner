@@ -28,17 +28,20 @@ Please be respectful and constructive in all interactions. We welcome contributo
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd spinner
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 3. Set up git hooks (for automatic code quality checks):
+
 ```bash
 ./scripts/setup-husky.sh
 ```
@@ -182,6 +185,7 @@ Use clear, descriptive commit messages:
 ```
 
 Types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -191,6 +195,7 @@ Types:
 - `chore`: Build process or auxiliary tool changes
 
 Example:
+
 ```
 feat: add CSV column auto-detection
 

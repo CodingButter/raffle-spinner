@@ -27,26 +27,26 @@ pnpm add @raffle-spinner/spinner-physics
 ## Usage
 
 ```typescript
-import { SpinnerPhysics } from '@raffle-spinner/spinner-physics';
-import type { SpinConfig, SpinResult } from '@raffle-spinner/spinner-physics';
+import { SpinnerPhysics } from "@raffle-spinner/spinner-physics";
+import type { SpinConfig, SpinResult } from "@raffle-spinner/spinner-physics";
 
 // Initialize physics engine
 const physics = new SpinnerPhysics({
   wheelRadius: 200,
   segments: participants.length,
   friction: 0.995,
-  minSpeed: 0.01
+  minSpeed: 0.01,
 });
 
 // Start a spin
 const config: SpinConfig = {
   initialVelocity: Math.random() * 0.5 + 0.5,
   targetIndex: Math.floor(Math.random() * participants.length),
-  duration: 5000
+  duration: 5000,
 };
 
 const result = await physics.spin(config);
-console.log('Winner index:', result.winnerIndex);
+console.log("Winner index:", result.winnerIndex);
 ```
 
 ## API Reference
@@ -63,56 +63,62 @@ constructor(options: PhysicsOptions)
 
 ```typescript
 interface PhysicsOptions {
-  wheelRadius: number;      // Radius of the wheel in pixels
-  segments: number;         // Number of segments (participants)
-  friction?: number;        // Friction coefficient (0-1, default: 0.995)
-  minSpeed?: number;        // Minimum speed before stopping (default: 0.01)
-  maxSpeed?: number;        // Maximum initial speed (default: 1.0)
+  wheelRadius: number; // Radius of the wheel in pixels
+  segments: number; // Number of segments (participants)
+  friction?: number; // Friction coefficient (0-1, default: 0.995)
+  minSpeed?: number; // Minimum speed before stopping (default: 0.01)
+  maxSpeed?: number; // Maximum initial speed (default: 1.0)
 }
 ```
 
 #### Methods
 
 ##### `spin(config: SpinConfig): Promise<SpinResult>`
+
 Starts a spin animation with the given configuration.
 
 ##### `stop(): void`
+
 Immediately stops the current spin.
 
 ##### `update(deltaTime: number): void`
+
 Updates the physics simulation. Called automatically during animation.
 
 ##### `getCurrentAngle(): number`
+
 Returns the current rotation angle in radians.
 
 ##### `getCurrentSpeed(): number`
+
 Returns the current rotation speed.
 
 ##### `getWinnerIndex(): number`
+
 Returns the index of the segment at the top position.
 
 ### Types
 
 ```typescript
 interface SpinConfig {
-  initialVelocity: number;  // Initial spin speed (0-1)
-  targetIndex?: number;     // Optional predetermined winner
-  duration?: number;        // Maximum spin duration in ms
-  onUpdate?: (angle: number) => void;  // Update callback
+  initialVelocity: number; // Initial spin speed (0-1)
+  targetIndex?: number; // Optional predetermined winner
+  duration?: number; // Maximum spin duration in ms
+  onUpdate?: (angle: number) => void; // Update callback
 }
 
 interface SpinResult {
-  winnerIndex: number;      // Index of winning segment
-  finalAngle: number;       // Final rotation angle
-  totalRotations: number;   // Total number of rotations
-  duration: number;         // Actual spin duration
+  winnerIndex: number; // Index of winning segment
+  finalAngle: number; // Final rotation angle
+  totalRotations: number; // Total number of rotations
+  duration: number; // Actual spin duration
 }
 
 interface PhysicsState {
-  angle: number;           // Current rotation angle
-  velocity: number;        // Current angular velocity
-  acceleration: number;    // Current angular acceleration
-  isSpinning: boolean;     // Whether wheel is currently spinning
+  angle: number; // Current rotation angle
+  velocity: number; // Current angular velocity
+  acceleration: number; // Current angular acceleration
+  isSpinning: boolean; // Whether wheel is currently spinning
 }
 ```
 
@@ -131,6 +137,7 @@ Where friction is typically 0.995, providing realistic deceleration.
 ### Winner Determination
 
 The winner is determined by:
+
 1. Calculating the final resting angle
 2. Mapping the angle to a segment index
 3. Accounting for the pointer position (top of wheel)
@@ -147,32 +154,32 @@ The winner is determined by:
 ### Canvas Setup
 
 ```typescript
-const canvas = document.getElementById('wheel') as HTMLCanvasElement;
-const ctx = canvas.getContext('2d');
+const canvas = document.getElementById("wheel") as HTMLCanvasElement;
+const ctx = canvas.getContext("2d");
 
 const physics = new SpinnerPhysics({
   wheelRadius: canvas.width / 2,
-  segments: participants.length
+  segments: participants.length,
 });
 
 // Animation loop
 function animate() {
   const angle = physics.getCurrentAngle();
-  
+
   // Clear canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
+
   // Draw wheel at current angle
   drawWheel(ctx, angle, participants);
-  
+
   if (physics.isSpinning) {
     requestAnimationFrame(animate);
   }
 }
 
 // Start spin
-physics.spin({ initialVelocity: 0.8 }).then(result => {
-  console.log('Winner:', participants[result.winnerIndex]);
+physics.spin({ initialVelocity: 0.8 }).then((result) => {
+  console.log("Winner:", participants[result.winnerIndex]);
 });
 
 animate();
@@ -186,8 +193,8 @@ animate();
 const physics = new SpinnerPhysics({
   wheelRadius: 200,
   segments: 100,
-  friction: 0.998,  // Less friction = longer spin
-  maxSpeed: 1.5     // Higher max speed
+  friction: 0.998, // Less friction = longer spin
+  maxSpeed: 1.5, // Higher max speed
 });
 ```
 
@@ -199,7 +206,7 @@ const targetWinner = 42;
 await physics.spin({
   initialVelocity: 0.7,
   targetIndex: targetWinner,
-  duration: 4000
+  duration: 4000,
 });
 ```
 
@@ -209,8 +216,8 @@ await physics.spin({
 const physics = new SpinnerPhysics({
   wheelRadius: 200,
   segments: 50,
-  friction: 0.99,   // Slower deceleration
-  minSpeed: 0.005   // More precise stopping
+  friction: 0.99, // Slower deceleration
+  minSpeed: 0.005, // More precise stopping
 });
 ```
 
@@ -222,14 +229,14 @@ For 5000+ participants:
 
 ```typescript
 const physics = new SpinnerPhysics({
-  wheelRadius: 300,  // Larger wheel for visibility
+  wheelRadius: 300, // Larger wheel for visibility
   segments: 5000,
-  friction: 0.996,   // Balanced deceleration
-  minSpeed: 0.008    // Precise stopping
+  friction: 0.996, // Balanced deceleration
+  minSpeed: 0.008, // Precise stopping
 });
 
 // Use segment grouping for rendering
-const segmentsPerGroup = Math.ceil(5000 / 360);  // ~14 per degree
+const segmentsPerGroup = Math.ceil(5000 / 360); // ~14 per degree
 ```
 
 ### Memory Optimization
@@ -263,7 +270,7 @@ pnpm typecheck
 ### Angle to Segment Mapping
 
 ```typescript
-segmentIndex = Math.floor((angle % (2 * Math.PI)) / segmentAngle)
+segmentIndex = Math.floor((angle % (2 * Math.PI)) / segmentAngle);
 ```
 
 ### Velocity Decay
@@ -275,7 +282,7 @@ v(t) = v₀ * friction^t
 ### Stopping Condition
 
 ```typescript
-stopped = velocity < minSpeed || elapsedTime > maxDuration
+stopped = velocity < minSpeed || elapsedTime > maxDuration;
 ```
 
 ## Contributing

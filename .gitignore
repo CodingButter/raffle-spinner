@@ -42,3 +42,6 @@ Thumbs.db
 *.pem
 *.crx
 *.zip
+
+# Wiki (separate repository)
+wiki/

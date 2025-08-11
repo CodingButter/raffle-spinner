@@ -21,7 +21,10 @@ export class CSVParser {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          const processed = this.processData(results.data as Record<string, string>[], mapping);
+          const processed = this.processData(
+            results.data as Record<string, string>[],
+            mapping,
+          );
           resolve(processed);
         },
         error: (error) => {
