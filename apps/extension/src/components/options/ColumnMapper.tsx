@@ -121,12 +121,23 @@ export function ColumnMapper({
   };
 
   const handleSelectSavedMapping = (mappingId: string) => {
-    const saved = savedMappings.find((m) => m.id === mappingId);
-    if (saved) {
-      setMapping(saved.mapping);
-      setUseFullName(!!saved.mapping.fullName);
-      setSelectedSavedMappingId(mappingId);
+    if (mappingId === 'manual') {
+      // Reset to manual configuration
+      setSelectedSavedMappingId('');
       setShouldSaveMapping(false);
+      // Keep current mapping or use detected
+      setMapping(detectedMapping);
+      setUseFullName(
+        !!detectedMapping.fullName || (!detectedMapping.firstName && !detectedMapping.lastName)
+      );
+    } else {
+      const saved = savedMappings.find((m) => m.id === mappingId);
+      if (saved) {
+        setMapping(saved.mapping);
+        setUseFullName(!!saved.mapping.fullName);
+        setSelectedSavedMappingId(mappingId);
+        setShouldSaveMapping(false);
+      }
     }
   };
 
@@ -149,12 +160,15 @@ export function ColumnMapper({
           {savedMappings.length > 0 && (
             <div className="space-y-2">
               <Label htmlFor="savedMapping">Use Saved Mapping</Label>
-              <Select value={selectedSavedMappingId} onValueChange={handleSelectSavedMapping}>
+              <Select
+                value={selectedSavedMappingId || 'manual'}
+                onValueChange={handleSelectSavedMapping}
+              >
                 <SelectTrigger id="savedMapping">
                   <SelectValue placeholder="Select a saved mapping or configure manually" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Configure manually</SelectItem>
+                  <SelectItem value="manual">Configure manually</SelectItem>
                   {savedMappings.map((saved) => (
                     <SelectItem key={saved.id} value={saved.id}>
                       {saved.name} {saved.isDefault && '(Default)'}
