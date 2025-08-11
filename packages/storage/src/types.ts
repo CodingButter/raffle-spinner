@@ -37,8 +37,20 @@ export interface ColumnMapping {
   ticketNumber: string;
 }
 
+export interface SavedMapping {
+  id: string;
+  name: string;
+  mapping: ColumnMapping;
+  createdAt: number;
+  updatedAt: number;
+  usageCount: number; // Track how often this mapping is used
+  isDefault?: boolean; // Mark one mapping as default
+}
+
 export interface StorageData {
   competitions: Competition[];
   settings: SpinnerSettings;
-  columnMapping: ColumnMapping | null;
+  columnMapping: ColumnMapping | null; // Keep for backwards compatibility
+  savedMappings?: SavedMapping[]; // New: array of saved mappings
+  defaultMappingId?: string; // New: ID of the default mapping
 }

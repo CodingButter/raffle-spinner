@@ -27,14 +27,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ColumnMapping } from '@raffle-spinner/storage';
+import { ColumnMapping, SavedMapping, storage } from '@raffle-spinner/storage';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { InfoIcon } from 'lucide-react';
 
 interface ColumnMapperProps {
   open: boolean;
   onClose: () => void;
   headers: string[];
   detectedMapping: Partial<ColumnMapping>;
-  onConfirm: (mapping: ColumnMapping) => void;
+  onConfirm: (mapping: ColumnMapping, saveMapping?: SavedMapping) => void;
+  savedMappings?: SavedMapping[];
+  suggestedMappingId?: string;
 }
 
 export function ColumnMapper({
@@ -43,20 +49,37 @@ export function ColumnMapper({
   headers,
   detectedMapping,
   onConfirm,
+  savedMappings = [],
+  suggestedMappingId,
 }: ColumnMapperProps) {
   const [mapping, setMapping] = React.useState<Partial<ColumnMapping>>(detectedMapping);
   const [useFullName, setUseFullName] = React.useState<boolean>(
     !!detectedMapping.fullName || (!detectedMapping.firstName && !detectedMapping.lastName)
   );
+  const [shouldSaveMapping, setShouldSaveMapping] = React.useState(false);
+  const [mappingName, setMappingName] = React.useState('');
+  const [selectedSavedMappingId, setSelectedSavedMappingId] = React.useState<string>('');
 
   React.useEffect(() => {
+    // If we have a suggested mapping, use it
+    if (suggestedMappingId && savedMappings.length > 0) {
+      const suggested = savedMappings.find((m) => m.id === suggestedMappingId);
+      if (suggested) {
+        setMapping(suggested.mapping);
+        setUseFullName(!!suggested.mapping.fullName);
+        setSelectedSavedMappingId(suggestedMappingId);
+        return;
+      }
+    }
+
+    // Otherwise use detected mapping
     setMapping(detectedMapping);
     setUseFullName(
       !!detectedMapping.fullName || (!detectedMapping.firstName && !detectedMapping.lastName)
     );
-  }, [detectedMapping]);
+  }, [detectedMapping, suggestedMappingId, savedMappings]);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const finalMapping = useFullName
       ? { fullName: mapping.fullName, ticketNumber: mapping.ticketNumber }
       : {
@@ -69,7 +92,41 @@ export function ColumnMapper({
       (useFullName && finalMapping.fullName && finalMapping.ticketNumber) ||
       (!useFullName && finalMapping.firstName && finalMapping.lastName && finalMapping.ticketNumber)
     ) {
-      onConfirm(finalMapping as ColumnMapping);
+      let savedMapping: SavedMapping | undefined;
+
+      if (shouldSaveMapping && mappingName.trim()) {
+        savedMapping = {
+          id: `mapping-${Date.now()}`,
+          name: mappingName.trim(),
+          mapping: finalMapping as ColumnMapping,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          usageCount: 1,
+          isDefault: false,
+        };
+        await storage.saveSavedMapping(savedMapping);
+      } else if (selectedSavedMappingId) {
+        // Increment usage count of existing mapping
+        const existing = savedMappings.find((m) => m.id === selectedSavedMappingId);
+        if (existing) {
+          await storage.saveSavedMapping({
+            ...existing,
+            usageCount: existing.usageCount + 1,
+          });
+        }
+      }
+
+      onConfirm(finalMapping as ColumnMapping, savedMapping);
+    }
+  };
+
+  const handleSelectSavedMapping = (mappingId: string) => {
+    const saved = savedMappings.find((m) => m.id === mappingId);
+    if (saved) {
+      setMapping(saved.mapping);
+      setUseFullName(!!saved.mapping.fullName);
+      setSelectedSavedMappingId(mappingId);
+      setShouldSaveMapping(false);
     }
   };
 
@@ -88,6 +145,34 @@ export function ColumnMapper({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          {/* Saved Mappings Selector */}
+          {savedMappings.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="savedMapping">Use Saved Mapping</Label>
+              <Select value={selectedSavedMappingId} onValueChange={handleSelectSavedMapping}>
+                <SelectTrigger id="savedMapping">
+                  <SelectValue placeholder="Select a saved mapping or configure manually" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Configure manually</SelectItem>
+                  {savedMappings.map((saved) => (
+                    <SelectItem key={saved.id} value={saved.id}>
+                      {saved.name} {saved.isDefault && '(Default)'}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {suggestedMappingId && selectedSavedMappingId === suggestedMappingId && (
+                <Alert>
+                  <InfoIcon className="h-4 w-4" />
+                  <AlertDescription>
+                    This mapping was automatically selected based on your default or most recently
+                    used settings.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
           {/* Toggle between full name and separate name columns */}
           <div className="flex items-center space-x-2 pb-2 border-b">
             <input
@@ -207,13 +292,38 @@ export function ColumnMapper({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Save Mapping Option */}
+          <div className="space-y-2 pt-4 border-t">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="saveMapping"
+                checked={shouldSaveMapping}
+                onCheckedChange={(checked) => setShouldSaveMapping(checked as boolean)}
+                disabled={!!selectedSavedMappingId}
+              />
+              <Label htmlFor="saveMapping" className="font-normal cursor-pointer">
+                Save this mapping for future use
+              </Label>
+            </div>
+            {shouldSaveMapping && (
+              <Input
+                placeholder="Enter a name for this mapping (e.g., 'Standard Format')"
+                value={mappingName}
+                onChange={(e) => setMappingName(e.target.value)}
+              />
+            )}
+          </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm} disabled={!isValid}>
+          <Button
+            onClick={handleConfirm}
+            disabled={!isValid || (shouldSaveMapping && !mappingName.trim())}
+          >
             Confirm Mapping
           </Button>
         </DialogFooter>

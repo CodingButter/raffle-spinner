@@ -11,7 +11,12 @@
  * - FR-1.4: Column Mapping Interface (mapping persistence)
  */
 
-import { Competition, SpinnerSettings, ColumnMapping } from "./types";
+import {
+  Competition,
+  SpinnerSettings,
+  ColumnMapping,
+  SavedMapping,
+} from "./types";
 
 export interface StorageAdapter {
   getCompetitions(): Promise<Competition[]>;
@@ -24,6 +29,14 @@ export interface StorageAdapter {
 
   getColumnMapping(): Promise<ColumnMapping | null>;
   saveColumnMapping(mapping: ColumnMapping): Promise<void>;
+
+  // Saved mappings methods
+  getSavedMappings(): Promise<SavedMapping[]>;
+  getSavedMapping(id: string): Promise<SavedMapping | null>;
+  saveSavedMapping(mapping: SavedMapping): Promise<void>;
+  deleteSavedMapping(id: string): Promise<void>;
+  getDefaultMapping(): Promise<SavedMapping | null>;
+  setDefaultMapping(id: string | null): Promise<void>;
 
   clear(): Promise<void>;
 }

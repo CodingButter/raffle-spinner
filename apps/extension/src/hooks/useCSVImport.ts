@@ -11,8 +11,8 @@
  * - FR-1.5: Data Validation and Error Handling
  */
 
-import { useState, useRef } from 'react';
-import { ColumnMapping, Competition } from '@raffle-spinner/storage';
+import { useState, useRef, useEffect } from 'react';
+import { ColumnMapping, Competition, SavedMapping, storage } from '@raffle-spinner/storage';
 import { useCSVUpload } from './useCSVUpload';
 
 interface UseCSVImportProps {
@@ -29,6 +29,9 @@ export function useCSVImport({
   const { upload, detectColumns } = useCSVUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [savedMappings, setSavedMappings] = useState<SavedMapping[]>([]);
+  const [suggestedMappingId, setSuggestedMappingId] = useState<string>('');
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showNameModal, setShowNameModal] = useState(false);
   const [showMapperModal, setShowMapperModal] = useState(false);
@@ -43,6 +46,16 @@ export function useCSVImport({
     null
   );
 
+  // Load saved mappings on mount
+  useEffect(() => {
+    loadSavedMappings();
+  }, []);
+
+  const loadSavedMappings = async () => {
+    const mappings = await storage.getSavedMappings();
+    setSavedMappings(mappings);
+  };
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -54,24 +67,62 @@ export function useCSVImport({
       const { headers, detected } = await detectColumns(file);
       setDetectedHeaders(headers);
 
-      if (!columnMapping) {
-        setDetectedMapping({
-          firstName: detected.firstName || '',
-          lastName: detected.lastName || '',
-          fullName: detected.fullName || '',
-          ticketNumber: detected.ticketNumber || '',
+      // Try to find the best matching saved mapping
+      const defaultMapping = await storage.getDefaultMapping();
+      let bestMappingId = '';
+
+      if (defaultMapping) {
+        // Use default if set
+        bestMappingId = defaultMapping.id;
+      } else if (savedMappings.length > 0) {
+        // Try to match based on headers
+        const matchingMapping = savedMappings.find((mapping) => {
+          const m = mapping.mapping;
+          return (
+            headers.includes(m.ticketNumber) &&
+            (m.fullName
+              ? headers.includes(m.fullName)
+              : m.firstName &&
+                headers.includes(m.firstName) &&
+                m.lastName &&
+                headers.includes(m.lastName))
+          );
         });
-        setShowMapperModal(true);
-      } else {
-        setShowNameModal(true);
+
+        if (matchingMapping) {
+          bestMappingId = matchingMapping.id;
+        } else {
+          // Use most recently used mapping
+          const sortedByUsage = [...savedMappings].sort((a, b) => b.usageCount - a.usageCount);
+          if (sortedByUsage[0].usageCount > 0) {
+            bestMappingId = sortedByUsage[0].id;
+          }
+        }
       }
+
+      setSuggestedMappingId(bestMappingId);
+
+      // Always show mapper modal to give user chance to confirm or change
+      setDetectedMapping({
+        firstName: detected.firstName || '',
+        lastName: detected.lastName || '',
+        fullName: detected.fullName || '',
+        ticketNumber: detected.ticketNumber || '',
+      });
+      setShowMapperModal(true);
     } catch (error) {
       console.error('Failed to detect columns:', error);
     }
   };
 
-  const handleMappingConfirm = async (mapping: ColumnMapping) => {
+  const handleMappingConfirm = async (mapping: ColumnMapping, savedMapping?: SavedMapping) => {
     await updateColumnMapping(mapping);
+
+    // Reload saved mappings if a new one was created
+    if (savedMapping) {
+      await loadSavedMappings();
+    }
+
     setShowMapperModal(false);
     setShowNameModal(true);
   };
@@ -160,6 +211,8 @@ export function useCSVImport({
     detectedMapping,
     duplicates,
     importSummary,
+    savedMappings,
+    suggestedMappingId,
     handleFileSelect,
     handleMappingConfirm,
     handleNameConfirm,

@@ -16,6 +16,7 @@ import {
   Competition,
   SpinnerSettings,
   ColumnMapping,
+  SavedMapping,
   StorageData,
 } from "./types";
 
@@ -32,6 +33,8 @@ export class ChromeStorageAdapter implements StorageAdapter {
         competitions: [],
         settings: DEFAULT_SETTINGS,
         columnMapping: null,
+        savedMappings: [],
+        defaultMappingId: undefined,
       }
     );
   }
@@ -88,6 +91,60 @@ export class ChromeStorageAdapter implements StorageAdapter {
 
   async saveColumnMapping(mapping: ColumnMapping): Promise<void> {
     await this.setData({ columnMapping: mapping });
+  }
+
+  // Saved mappings methods
+  async getSavedMappings(): Promise<SavedMapping[]> {
+    const data = await this.getData();
+    return data.savedMappings || [];
+  }
+
+  async getSavedMapping(id: string): Promise<SavedMapping | null> {
+    const mappings = await this.getSavedMappings();
+    return mappings.find((m) => m.id === id) || null;
+  }
+
+  async saveSavedMapping(mapping: SavedMapping): Promise<void> {
+    const mappings = await this.getSavedMappings();
+    const index = mappings.findIndex((m) => m.id === mapping.id);
+
+    if (index >= 0) {
+      mappings[index] = {
+        ...mapping,
+        updatedAt: Date.now(),
+      };
+    } else {
+      mappings.push(mapping);
+    }
+
+    await this.setData({ savedMappings: mappings });
+  }
+
+  async deleteSavedMapping(id: string): Promise<void> {
+    const mappings = await this.getSavedMappings();
+    const filtered = mappings.filter((m) => m.id !== id);
+
+    const data = await this.getData();
+    // If we're deleting the default mapping, clear the default
+    if (data.defaultMappingId === id) {
+      await this.setData({
+        savedMappings: filtered,
+        defaultMappingId: undefined,
+      });
+    } else {
+      await this.setData({ savedMappings: filtered });
+    }
+  }
+
+  async getDefaultMapping(): Promise<SavedMapping | null> {
+    const data = await this.getData();
+    if (!data.defaultMappingId) return null;
+
+    return this.getSavedMapping(data.defaultMappingId);
+  }
+
+  async setDefaultMapping(id: string | null): Promise<void> {
+    await this.setData({ defaultMappingId: id || undefined });
   }
 
   async clear(): Promise<void> {
