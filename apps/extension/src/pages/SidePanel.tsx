@@ -14,7 +14,7 @@
 import { useState } from 'react';
 import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
-import { SpinnerWheel } from '@/components/sidepanel/SpinnerWheel';
+import { SlotMachineWheel } from '@/components/sidepanel/SlotMachineWheel';
 import { SessionWinners, Winner } from '@/components/sidepanel/SessionWinners';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -129,7 +129,7 @@ function SidePanelContent() {
 
             {selectedCompetition && (
               <div className="space-y-4">
-                <SpinnerWheel
+                <SlotMachineWheel
                   participants={selectedCompetition.participants}
                   targetTicketNumber={ticketNumber}
                   settings={settings}
