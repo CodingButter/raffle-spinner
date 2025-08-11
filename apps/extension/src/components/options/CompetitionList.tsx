@@ -8,17 +8,23 @@
  * - FR-1.6: Competition Management
  */
 
+import { useState } from 'react';
 import { Competition } from '@raffle-spinner/storage';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, Users } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ImageUpload } from '@/components/ui/image-upload';
+import { Trash2, Users, AlertCircle } from 'lucide-react';
 
 interface CompetitionListProps {
   competitions: Competition[];
   onDelete: (id: string) => void;
+  onUpdateBanner?: (id: string, banner: string | undefined) => void;
 }
 
-export function CompetitionList({ competitions, onDelete }: CompetitionListProps) {
+export function CompetitionList({ competitions, onDelete, onUpdateBanner }: CompetitionListProps) {
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   if (competitions.length === 0) {
     return (
       <Card>
@@ -34,6 +40,13 @@ export function CompetitionList({ competitions, onDelete }: CompetitionListProps
 
   return (
     <div className="space-y-4">
+      {uploadError && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{uploadError}</AlertDescription>
+        </Alert>
+      )}
+
       {competitions.map((competition) => (
         <Card key={competition.id}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -41,18 +54,31 @@ export function CompetitionList({ competitions, onDelete }: CompetitionListProps
               <CardTitle className="text-lg">{competition.name}</CardTitle>
               <CardDescription>{competition.participants.length} participants</CardDescription>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onDelete(competition.id)}
-              className="text-destructive hover:text-destructive/90"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onDelete(competition.id)}
+                className="text-destructive hover:text-destructive/90"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xs text-muted-foreground">
-              Created: {new Date(competition.createdAt).toLocaleDateString()}
+            <div className="space-y-3">
+              {/* Competition Banner */}
+              <ImageUpload
+                value={competition.bannerImage}
+                onChange={(value) => onUpdateBanner?.(competition.id, value)}
+                onError={setUploadError}
+                height="h-24"
+                compact
+              />
+
+              <div className="text-xs text-muted-foreground">
+                Created: {new Date(competition.createdAt).toLocaleDateString()}
+              </div>
             </div>
           </CardContent>
         </Card>

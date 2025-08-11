@@ -24,6 +24,7 @@ interface CompetitionManagementProps {
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDeleteCompetition: (id: string) => void;
   onOpenMapper: () => void;
+  onUpdateBanner?: (id: string, banner: string | undefined) => void;
 }
 
 export function CompetitionManagement({
@@ -33,6 +34,7 @@ export function CompetitionManagement({
   onFileSelect,
   onDeleteCompetition,
   onOpenMapper,
+  onUpdateBanner,
 }: CompetitionManagementProps) {
   return (
     <Card>
@@ -83,7 +85,11 @@ export function CompetitionManagement({
           )}
         </div>
 
-        <CompetitionList competitions={competitions} onDelete={onDeleteCompetition} />
+        <CompetitionList
+          competitions={competitions}
+          onDelete={onDeleteCompetition}
+          onUpdateBanner={onUpdateBanner}
+        />
       </CardContent>
     </Card>
   );

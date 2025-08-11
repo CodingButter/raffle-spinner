@@ -23,6 +23,7 @@ interface CompetitionContextType {
   selectCompetition: (id: string) => void;
   addCompetition: (competition: Competition) => Promise<void>;
   deleteCompetition: (id: string) => Promise<void>;
+  updateCompetitionBanner: (id: string, banner: string | undefined) => Promise<void>;
 }
 
 const CompetitionContext = createContext<CompetitionContextType | undefined>(undefined);
@@ -65,9 +66,51 @@ export function CompetitionProvider({ children }: { children: ReactNode }) {
     await loadCompetitions();
   };
 
+  const updateCompetitionBanner = async (id: string, banner: string | undefined) => {
+    const competition = competitions.find((c) => c.id === id);
+    if (!competition) return;
+
+    const updatedCompetition = {
+      ...competition,
+      bannerImage: banner,
+      updatedAt: Date.now(),
+    };
+
+    await storage.saveCompetition(updatedCompetition);
+    await loadCompetitions();
+
+    // Update selected competition if it's the one being modified
+    if (selectedCompetition?.id === id) {
+      setSelectedCompetition(updatedCompetition);
+    }
+  };
+
   useEffect(() => {
     loadCompetitions();
-  }, []);
+
+    // Listen for storage changes from other contexts (like options page)
+    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (changes.data) {
+        const newData = changes.data.newValue;
+        if (newData?.competitions) {
+          setCompetitions(newData.competitions);
+          // Update selected competition if it still exists
+          if (selectedCompetition) {
+            const updatedComp = newData.competitions.find(
+              (c: Competition) => c.id === selectedCompetition.id
+            );
+            setSelectedCompetition(updatedComp || null);
+          }
+        }
+      }
+    };
+
+    chrome.storage.onChanged.addListener(handleStorageChange);
+
+    return () => {
+      chrome.storage.onChanged.removeListener(handleStorageChange);
+    };
+  }, [selectedCompetition]);
 
   return (
     <CompetitionContext.Provider
@@ -80,6 +123,7 @@ export function CompetitionProvider({ children }: { children: ReactNode }) {
         selectCompetition,
         addCompetition,
         deleteCompetition,
+        updateCompetitionBanner,
       }}
     >
       {children}

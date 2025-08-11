@@ -38,20 +38,17 @@ export function useSlotMachineAnimation({
   const spin = useCallback(() => {
     // console.log('=== STARTING SLOT MACHINE SPIN ===');
 
-    // Find the target participant
+    // Find the target participant in the subset
     const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
     const winnerIndex = participants.findIndex(
       (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
     );
 
-    if (winnerIndex === -1) {
-      console.error('Target not found:', targetTicketNumber);
-      onError?.(`Ticket ${targetTicketNumber} not found`);
-      return;
-    }
-
-    const winner = participants[winnerIndex];
-    // console.log(`Target: ${winner.ticketNumber} at index ${winnerIndex}`);
+    // If winner not in subset, just spin to the middle position
+    // The actual winner will be determined by the parent component
+    const targetIndex = winnerIndex !== -1 ? winnerIndex : Math.floor(participants.length / 2);
+    const winner = participants[targetIndex];
+    // console.log(`Target: ${winner.ticketNumber} at index ${targetIndex}`);
 
     // Animation setup
     const duration = settings.minSpinDuration * 1000;
@@ -69,21 +66,26 @@ export function useSlotMachineAnimation({
     // Position represents how many pixels we've scrolled down from participant 0
     // After a full rotation, we're back at participant 0
 
-    // CRITICAL POSITION CALCULATION
-    // The wheel visual layout: positions -2, -1, 0, 1, 2 (CENTER), 3, 4...
-    // When position = P, topIndex = floor(P / itemHeight)
-    // Items displayed: topIndex-2, topIndex-1, topIndex, topIndex+1, topIndex+2 (CENTER)
+    // CRITICAL POSITION CALCULATION - FIXED
+    // The wheel visual layout shows items at positions: -2, -1, 0, 1, 2 (CENTER), 3, 4
+    // When position = P pixels:
+    //   - topIndex = floor(P / itemHeight)
+    //   - Center item is at topIndex + 2
     //
-    // To show winnerIndex at CENTER position (i=2):
-    // We need: (topIndex + 2) % length = winnerIndex
-    // Therefore: topIndex = (winnerIndex - 2 + length) % length
+    // To show targetIndex at CENTER:
+    //   - We need topIndex such that (topIndex + 2) % participants.length = targetIndex
+    //   - Therefore: topIndex = targetIndex - 2
+    //   - If negative, add participants.length to wrap around
 
-    const requiredTopIndex = (winnerIndex - 2 + participants.length) % participants.length;
+    let requiredTopIndex = targetIndex - 2;
+    if (requiredTopIndex < 0) {
+      requiredTopIndex += participants.length;
+    }
     const targetPositionNormalized = requiredTopIndex * itemHeight;
 
     // Debug: Position calculation
     // console.log('🎯 Position Math:', {
-    //   winnerIndex,
+    //   targetIndex,
     //   requiredTopIndex,
     //   targetPositionNormalized,
     //   willShowAtCenter: participants[(requiredTopIndex + 2) % participants.length]?.ticketNumber,
@@ -106,16 +108,16 @@ export function useSlotMachineAnimation({
     const totalDistance = extraDistance + forwardDistance;
     const finalPosition = startPos + totalDistance;
 
-    // VERIFY CALCULATION
+    // VERIFY CALCULATION - FIXED
     const testFinalNorm =
       ((finalPosition % wheelCircumference) + wheelCircumference) % wheelCircumference;
-    const testTopIndex = Math.floor(testFinalNorm / itemHeight) % participants.length;
+    const testTopIndex = Math.floor(testFinalNorm / itemHeight);
     const testCenterIndex = (testTopIndex + 2) % participants.length;
 
     // Debug: Animation target
     // console.log('🎯 Animation Target:', {
     //   targetTicket: winner.ticketNumber,
-    //   winnerIndex,
+    //   targetIndex,
     //   requiredTopIndex,
     //   targetPositionNormalized,
     //   currentNormalized,
@@ -126,11 +128,11 @@ export function useSlotMachineAnimation({
     //     testTopIndex,
     //     testCenterIndex,
     //     testCenterTicket: participants[testCenterIndex]?.ticketNumber,
-    //     isCorrect: testCenterIndex === winnerIndex ? '✅ WILL BE CORRECT' : '❌ WILL BE WRONG'
+    //     isCorrect: testCenterIndex === targetIndex ? '✅ WILL BE CORRECT' : '❌ WILL BE WRONG'
     //   }
     // });
 
-    if (testCenterIndex !== winnerIndex) {
+    if (testCenterIndex !== targetIndex) {
       console.error('⚠️ PRE-FLIGHT CHECK FAILED - Calculation will be wrong!');
       console.error('Expected to show:', winner.ticketNumber);
       console.error('Will actually show:', participants[testCenterIndex]?.ticketNumber);
@@ -167,25 +169,28 @@ export function useSlotMachineAnimation({
         // Verify what's displayed - CRITICAL FIX
         const finalNorm =
           ((finalPosition % wheelCircumference) + wheelCircumference) % wheelCircumference;
-        const topIndex = Math.floor(finalNorm / itemHeight) % participants.length;
+        const topIndex = Math.floor(finalNorm / itemHeight);
         const centerIndex = (topIndex + 2) % participants.length;
 
         // Only log if there's an error
-        if (centerIndex !== winnerIndex) {
+        if (centerIndex !== targetIndex) {
           console.error('=== SPIN ERROR ===');
-          console.error(`Target winner: ${winner.ticketNumber} (index ${winnerIndex})`);
+          console.error(`Target winner: ${winner.ticketNumber} (index ${targetIndex})`);
           console.error(
             `Center shows: ${participants[centerIndex].ticketNumber} (index ${centerIndex})`
           );
         }
 
-        if (centerIndex !== winnerIndex) {
+        if (centerIndex !== targetIndex) {
           console.error('🚨 CRITICAL ERROR: Wrong ticket displayed!');
           console.error(`Should show: ${winner.ticketNumber}`);
           console.error(`Actually showing: ${participants[centerIndex].ticketNumber}`);
 
           // FORCE CORRECTION - Adjust position to show correct winner
-          const correctTopIndex = (winnerIndex - 2 + participants.length) % participants.length;
+          let correctTopIndex = targetIndex - 2;
+          if (correctTopIndex < 0) {
+            correctTopIndex += participants.length;
+          }
           const correctPosition = correctTopIndex * itemHeight;
 
           console.warn('Applying position correction:', correctPosition);
@@ -193,12 +198,12 @@ export function useSlotMachineAnimation({
           drawWheel(correctPosition);
 
           // Verify correction worked
-          const correctedTopIndex = Math.floor(correctPosition / itemHeight) % participants.length;
+          const correctedTopIndex = Math.floor(correctPosition / itemHeight);
           const correctedCenterIndex = (correctedTopIndex + 2) % participants.length;
           console.log('After correction:', {
             correctedCenterIndex,
             correctedTicket: participants[correctedCenterIndex]?.ticketNumber,
-            isNowCorrect: correctedCenterIndex === winnerIndex,
+            isNowCorrect: correctedCenterIndex === targetIndex,
           });
         }
 
