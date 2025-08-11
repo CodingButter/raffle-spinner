@@ -132,6 +132,10 @@ function SidePanelContent() {
               settings={settings}
               isSpinning={isSpinning}
               onSpinComplete={handleSpinComplete}
+              onError={(error) => {
+                setError(error);
+                setIsSpinning(false);
+              }}
             />
 
             {/* Winner Display */}
