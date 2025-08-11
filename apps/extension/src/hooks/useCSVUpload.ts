@@ -35,6 +35,7 @@ interface DetectedColumns {
   detected: {
     firstName: string | null;
     lastName: string | null;
+    fullName: string | null;
     ticketNumber: string | null;
   };
 }

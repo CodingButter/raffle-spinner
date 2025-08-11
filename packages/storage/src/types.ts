@@ -31,8 +31,9 @@ export interface SpinnerSettings {
 }
 
 export interface ColumnMapping {
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string; // Single column containing both first and last name
   ticketNumber: string;
 }
 

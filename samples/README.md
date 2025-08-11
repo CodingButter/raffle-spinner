@@ -10,6 +10,8 @@ This directory contains sample CSV files for testing the Raffle Winner Spinner C
 - **`standard-raffle.csv`** - 30 entries with FirstName,LastName,TicketNumber
 - **`school-fundraiser.csv`** - 26 entries with ParticipantName,RaffleNumber
 - **`multiple-tickets.csv`** - 40 entries showing participants with multiple tickets
+- **`fullname-raffle.csv`** - 25 entries with single Name column (First Last format)
+- **`lastfirst-raffle.csv`** - 20 entries with ParticipantName column (Last, First format)
 
 ### Medium Samples (50-100 entries)
 
@@ -28,11 +30,25 @@ The extension automatically detects various column naming conventions:
 
 ### Name Columns
 
+**Separate columns (traditional format):**
+
 - `First`, `Last`
 - `FirstName`, `LastName`
 - `first_name`, `last_name`
 - `firstName`, `lastName`
-- `Name`, `ParticipantName`, `full_name`
+
+**Single column (full name - NEW!):**
+
+- `Name`, `FullName`, `full_name`
+- `ParticipantName`, `participant_name`
+- `CustomerName`, `customer_name`
+- `EntrantName`, `entrant_name`
+
+The extension now automatically detects and splits full names in formats like:
+
+- "John Smith" → First: John, Last: Smith
+- "Smith, John" → First: John, Last: Smith
+- "Mary Jane Smith" → First: Mary, Last: Jane Smith
 
 ### Ticket Columns
 

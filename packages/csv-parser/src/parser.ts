@@ -77,8 +77,24 @@ export class CSVParser {
     row: Record<string, string>,
     mapping: ColumnMapping,
   ): Participant | null {
-    const firstName = row[mapping.firstName]?.trim();
-    const lastName = row[mapping.lastName]?.trim();
+    let firstName: string | undefined;
+    let lastName: string | undefined;
+
+    // Check if we're using a full name column or separate columns
+    if (mapping.fullName) {
+      const fullName = row[mapping.fullName]?.trim();
+      if (!fullName) return null;
+
+      // Split the full name intelligently
+      const nameParts = this.splitFullName(fullName);
+      firstName = nameParts.firstName;
+      lastName = nameParts.lastName;
+    } else {
+      // Use separate first and last name columns
+      firstName = row[mapping.firstName || ""]?.trim();
+      lastName = row[mapping.lastName || ""]?.trim();
+    }
+
     const ticketNumber = row[mapping.ticketNumber]?.trim();
 
     // Skip if any required field is missing
@@ -91,5 +107,48 @@ export class CSVParser {
       lastName,
       ticketNumber,
     };
+  }
+
+  private splitFullName(fullName: string): {
+    firstName: string;
+    lastName: string;
+  } {
+    const trimmed = fullName.trim();
+
+    // Handle various name formats
+    // Format: "Last, First" or "Last,First"
+    if (trimmed.includes(",")) {
+      const parts = trimmed.split(",").map((p) => p.trim());
+      if (parts.length >= 2) {
+        return {
+          firstName: parts[1],
+          lastName: parts[0],
+        };
+      }
+    }
+
+    // Format: "First Last" or "First Middle Last" etc.
+    const parts = trimmed.split(/\s+/);
+
+    if (parts.length === 1) {
+      // Only one word, use it as both first and last name
+      return {
+        firstName: parts[0],
+        lastName: parts[0],
+      };
+    } else if (parts.length === 2) {
+      // Standard "First Last" format
+      return {
+        firstName: parts[0],
+        lastName: parts[1],
+      };
+    } else {
+      // Multiple words: treat first word as first name, rest as last name
+      // This handles "First Middle Last" -> "First" "Middle Last"
+      return {
+        firstName: parts[0],
+        lastName: parts.slice(1).join(" "),
+      };
+    }
   }
 }

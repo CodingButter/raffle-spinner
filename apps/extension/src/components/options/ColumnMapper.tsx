@@ -45,18 +45,37 @@ export function ColumnMapper({
   onConfirm,
 }: ColumnMapperProps) {
   const [mapping, setMapping] = React.useState<Partial<ColumnMapping>>(detectedMapping);
+  const [useFullName, setUseFullName] = React.useState<boolean>(
+    !!detectedMapping.fullName || (!detectedMapping.firstName && !detectedMapping.lastName)
+  );
 
   React.useEffect(() => {
     setMapping(detectedMapping);
+    setUseFullName(
+      !!detectedMapping.fullName || (!detectedMapping.firstName && !detectedMapping.lastName)
+    );
   }, [detectedMapping]);
 
   const handleConfirm = () => {
-    if (mapping.firstName && mapping.lastName && mapping.ticketNumber) {
-      onConfirm(mapping as ColumnMapping);
+    const finalMapping = useFullName
+      ? { fullName: mapping.fullName, ticketNumber: mapping.ticketNumber }
+      : {
+          firstName: mapping.firstName,
+          lastName: mapping.lastName,
+          ticketNumber: mapping.ticketNumber,
+        };
+
+    if (
+      (useFullName && finalMapping.fullName && finalMapping.ticketNumber) ||
+      (!useFullName && finalMapping.firstName && finalMapping.lastName && finalMapping.ticketNumber)
+    ) {
+      onConfirm(finalMapping as ColumnMapping);
     }
   };
 
-  const isValid = mapping.firstName && mapping.lastName && mapping.ticketNumber;
+  const isValid = useFullName
+    ? mapping.fullName && mapping.ticketNumber
+    : mapping.firstName && mapping.lastName && mapping.ticketNumber;
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
@@ -69,43 +88,106 @@ export function ColumnMapper({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="firstName">First Name Column</Label>
-            <Select
-              value={mapping.firstName || ''}
-              onValueChange={(value) => setMapping({ ...mapping, firstName: value })}
-            >
-              <SelectTrigger id="firstName">
-                <SelectValue placeholder="Select a column" />
-              </SelectTrigger>
-              <SelectContent>
-                {headers.map((header) => (
-                  <SelectItem key={header} value={header}>
-                    {header}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Toggle between full name and separate name columns */}
+          <div className="flex items-center space-x-2 pb-2 border-b">
+            <input
+              type="radio"
+              id="separateNames"
+              name="nameFormat"
+              checked={!useFullName}
+              onChange={() => {
+                setUseFullName(false);
+                setMapping({ ...mapping, fullName: undefined });
+              }}
+              className="h-4 w-4"
+            />
+            <Label htmlFor="separateNames" className="font-normal cursor-pointer">
+              Separate first and last name columns
+            </Label>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Last Name Column</Label>
-            <Select
-              value={mapping.lastName || ''}
-              onValueChange={(value) => setMapping({ ...mapping, lastName: value })}
-            >
-              <SelectTrigger id="lastName">
-                <SelectValue placeholder="Select a column" />
-              </SelectTrigger>
-              <SelectContent>
-                {headers.map((header) => (
-                  <SelectItem key={header} value={header}>
-                    {header}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex items-center space-x-2 pb-2 border-b">
+            <input
+              type="radio"
+              id="fullName"
+              name="nameFormat"
+              checked={useFullName}
+              onChange={() => {
+                setUseFullName(true);
+                setMapping({ ...mapping, firstName: undefined, lastName: undefined });
+              }}
+              className="h-4 w-4"
+            />
+            <Label htmlFor="fullName" className="font-normal cursor-pointer">
+              Single column with full names
+            </Label>
           </div>
+
+          {/* Show appropriate fields based on selection */}
+          {useFullName ? (
+            <div className="space-y-2">
+              <Label htmlFor="fullNameColumn">Full Name Column</Label>
+              <Select
+                value={mapping.fullName || ''}
+                onValueChange={(value) => setMapping({ ...mapping, fullName: value })}
+              >
+                <SelectTrigger id="fullNameColumn">
+                  <SelectValue placeholder="Select a column" />
+                </SelectTrigger>
+                <SelectContent>
+                  {headers.map((header) => (
+                    <SelectItem key={header} value={header}>
+                      {header}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Names will be automatically split. Supports &quot;First Last&quot;, &quot;Last,
+                First&quot;, and multi-word names.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name Column</Label>
+                <Select
+                  value={mapping.firstName || ''}
+                  onValueChange={(value) => setMapping({ ...mapping, firstName: value })}
+                >
+                  <SelectTrigger id="firstName">
+                    <SelectValue placeholder="Select a column" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {headers.map((header) => (
+                      <SelectItem key={header} value={header}>
+                        {header}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name Column</Label>
+                <Select
+                  value={mapping.lastName || ''}
+                  onValueChange={(value) => setMapping({ ...mapping, lastName: value })}
+                >
+                  <SelectTrigger id="lastName">
+                    <SelectValue placeholder="Select a column" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {headers.map((header) => (
+                      <SelectItem key={header} value={header}>
+                        {header}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="ticketNumber">Ticket Number Column</Label>

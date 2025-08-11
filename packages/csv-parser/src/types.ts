@@ -26,6 +26,7 @@ export interface ColumnMapper {
   detectHeaders(headers: string[]): {
     firstName: string | null;
     lastName: string | null;
+    fullName: string | null;
     ticketNumber: string | null;
   };
 }
