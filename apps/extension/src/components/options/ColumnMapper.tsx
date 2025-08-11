@@ -32,6 +32,8 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { InfoIcon } from 'lucide-react';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
+import { helpContent } from '@/lib/help-content';
 
 interface ColumnMapperProps {
   open: boolean;
@@ -149,7 +151,10 @@ export function ColumnMapper({
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Map CSV Columns</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            Map CSV Columns
+            <InfoTooltip {...helpContent.columnMapping.overview} />
+          </DialogTitle>
           <DialogDescription>
             Select which columns in your CSV correspond to the required fields.
           </DialogDescription>

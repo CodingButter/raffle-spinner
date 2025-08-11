@@ -14,6 +14,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Upload, Settings, Play } from 'lucide-react';
 import { CompetitionList } from './CompetitionList';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
+import { helpContent } from '@/lib/help-content';
 
 interface CompetitionManagementProps {
   competitions: Competition[];
@@ -35,8 +37,17 @@ export function CompetitionManagement({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Competition Management</CardTitle>
-        <CardDescription>Upload CSV files to create competitions for your raffles</CardDescription>
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <CardTitle className="flex items-center gap-2">
+              Competition Management
+              <InfoTooltip {...helpContent.competitions.overview} />
+            </CardTitle>
+            <CardDescription>
+              Upload CSV files to create competitions for your raffles
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-4 flex-wrap">
@@ -47,10 +58,13 @@ export function CompetitionManagement({
             onChange={onFileSelect}
             className="hidden"
           />
-          <Button onClick={() => fileInputRef.current?.click()} className="gap-2">
-            <Upload className="h-4 w-4" />
-            Upload New Competition
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={() => fileInputRef.current?.click()} className="gap-2">
+              <Upload className="h-4 w-4" />
+              Upload New Competition
+            </Button>
+            <InfoTooltip {...helpContent.competitions.csvUpload} />
+          </div>
           {columnMapping && (
             <Button variant="outline" onClick={onOpenMapper} className="gap-2">
               <Settings className="h-4 w-4" />

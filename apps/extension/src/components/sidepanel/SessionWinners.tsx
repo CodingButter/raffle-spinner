@@ -10,6 +10,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trophy } from 'lucide-react';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
+import { helpContent } from '@/lib/help-content';
 
 export interface Winner {
   firstName: string;
@@ -34,6 +36,7 @@ export function SessionWinners({ winners }: SessionWinnersProps) {
         <CardTitle className="flex items-center gap-2">
           <Trophy className="h-5 w-5" />
           Session Winners
+          <InfoTooltip {...helpContent.sessionWinners.overview} iconSize="sm" />
         </CardTitle>
       </CardHeader>
       <CardContent>
