@@ -33,11 +33,11 @@ export function drawWheelFrame({ ctx, canvasWidth, viewportHeight }: WheelFrameP
   ctx.lineWidth = 2;
   ctx.strokeRect(24, 44, canvasWidth - 48, viewportHeight - 8);
 
-  // Draw center selection indicator (red arrows pointing to center)
+  // Draw center selection indicator using Hot Pink arrows
   const centerLineY = viewportHeight / 2 + 40;
 
-  // Left arrow (pointing right/inward)
-  ctx.fillStyle = '#ef4444';
+  // Left arrow (pointing right/inward) - Hot Pink
+  ctx.fillStyle = '#FF1493';
   ctx.beginPath();
   ctx.moveTo(40, centerLineY); // Point at the right
   ctx.lineTo(10, centerLineY - 20); // Top left corner
@@ -45,7 +45,7 @@ export function drawWheelFrame({ ctx, canvasWidth, viewportHeight }: WheelFrameP
   ctx.closePath();
   ctx.fill();
 
-  // Right arrow (pointing left/inward)
+  // Right arrow (pointing left/inward) - Hot Pink
   ctx.beginPath();
   ctx.moveTo(canvasWidth - 40, centerLineY); // Point at the left
   ctx.lineTo(canvasWidth - 10, centerLineY - 20); // Top right corner
@@ -53,8 +53,8 @@ export function drawWheelFrame({ ctx, canvasWidth, viewportHeight }: WheelFrameP
   ctx.closePath();
   ctx.fill();
 
-  // Draw selection line
-  ctx.strokeStyle = '#ef4444';
+  // Draw selection line - Winner Gold
+  ctx.strokeStyle = '#FFD700';
   ctx.lineWidth = 3;
   ctx.setLineDash([5, 5]);
   ctx.beginPath();

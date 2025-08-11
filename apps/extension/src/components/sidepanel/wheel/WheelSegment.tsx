@@ -53,16 +53,18 @@ export function drawWheelSegment({
   // Draw segment background with gradient for 3D effect
   const segmentGradient = ctx.createLinearGradient(xOffset, yPos, xOffset + scaledWidth, yPos);
 
-  // Alternate colors for segments
+  // Alternate colors for segments using brand colors
   const isEven = itemIndex % 2 === 0;
   if (isEven) {
-    segmentGradient.addColorStop(0, `rgba(59, 130, 246, ${opacity * 0.8})`);
-    segmentGradient.addColorStop(0.5, `rgba(59, 130, 246, ${opacity})`);
-    segmentGradient.addColorStop(1, `rgba(59, 130, 246, ${opacity * 0.8})`);
+    // Trust Blue (#007BFF)
+    segmentGradient.addColorStop(0, `rgba(0, 123, 255, ${opacity * 0.8})`);
+    segmentGradient.addColorStop(0.5, `rgba(0, 123, 255, ${opacity})`);
+    segmentGradient.addColorStop(1, `rgba(0, 123, 255, ${opacity * 0.8})`);
   } else {
-    segmentGradient.addColorStop(0, `rgba(30, 64, 175, ${opacity * 0.8})`);
-    segmentGradient.addColorStop(0.5, `rgba(30, 64, 175, ${opacity})`);
-    segmentGradient.addColorStop(1, `rgba(30, 64, 175, ${opacity * 0.8})`);
+    // Darker blue variant
+    segmentGradient.addColorStop(0, `rgba(0, 86, 179, ${opacity * 0.8})`);
+    segmentGradient.addColorStop(0.5, `rgba(0, 86, 179, ${opacity})`);
+    segmentGradient.addColorStop(1, `rgba(0, 86, 179, ${opacity * 0.8})`);
   }
 
   ctx.fillStyle = segmentGradient;
