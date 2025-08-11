@@ -111,9 +111,9 @@ export function TicketConversionDialog({
             </div>
           )}
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <p className="text-sm">
-              <strong>Examples of conversion:</strong>
+          <div className="bg-muted border rounded-lg p-3">
+            <p className="text-sm text-muted-foreground">
+              <strong className="text-foreground">Examples of conversion:</strong>
               <br />• {'"ABC123"'} → {'"123"'}
               <br />• {'"T-456-X"'} → {'"456"'}
               <br />• {'"00789"'} → {'"789"'}
