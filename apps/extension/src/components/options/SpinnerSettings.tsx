@@ -19,6 +19,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { SpinnerSettings as Settings } from '@raffle-spinner/storage';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
+import { helpContent } from '@/lib/help-content';
 
 interface SpinnerSettingsProps {
   settings: Settings;
@@ -29,16 +31,19 @@ export function SpinnerSettings({ settings, onUpdate }: SpinnerSettingsProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Spinner Settings</CardTitle>
+        <CardTitle className="flex items-center gap-2">Spinner Settings</CardTitle>
         <CardDescription>
           Customize the physics and behavior of the spinner animation
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="min-duration">
-            Minimum Spin Duration: {settings.minSpinDuration} seconds
-          </Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="min-duration">
+              Minimum Spin Duration: {settings.minSpinDuration} seconds
+            </Label>
+            <InfoTooltip {...helpContent.spinnerSettings.minSpinDuration} />
+          </div>
           <Slider
             id="min-duration"
             min={1}
@@ -54,7 +59,10 @@ export function SpinnerSettings({ settings, onUpdate }: SpinnerSettingsProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="deceleration">Deceleration Rate</Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="deceleration">Deceleration Rate</Label>
+            <InfoTooltip {...helpContent.spinnerSettings.decelerationRate} />
+          </div>
           <Select
             value={settings.decelerationRate}
             onValueChange={(value: 'slow' | 'medium' | 'fast') =>

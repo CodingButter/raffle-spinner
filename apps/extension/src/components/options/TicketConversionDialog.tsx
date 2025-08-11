@@ -16,6 +16,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { AlertCircle, ArrowRight } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
+import { helpContent } from '@/lib/help-content';
 import {
   Table,
   TableBody,
@@ -52,7 +54,10 @@ export function TicketConversionDialog({
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Non-Numeric Ticket Numbers Detected</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            Non-Numeric Ticket Numbers Detected
+            <InfoTooltip {...helpContent.ticketHandling.nonNumeric} />
+          </DialogTitle>
           <DialogDescription>
             We found ticket numbers containing letters or special characters. We only support
             numeric tickets and will extract the numeric portion where possible.

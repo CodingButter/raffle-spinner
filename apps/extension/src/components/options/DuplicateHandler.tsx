@@ -19,6 +19,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
+import { helpContent } from '@/lib/help-content';
 
 interface DuplicateHandlerProps {
   open: boolean;
@@ -32,7 +34,10 @@ export function DuplicateHandler({ open, duplicates, onProceed, onCancel }: Dupl
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Duplicate Ticket Numbers Found</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            Duplicate Ticket Numbers Found
+            <InfoTooltip {...helpContent.ticketHandling.duplicates} />
+          </DialogTitle>
           <DialogDescription>
             We found duplicate ticket numbers in your CSV file. Only the first occurrence of each
             duplicate will be kept if you proceed.

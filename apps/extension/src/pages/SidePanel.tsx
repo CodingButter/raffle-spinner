@@ -17,6 +17,7 @@ import { SessionWinners, Winner } from '@/components/sidepanel/SessionWinners';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { normalizeTicketNumber } from '@/lib/utils';
 import {
   Select,
@@ -27,6 +28,8 @@ import {
 } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Sparkles, AlertCircle } from 'lucide-react';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
+import { helpContent } from '@/lib/help-content';
 import { Participant } from '@raffle-spinner/storage';
 import confetti from 'canvas-confetti';
 
@@ -158,24 +161,30 @@ function SidePanelContent() {
             )}
 
             {/* Spin Controls */}
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="Enter ticket number"
-                value={ticketNumber}
-                onChange={(e) => setTicketNumber(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !isSpinning && handleSpin()}
-                disabled={isSpinning}
-                className="bg-input border-border text-foreground placeholder:text-muted-foreground"
-              />
-              <Button
-                onClick={handleSpin}
-                disabled={isSpinning || !ticketNumber}
-                size="lg"
-                className="min-w-[120px]"
-              >
-                {isSpinning ? 'Spinning...' : 'Spin'}
-              </Button>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Label className="text-sm text-muted-foreground">Ticket Entry</Label>
+                <InfoTooltip {...helpContent.sidePanel.ticketEntry} iconSize="sm" />
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="Enter ticket number"
+                  value={ticketNumber}
+                  onChange={(e) => setTicketNumber(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && !isSpinning && handleSpin()}
+                  disabled={isSpinning}
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground"
+                />
+                <Button
+                  onClick={handleSpin}
+                  disabled={isSpinning || !ticketNumber}
+                  size="lg"
+                  className="min-w-[120px]"
+                >
+                  {isSpinning ? 'Spinning...' : 'Spin'}
+                </Button>
+              </div>
             </div>
 
             {error && (

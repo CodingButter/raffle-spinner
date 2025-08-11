@@ -11,6 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Trash2, Edit, Star, StarOff } from 'lucide-react';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
+import { helpContent } from '@/lib/help-content';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -117,7 +119,10 @@ export function SavedMappingsManager() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Saved Column Mappings</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            Saved Column Mappings
+            <InfoTooltip {...helpContent.columnMapping.savedMappings} />
+          </CardTitle>
           <CardDescription>
             No saved mappings yet. Mappings will appear here after you import CSVs.
           </CardDescription>
@@ -130,7 +135,10 @@ export function SavedMappingsManager() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Saved Column Mappings</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            Saved Column Mappings
+            <InfoTooltip {...helpContent.columnMapping.savedMappings} />
+          </CardTitle>
           <CardDescription>
             Manage your saved CSV column mappings. Set a default to auto-apply to new imports.
           </CardDescription>
