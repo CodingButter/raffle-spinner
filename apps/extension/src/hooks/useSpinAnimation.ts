@@ -11,7 +11,7 @@
 
 import { useRef, useCallback } from 'react';
 import { Participant, SpinnerSettings } from '@raffle-spinner/storage';
-import { SpinnerPhysics } from '@raffle-spinner/spinner-physics';
+import { normalizeTicketNumber } from '@/lib/utils';
 
 interface UseSpinAnimationProps {
   participants: Participant[];
@@ -39,22 +39,19 @@ export function useSpinAnimation({
   drawWheel,
 }: UseSpinAnimationProps) {
   const animationRef = useRef<number>();
-  const physics = useRef(new SpinnerPhysics());
 
   const animate = useCallback(() => {
-    // Normalize ticket numbers for comparison (same as in SidePanel)
-    const normalizeTicket = (ticket: string) => {
-      const trimmed = ticket.trim();
-      // Remove leading zeros but keep single '0'
-      const withoutLeadingZeros = trimmed.replace(/^0+/, '') || '0';
-      return withoutLeadingZeros;
-    };
+    console.log('Starting animation with ticket:', targetTicketNumber);
+    console.log('Total participants:', participants.length);
 
-    const normalizedTarget = normalizeTicket(targetTicketNumber);
+    const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
+    console.log('Normalized target ticket:', normalizedTarget);
 
     const targetIndex = participants.findIndex(
-      (p) => normalizeTicket(p.ticketNumber) === normalizedTarget
+      (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
     );
+
+    console.log('Found target at index:', targetIndex);
 
     if (targetIndex === -1) {
       console.error(
@@ -64,10 +61,10 @@ export function useSpinAnimation({
         normalizedTarget
       );
       console.error(
-        'Available tickets:',
-        participants.map((p) => ({
+        'Available tickets (first 10):',
+        participants.slice(0, 10).map((p) => ({
           original: p.ticketNumber,
-          normalized: normalizeTicket(p.ticketNumber),
+          normalized: normalizeTicketNumber(p.ticketNumber),
         }))
       );
 
@@ -80,14 +77,21 @@ export function useSpinAnimation({
     // Calculate target position (center of viewport)
     const targetPosition = targetIndex * itemHeight;
 
-    const spinConfig = {
-      targetIndex,
-      totalItems: participants.length,
-      minDuration: settings.minSpinDuration,
-      decelerationRate: settings.decelerationRate,
-    };
+    // For slot machine style, we'll create our own animation config
+    // instead of using the angle-based physics
+    const duration = settings.minSpinDuration * 1000; // Convert to milliseconds
+    const easingFunction = {
+      slow: (t: number) => 1 - Math.pow(1 - t, 3),
+      medium: (t: number) => 1 - Math.pow(1 - t, 2),
+      fast: (t: number) => (t < 0.5 ? 2 * t : 1 - Math.pow(-2 * t + 2, 2) / 2),
+    }[settings.decelerationRate];
 
-    const animation = physics.current.calculateSpinAnimation(spinConfig);
+    console.log('Animation config:', {
+      duration,
+      decelerationRate: settings.decelerationRate,
+      targetIndex,
+    });
+
     const startTime = Date.now();
     const startPosition = currentPosition;
 
@@ -96,19 +100,40 @@ export function useSpinAnimation({
     const totalDistance =
       extraRotations * wheelCircumference + targetPosition - (startPosition % wheelCircumference);
 
+    console.log('Animation details:', {
+      startPosition,
+      targetPosition,
+      totalDistance,
+      duration,
+      wheelCircumference,
+    });
+
+    let frameCount = 0;
     const spin = () => {
+      frameCount++;
       const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / animation.duration, 1);
-      const easedProgress = animation.easing(progress);
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easingFunction(progress);
 
       const position = startPosition + totalDistance * easedProgress;
       setCurrentPosition(position);
       drawWheel(position);
 
+      if (frameCount % 60 === 0) {
+        console.log('Animation progress:', {
+          frame: frameCount,
+          progress: (progress * 100).toFixed(2) + '%',
+          elapsed: elapsed + 'ms',
+          position,
+        });
+      }
+
       if (progress < 1) {
         animationRef.current = requestAnimationFrame(spin);
       } else {
+        console.log('Animation complete! Calling onSpinComplete');
         const winner = participants[targetIndex];
+        console.log('Winner:', winner);
         onSpinComplete(winner);
       }
     };
