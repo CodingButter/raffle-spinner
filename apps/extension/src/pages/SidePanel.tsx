@@ -12,7 +12,7 @@
 import { useState } from 'react';
 import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
-import { SlotMachineWheel } from '@/components/sidepanel/SlotMachineWheel';
+import { SlotMachineWheelV2 } from '@/components/sidepanel/SlotMachineWheelV2';
 import { SessionWinners, Winner } from '@/components/sidepanel/SessionWinners';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,13 +55,9 @@ function SidePanelContent() {
     // Use shared utility for ticket normalization
     const normalizedInput = normalizeTicketNumber(ticketNumber);
 
-    console.log('Searching for ticket:', ticketNumber, 'normalized:', normalizedInput);
-
     const participant = selectedCompetition.participants.find(
       (p) => normalizeTicketNumber(p.ticketNumber) === normalizedInput
     );
-
-    console.log('Found participant:', participant);
 
     if (!participant) {
       setError('Ticket number not found in this competition');
@@ -130,7 +126,7 @@ function SidePanelContent() {
         {/* Main Spinner Area */}
         {selectedCompetition && (
           <>
-            <SlotMachineWheel
+            <SlotMachineWheelV2
               participants={selectedCompetition.participants}
               targetTicketNumber={ticketNumber}
               settings={settings}
