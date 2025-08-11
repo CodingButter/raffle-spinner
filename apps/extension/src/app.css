@@ -2,26 +2,54 @@
 
 /* Tailwind v4 Configuration via CSS */
 @theme {
-  /* Custom color tokens */
-  --color-border: hsl(214.3 31.8% 91.4%);
-  --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(222.2 84% 4.9%);
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(222.2 84% 4.9%);
-  --color-primary: hsl(222.2 47.4% 11.2%);
-  --color-primary-foreground: hsl(210 40% 98%);
-  --color-secondary: hsl(210 40% 96.1%);
-  --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-  --color-muted: hsl(210 40% 96.1%);
-  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
-  --color-accent: hsl(210 40% 96.1%);
-  --color-accent-foreground: hsl(222.2 47.4% 11.2%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(222.2 84% 4.9%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222.2 84% 4.9%);
+  /* Brand Colors - Raffle/Lottery Theme */
+  --color-brand-blue: #007bff; /* Trust Blue - Primary brand color */
+  --color-brand-pink: #ff1493; /* Hot Pink - Secondary brand color */
+  --color-brand-gold: #ffd700; /* Winner Gold - Accent for winners */
+  --color-brand-green: #28a745; /* Success Green - Positive actions */
+  --color-brand-red: #dc3545; /* Alert Red - Errors and warnings */
+
+  /* Extended color palette for Tailwind classes */
+  --color-*-success: #28a745;
+
+  /* Semantic Color Mappings */
+  --color-primary: var(--color-brand-blue);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--color-brand-pink);
+  --color-secondary-foreground: #ffffff;
+  --color-success: var(--color-brand-green);
+  --color-success-foreground: #ffffff;
+  --color-destructive: var(--color-brand-red);
+  --color-destructive-foreground: #ffffff;
+  --color-warning: var(--color-brand-gold);
+  --color-warning-foreground: #343a40;
+
+  /* UI Colors */
+  --color-background: #ffffff;
+  --color-foreground: #343a40;
+  --color-card: #ffffff;
+  --color-card-foreground: #343a40;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #343a40;
+  --color-muted: #f8f9fa;
+  --color-muted-foreground: #6c757d;
+  --color-accent: var(--color-brand-gold);
+  --color-accent-foreground: #343a40;
+
+  /* Form & Interactive Elements */
+  --color-border: #dee2e6;
+  --color-input: #ffffff;
+  --color-ring: var(--color-brand-blue);
+
+  /* Spinner Specific Colors */
+  --color-spinner-bg-start: #1a1a2e;
+  --color-spinner-bg-mid: #0f0f23;
+  --color-spinner-bg-end: #1a1a2e;
+  --color-spinner-segment-even: var(--color-brand-blue);
+  --color-spinner-segment-odd: #1e40af; /* Darker blue */
+  --color-spinner-highlight: var(--color-brand-gold);
+  --color-spinner-arrow: var(--color-brand-pink);
+  --color-winner-glow: var(--color-brand-gold);
 
   /* Border radius */
   --radius-lg: 0.5rem;
@@ -31,30 +59,46 @@
   /* Animation */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  /* Font Sizes - Enhanced for readability */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
 }
 
-/* Dark mode overrides */
+/* Dark mode overrides - Lottery theme dark variant */
 @media (prefers-color-scheme: dark) {
   @theme {
-    --color-background: hsl(222.2 84% 4.9%);
-    --color-foreground: hsl(210 40% 98%);
-    --color-card: hsl(222.2 84% 4.9%);
-    --color-card-foreground: hsl(210 40% 98%);
-    --color-popover: hsl(222.2 84% 4.9%);
-    --color-popover-foreground: hsl(210 40% 98%);
-    --color-primary: hsl(210 40% 98%);
-    --color-primary-foreground: hsl(222.2 47.4% 11.2%);
-    --color-secondary: hsl(217.2 32.6% 17.5%);
-    --color-secondary-foreground: hsl(210 40% 98%);
-    --color-muted: hsl(217.2 32.6% 17.5%);
-    --color-muted-foreground: hsl(215 20.2% 65.1%);
-    --color-accent: hsl(217.2 32.6% 17.5%);
-    --color-accent-foreground: hsl(210 40% 98%);
-    --color-destructive: hsl(0 62.8% 30.6%);
-    --color-destructive-foreground: hsl(210 40% 98%);
-    --color-border: hsl(217.2 32.6% 17.5%);
-    --color-input: hsl(217.2 32.6% 17.5%);
-    --color-ring: hsl(212.7 26.8% 83.9%);
+    /* Dark mode background */
+    --color-background: #1a1a2e;
+    --color-foreground: #f8f9fa;
+    --color-card: #0f0f23;
+    --color-card-foreground: #f8f9fa;
+    --color-popover: #0f0f23;
+    --color-popover-foreground: #f8f9fa;
+
+    /* Adjusted brand colors for dark mode */
+    --color-primary: #0066dd; /* Slightly darker blue */
+    --color-primary-foreground: #ffffff;
+    --color-secondary: #ff69b4; /* Lighter pink for visibility */
+    --color-secondary-foreground: #ffffff;
+    --color-muted: #2a2a3e;
+    --color-muted-foreground: #adb5bd;
+    --color-accent: var(--color-brand-gold);
+    --color-accent-foreground: #1a1a2e;
+
+    /* Form elements */
+    --color-border: #495057;
+    --color-input: #2a2a3e;
+    --color-ring: var(--color-brand-blue);
+
+    /* Spinner colors remain vibrant in dark mode */
+    --color-spinner-segment-even: #0066dd;
+    --color-spinner-segment-odd: #003d82;
   }
 }
 
@@ -77,10 +121,23 @@
   }
 }
 
-/* Custom Scrollbar Styles */
+/* Winner animation */
+@keyframes winner-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--color-winner-glow);
+  }
+  50% {
+    box-shadow:
+      0 0 40px var(--color-winner-glow),
+      0 0 60px var(--color-winner-glow);
+  }
+}
+
+/* Custom Scrollbar Styles - Themed */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--color-primary) / 0.3) hsl(var(--color-background));
+  scrollbar-color: var(--color-primary) var(--color-muted);
 }
 
 *::-webkit-scrollbar {
@@ -89,22 +146,22 @@
 }
 
 *::-webkit-scrollbar-track {
-  background: hsl(var(--color-background));
+  background: var(--color-muted);
   border-radius: 5px;
 }
 
 *::-webkit-scrollbar-thumb {
-  background: hsl(var(--color-primary) / 0.3);
+  background: var(--color-primary);
   border-radius: 5px;
-  border: 2px solid hsl(var(--color-background));
+  border: 2px solid var(--color-muted);
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--color-primary) / 0.5);
+  background: var(--color-secondary);
 }
 
 *::-webkit-scrollbar-corner {
-  background: hsl(var(--color-background));
+  background: var(--color-muted);
 }
 
 /* Base styles */
@@ -116,5 +173,48 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+/* Utility classes for new theme colors */
+@layer utilities {
+  .text-brand-blue {
+    color: var(--color-brand-blue);
+  }
+
+  .text-brand-pink {
+    color: var(--color-brand-pink);
+  }
+
+  .text-brand-gold {
+    color: var(--color-brand-gold);
+  }
+
+  .bg-brand-blue {
+    background-color: var(--color-brand-blue);
+  }
+
+  .bg-brand-pink {
+    background-color: var(--color-brand-pink);
+  }
+
+  .bg-brand-gold {
+    background-color: var(--color-brand-gold);
+  }
+
+  .border-brand-blue {
+    border-color: var(--color-brand-blue);
+  }
+
+  .border-brand-pink {
+    border-color: var(--color-brand-pink);
+  }
+
+  .border-brand-gold {
+    border-color: var(--color-brand-gold);
+  }
+
+  .winner-glow {
+    animation: winner-glow 2s ease-in-out infinite;
   }
 }

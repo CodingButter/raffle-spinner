@@ -99,7 +99,7 @@ function SidePanelContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-2xl mx-auto space-y-4">
         {/* Competition Selector - Minimal UI */}
         <div className="flex gap-2">
@@ -110,7 +110,7 @@ function SidePanelContent() {
               if (comp) selectCompetition(id);
             }}
           >
-            <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+            <SelectTrigger className="bg-card border-border text-card-foreground">
               <SelectValue placeholder="Select Competition" />
             </SelectTrigger>
             <SelectContent>
@@ -140,15 +140,17 @@ function SidePanelContent() {
 
             {/* Winner Display */}
             {currentWinner && (
-              <Card className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/50">
+              <Card className="bg-gradient-to-r from-brand-gold/20 to-brand-gold/10 border-brand-gold winner-glow">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">
-                    <Sparkles className="h-8 w-8 text-yellow-500 animate-pulse" />
+                    <Sparkles className="h-8 w-8 text-brand-gold animate-pulse" />
                     <div className="flex-1">
-                      <p className="text-2xl font-bold text-white">
+                      <p className="text-2xl font-bold text-brand-gold">
                         🎉 {currentWinner.firstName} {currentWinner.lastName}
                       </p>
-                      <p className="text-lg text-gray-300">Ticket #{currentWinner.ticketNumber}</p>
+                      <p className="text-lg text-brand-pink">
+                        Ticket #{currentWinner.ticketNumber}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -164,7 +166,7 @@ function SidePanelContent() {
                 onChange={(e) => setTicketNumber(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !isSpinning && handleSpin()}
                 disabled={isSpinning}
-                className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500"
+                className="bg-input border-border text-foreground placeholder:text-muted-foreground"
               />
               <Button
                 onClick={handleSpin}
@@ -177,7 +179,7 @@ function SidePanelContent() {
             </div>
 
             {error && (
-              <Alert variant="destructive" className="bg-red-900/20 border-red-500/50">
+              <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
@@ -187,7 +189,7 @@ function SidePanelContent() {
 
         {/* Session Winners */}
         {sessionWinners.length > 0 && (
-          <Card className="bg-gray-800/30 border-gray-700">
+          <Card className="bg-card/80 border-border">
             <CardContent className="p-4">
               <SessionWinners winners={sessionWinners} />
             </CardContent>
