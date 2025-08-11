@@ -44,6 +44,12 @@ try {
     const dest = path.join(distDir, file);
     fs.copyFileSync(src, dest);
   });
+  
+  // Copy background script if it exists
+  const backgroundScript = path.join(__dirname, '..', 'src', 'background.js');
+  if (fs.existsSync(backgroundScript)) {
+    fs.copyFileSync(backgroundScript, path.join(distDir, 'background.js'));
+  }
 
   // Create ZIP file
   console.log('🗜️  Creating ZIP package...');

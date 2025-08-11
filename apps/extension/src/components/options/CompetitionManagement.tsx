@@ -12,7 +12,7 @@
 import { Competition, ColumnMapping } from '@raffle-spinner/storage';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, Settings } from 'lucide-react';
+import { Upload, Settings, Play } from 'lucide-react';
 import { CompetitionList } from './CompetitionList';
 
 interface CompetitionManagementProps {
@@ -39,7 +39,7 @@ export function CompetitionManagement({
         <CardDescription>Upload CSV files to create competitions for your raffles</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-4">
+        <div className="flex gap-4 flex-wrap">
           <input
             ref={fileInputRef}
             type="file"
@@ -55,6 +55,16 @@ export function CompetitionManagement({
             <Button variant="outline" onClick={onOpenMapper} className="gap-2">
               <Settings className="h-4 w-4" />
               Configure Column Mapping
+            </Button>
+          )}
+          {competitions.length > 0 && (
+            <Button
+              variant="default"
+              onClick={() => chrome.runtime.sendMessage({ action: 'openSidePanel' })}
+              className="gap-2"
+            >
+              <Play className="h-4 w-4" />
+              Open Spinner
             </Button>
           )}
         </div>

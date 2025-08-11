@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "description": "A Chrome extension for conducting live raffle draws with an animated spinner wheel",
   "permissions": ["storage", "sidePanel"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "options_page": "options.html",
   "side_panel": {
     "default_path": "sidepanel.html"
