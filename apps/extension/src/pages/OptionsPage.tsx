@@ -17,6 +17,7 @@ import { CSVUploadModal } from '@/components/options/CSVUploadModal';
 import { ColumnMapper } from '@/components/options/ColumnMapper';
 import { DuplicateHandler } from '@/components/options/DuplicateHandler';
 import { DeleteConfirmDialog } from '@/components/options/DeleteConfirmDialog';
+import { TicketConversionDialog } from '@/components/options/TicketConversionDialog';
 import { SpinnerSettings } from '@/components/options/SpinnerSettings';
 import { SavedMappingsManager } from '@/components/options/SavedMappingsManager';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -36,9 +37,11 @@ function OptionsContent() {
     showNameModal,
     showMapperModal,
     showDuplicateModal,
+    showConversionModal,
     detectedHeaders,
     detectedMapping,
     duplicates,
+    ticketConversions,
     importSummary,
     savedMappings,
     suggestedMappingId,
@@ -46,9 +49,11 @@ function OptionsContent() {
     handleMappingConfirm,
     handleNameConfirm,
     handleDuplicateProceed,
+    handleConversionProceed,
     setShowNameModal,
     setShowMapperModal,
     setShowDuplicateModal,
+    setShowConversionModal,
     openMapperModal,
   } = useCSVImport({
     addCompetition,
@@ -130,6 +135,13 @@ function OptionsContent() {
           duplicates={duplicates}
           onProceed={handleDuplicateProceed}
           onCancel={() => setShowDuplicateModal(false)}
+        />
+
+        <TicketConversionDialog
+          open={showConversionModal}
+          conversions={ticketConversions}
+          onProceed={handleConversionProceed}
+          onCancel={() => setShowConversionModal(false)}
         />
 
         <DeleteConfirmDialog

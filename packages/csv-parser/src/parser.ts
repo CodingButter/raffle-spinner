@@ -40,6 +40,7 @@ export class CSVParser {
   ): ParseResult {
     const participants: Participant[] = [];
     const ticketMap = new Map<string, string[]>();
+    const ticketConversions: ParseResult["ticketConversions"] = [];
     let skippedRows = 0;
 
     for (const row of rows) {
@@ -48,6 +49,38 @@ export class CSVParser {
       if (!participant) {
         skippedRows++;
         continue;
+      }
+
+      // Check if ticket needs conversion
+      const originalTicket = participant.ticketNumber;
+      const isNumeric = /^\d+$/.test(originalTicket);
+
+      if (!isNumeric) {
+        // Extract numeric portion
+        const numericTicket = originalTicket.replace(/\D/g, "");
+
+        if (numericTicket.length === 0) {
+          // No numeric portion, skip this entry
+          ticketConversions.push({
+            original: originalTicket,
+            converted: null,
+            firstName: participant.firstName,
+            lastName: participant.lastName,
+          });
+          skippedRows++;
+          continue;
+        }
+
+        // Record the conversion
+        ticketConversions.push({
+          original: originalTicket,
+          converted: numericTicket,
+          firstName: participant.firstName,
+          lastName: participant.lastName,
+        });
+
+        // Use the converted ticket
+        participant.ticketNumber = numericTicket;
       }
 
       // Track duplicates
@@ -70,6 +103,8 @@ export class CSVParser {
       duplicates,
       skippedRows,
       totalRows: rows.length,
+      ticketConversions:
+        ticketConversions.length > 0 ? ticketConversions : undefined,
     };
   }
 

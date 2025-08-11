@@ -28,6 +28,12 @@ interface UploadResult {
   duplicates: Array<{ ticketNumber: string; names: string[] }>;
   skippedRows: number;
   totalRows: number;
+  ticketConversions?: Array<{
+    original: string;
+    converted: string | null;
+    firstName: string;
+    lastName: string;
+  }>;
 }
 
 interface DetectedColumns {
@@ -91,6 +97,7 @@ export function useCSVUpload(): UseCSVUploadResult {
         duplicates: result.duplicates,
         skippedRows: result.skippedRows,
         totalRows: result.totalRows,
+        ticketConversions: result.ticketConversions,
       };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Upload failed';

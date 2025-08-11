@@ -36,11 +36,20 @@ export function useCSVImport({
   const [showNameModal, setShowNameModal] = useState(false);
   const [showMapperModal, setShowMapperModal] = useState(false);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [showConversionModal, setShowConversionModal] = useState(false);
   const [detectedHeaders, setDetectedHeaders] = useState<string[]>([]);
   const [detectedMapping, setDetectedMapping] = useState<Partial<ColumnMapping>>({});
   const [duplicates, setDuplicates] = useState<Array<{ ticketNumber: string; names: string[] }>>(
     []
   );
+  const [ticketConversions, setTicketConversions] = useState<
+    Array<{
+      original: string;
+      converted: string | null;
+      firstName: string;
+      lastName: string;
+    }>
+  >([]);
   const [competitionName, setCompetitionName] = useState('');
   const [importSummary, setImportSummary] = useState<{ success: boolean; message: string } | null>(
     null
@@ -136,6 +145,14 @@ export function useCSVImport({
     try {
       const result = await upload(selectedFile, name, columnMapping);
 
+      // Check for ticket conversions first
+      if (result.ticketConversions && result.ticketConversions.length > 0) {
+        setTicketConversions(result.ticketConversions);
+        setShowConversionModal(true);
+        // Don't proceed until user confirms conversions
+        return;
+      }
+
       if (result.duplicates.length > 0) {
         setDuplicates(result.duplicates);
         setShowDuplicateModal(true);
@@ -154,6 +171,44 @@ export function useCSVImport({
       setImportSummary({
         success: false,
         message: 'Failed to import CSV. Please check the file format.',
+      });
+    }
+
+    resetFileInput();
+  };
+
+  const handleConversionProceed = async () => {
+    setShowConversionModal(false);
+
+    if (!selectedFile || !columnMapping || !competitionName) return;
+
+    // Re-process the file - conversions are already handled in the parser
+    try {
+      const result = await upload(selectedFile, competitionName, columnMapping);
+
+      if (result.duplicates.length > 0) {
+        setDuplicates(result.duplicates);
+        setShowDuplicateModal(true);
+      } else {
+        await addCompetition(result.competition);
+        const conversionCount = ticketConversions.filter((c) => c.converted).length;
+        setImportSummary({
+          success: true,
+          message: `Success! ${result.competition.participants.length} participants imported. ${
+            conversionCount > 0
+              ? `${conversionCount} ticket numbers were converted to numeric format. `
+              : ''
+          }${
+            result.skippedRows > 0
+              ? `${result.skippedRows} rows were skipped due to missing data or invalid tickets.`
+              : ''
+          }`,
+        });
+      }
+    } catch (error) {
+      setImportSummary({
+        success: false,
+        message: 'Failed to import CSV.',
       });
     }
 
@@ -207,9 +262,11 @@ export function useCSVImport({
     showNameModal,
     showMapperModal,
     showDuplicateModal,
+    showConversionModal,
     detectedHeaders,
     detectedMapping,
     duplicates,
+    ticketConversions,
     importSummary,
     savedMappings,
     suggestedMappingId,
@@ -217,9 +274,11 @@ export function useCSVImport({
     handleMappingConfirm,
     handleNameConfirm,
     handleDuplicateProceed,
+    handleConversionProceed,
     setShowNameModal,
     setShowMapperModal,
     setShowDuplicateModal,
+    setShowConversionModal,
     openMapperModal,
   };
 }
