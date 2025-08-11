@@ -1,0 +1,32 @@
+{
+  "name": "raffle-spinner",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Raffle Winner Spinner - Chrome Extension Monorepo",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r --filter='!@raffle-spinner/extension' build && pnpm --filter @raffle-spinner/extension build",
+    "clean": "pnpm -r clean",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "typecheck": "pnpm -r typecheck",
+    "quality": "pnpm lint && pnpm format:check && pnpm typecheck",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@raffle-spinner/eslint-config": "workspace:*",
+    "@raffle-spinner/prettier-config": "workspace:*",
+    "eslint": "^8.57.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "packageManager": "pnpm@9.6.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Raffle Winner Spinner",
+  "version": "1.0.0",
+  "description": "A Chrome extension for conducting live raffle draws with an animated spinner wheel",
+  "permissions": ["storage", "sidePanel"],
+  "options_page": "options.html",
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "action": {
+    "default_title": "Open Raffle Spinner"
+  }
+}

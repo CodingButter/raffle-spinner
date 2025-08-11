@@ -1,0 +1,90 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[FEATURE] "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please provide as much detail as possible.
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Type
+      description: What kind of feature are you requesting?
+      options:
+        - New functionality
+        - Enhancement to existing feature
+        - Performance improvement
+        - User interface improvement
+        - Integration with external service
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Describe the problem this feature would solve
+      placeholder: "Currently, when running multiple raffles, I have to manually..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe how you'd like this to work
+      placeholder: "Add a button that allows users to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions?
+      placeholder: "I've tried using... but it doesn't quite work because..."
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Provide a real-world example of how this would be used
+      placeholder: "In our organization, we run weekly raffles with 500+ participants..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Critical - Blocking my use of the extension
+        - High - Would significantly improve my workflow
+        - Medium - Nice to have
+        - Low - Minor improvement
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: Implementation Considerations
+      options:
+        - label: I am willing to help implement this feature
+        - label: This feature should be configurable/optional
+        - label: This feature requires UI changes
+        - label: This feature requires new permissions
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups or Examples
+      description: If you have any mockups, examples, or references, please share them
+      placeholder: "Similar feature exists in... (provide links or images)"

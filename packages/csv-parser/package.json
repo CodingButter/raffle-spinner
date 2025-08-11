@@ -1,0 +1,35 @@
+{
+  "name": "@raffle-spinner/csv-parser",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\""
+  },
+  "dependencies": {
+    "@raffle-spinner/storage": "workspace:*",
+    "papaparse": "^5.4.1"
+  },
+  "devDependencies": {
+    "@raffle-spinner/eslint-config": "workspace:*",
+    "@raffle-spinner/typescript-config": "workspace:*",
+    "@types/papaparse": "^5.3.14",
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4"
+  }
+}

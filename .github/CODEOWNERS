@@ -1,0 +1,29 @@
+# This file defines code ownership for automatic review requests
+# https://help.github.com/articles/about-codeowners/
+
+# Global owners
+* @CodingButter
+
+# Extension specific
+/apps/extension/ @CodingButter
+
+# Package ownership
+/packages/csv-parser/ @CodingButter
+/packages/spinner-physics/ @CodingButter
+/packages/storage/ @CodingButter
+
+# Config packages
+/packages/eslint-config/ @CodingButter
+/packages/prettier-config/ @CodingButter
+/packages/typescript-config/ @CodingButter
+
+# CI/CD and GitHub configuration
+/.github/ @CodingButter
+
+# Documentation
+*.md @CodingButter
+/docs/ @CodingButter
+
+# Security sensitive files
+/.github/SECURITY.md @CodingButter
+/.github/workflows/security*.yml @CodingButter

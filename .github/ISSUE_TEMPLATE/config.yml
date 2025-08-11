@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/CodingButter/raffle-spinner/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 📚 Documentation
+    url: https://github.com/CodingButter/raffle-spinner#readme
+    about: Check out the documentation for usage guides
+  - name: 🔒 Security Issue
+    url: https://github.com/CodingButter/raffle-spinner/security/policy
+    about: Report security vulnerabilities privately

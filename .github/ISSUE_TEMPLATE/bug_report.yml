@@ -1,0 +1,129 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this bug! Please fill out the information below to help us resolve it.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: "When I click the spin button, the wheel doesn't rotate..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to options page
+        2. Upload CSV file
+        3. Click on 'Create Competition'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen
+      placeholder: "The competition should be created successfully"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened
+      placeholder: "An error message appears saying..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      description: Which browser are you using?
+      options:
+        - Chrome
+        - Chromium
+        - Brave
+        - Edge
+        - Opera
+        - Other Chromium-based
+    validations:
+      required: true
+
+  - type: input
+    id: browser-version
+    attributes:
+      label: Browser Version
+      description: "Example: 120.0.6099.71"
+      placeholder: "Type chrome://version in address bar"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS Sonoma
+        - macOS Ventura
+        - Ubuntu
+        - Other Linux
+        - ChromeOS
+    validations:
+      required: true
+
+  - type: textarea
+    id: console-errors
+    attributes:
+      label: Console Errors
+      description: |
+        Please open Developer Tools (F12) and check for any errors in the Console tab
+      placeholder: "Paste any error messages from the console here"
+      render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem
+      placeholder: "Drag and drop images here"
+
+  - type: textarea
+    id: sample-data
+    attributes:
+      label: Sample CSV Data
+      description: If the bug is related to CSV parsing, provide a sample (with sensitive data removed)
+      placeholder: |
+        Name,Ticket
+        John Doe,12345
+        Jane Smith,67890
+      render: csv
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched for existing issues
+          required: true
+        - label: I have tested with the latest version
+          required: true
+        - label: I have disabled other extensions to rule out conflicts
+          required: false
