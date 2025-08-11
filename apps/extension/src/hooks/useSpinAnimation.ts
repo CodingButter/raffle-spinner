@@ -40,8 +40,19 @@ export function useSpinAnimation({
   const physics = useRef(new SpinnerPhysics());
 
   const animate = useCallback(() => {
-    const targetIndex = participants.findIndex((p) => p.ticketNumber === targetTicketNumber);
-    if (targetIndex === -1) return;
+    // Normalize ticket numbers for comparison (same as in SidePanel)
+    const normalizeTicket = (ticket: string) => ticket.trim().replace(/^0+/, '') || '0';
+    const normalizedTarget = normalizeTicket(targetTicketNumber);
+
+    const targetIndex = participants.findIndex(
+      (p) =>
+        normalizeTicket(p.ticketNumber) === normalizedTarget ||
+        p.ticketNumber === targetTicketNumber
+    );
+    if (targetIndex === -1) {
+      console.error('Target ticket not found:', targetTicketNumber);
+      return;
+    }
 
     // Calculate target position (center of viewport)
     const targetPosition = targetIndex * itemHeight;
