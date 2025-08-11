@@ -18,6 +18,7 @@ import { ColumnMapper } from '@/components/options/ColumnMapper';
 import { DuplicateHandler } from '@/components/options/DuplicateHandler';
 import { DeleteConfirmDialog } from '@/components/options/DeleteConfirmDialog';
 import { SpinnerSettings } from '@/components/options/SpinnerSettings';
+import { SavedMappingsManager } from '@/components/options/SavedMappingsManager';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle } from 'lucide-react';
 import { Competition } from '@raffle-spinner/storage';
@@ -39,6 +40,8 @@ function OptionsContent() {
     detectedMapping,
     duplicates,
     importSummary,
+    savedMappings,
+    suggestedMappingId,
     handleFileSelect,
     handleMappingConfirm,
     handleNameConfirm,
@@ -102,6 +105,8 @@ function OptionsContent() {
 
         <SpinnerSettings settings={settings} onUpdate={updateSettings} />
 
+        <SavedMappingsManager />
+
         {/* Modals */}
         <CSVUploadModal
           open={showNameModal}
@@ -116,6 +121,8 @@ function OptionsContent() {
           headers={detectedHeaders}
           detectedMapping={detectedMapping}
           onConfirm={handleMappingConfirm}
+          savedMappings={savedMappings}
+          suggestedMappingId={suggestedMappingId}
         />
 
         <DuplicateHandler
