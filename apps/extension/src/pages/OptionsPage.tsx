@@ -22,12 +22,13 @@ import { CompetitionList } from '@/components/options/CompetitionList';
 import { CSVUploadModal } from '@/components/options/CSVUploadModal';
 import { ColumnMapper } from '@/components/options/ColumnMapper';
 import { DuplicateHandler } from '@/components/options/DuplicateHandler';
+import { DeleteConfirmDialog } from '@/components/options/DeleteConfirmDialog';
 import { SpinnerSettings } from '@/components/options/SpinnerSettings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Upload, CheckCircle, Settings } from 'lucide-react';
-import { ColumnMapping } from '@raffle-spinner/storage';
+import { ColumnMapping, Competition } from '@raffle-spinner/storage';
 
 function OptionsContent() {
   const { competitions, addCompetition, deleteCompetition } = useCompetitions();
@@ -48,7 +49,8 @@ function OptionsContent() {
   const [importSummary, setImportSummary] = useState<{ success: boolean; message: string } | null>(
     null
   );
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [competitionToDelete, setCompetitionToDelete] = useState<Competition | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -144,14 +146,25 @@ function OptionsContent() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirmDelete === id) {
-      await deleteCompetition(id);
-      setConfirmDelete(null);
-    } else {
-      setConfirmDelete(id);
-      setTimeout(() => setConfirmDelete(null), 3000);
+  const handleDeleteClick = (id: string) => {
+    const competition = competitions.find((c) => c.id === id);
+    if (competition) {
+      setCompetitionToDelete(competition);
+      setShowDeleteDialog(true);
     }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (competitionToDelete) {
+      await deleteCompetition(competitionToDelete.id);
+      setCompetitionToDelete(null);
+      setShowDeleteDialog(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setCompetitionToDelete(null);
+    setShowDeleteDialog(false);
   };
 
   return (
@@ -211,7 +224,7 @@ function OptionsContent() {
               )}
             </div>
 
-            <CompetitionList competitions={competitions} onDelete={handleDelete} />
+            <CompetitionList competitions={competitions} onDelete={handleDeleteClick} />
           </CardContent>
         </Card>
 
@@ -237,6 +250,13 @@ function OptionsContent() {
           duplicates={duplicates}
           onProceed={handleDuplicateProceed}
           onCancel={() => setShowDuplicateModal(false)}
+        />
+
+        <DeleteConfirmDialog
+          open={showDeleteDialog}
+          competition={competitionToDelete}
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
         />
       </div>
     </div>
