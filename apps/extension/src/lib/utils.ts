@@ -23,3 +23,31 @@ export function normalizeTicketNumber(ticket: string): string {
   // Remove leading zeros but keep single '0'
   return trimmed.replace(/^0+/, '') || '0';
 }
+
+/**
+ * Extracts numeric portion from a ticket string.
+ * Returns only the digits from the ticket, or null if no digits found.
+ *
+ * @param ticket - The ticket string to extract numbers from
+ * @returns The numeric portion as a string, or null if no numbers
+ *
+ * @example
+ * extractNumericTicket('ABC123') // returns '123'
+ * extractNumericTicket('T-456-X') // returns '456'
+ * extractNumericTicket('789') // returns '789'
+ * extractNumericTicket('ABC') // returns null
+ */
+export function extractNumericTicket(ticket: string): string | null {
+  const digits = ticket.replace(/\D/g, '');
+  return digits.length > 0 ? digits : null;
+}
+
+/**
+ * Validates if a ticket is purely numeric (may have leading zeros).
+ *
+ * @param ticket - The ticket to validate
+ * @returns True if ticket contains only digits
+ */
+export function isNumericTicket(ticket: string): boolean {
+  return /^\d+$/.test(ticket.trim());
+}

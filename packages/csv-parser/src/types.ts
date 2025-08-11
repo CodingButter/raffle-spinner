@@ -20,6 +20,12 @@ export interface ParseResult {
   }>;
   skippedRows: number;
   totalRows: number;
+  ticketConversions?: Array<{
+    original: string;
+    converted: string | null;
+    firstName: string;
+    lastName: string;
+  }>;
 }
 
 export interface ColumnMapper {
