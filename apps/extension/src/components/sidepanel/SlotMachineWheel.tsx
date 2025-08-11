@@ -21,6 +21,7 @@ interface SlotMachineWheelProps {
   settings: SpinnerSettings;
   isSpinning: boolean;
   onSpinComplete: (winner: Participant) => void;
+  onError?: (error: string) => void;
 }
 
 // Constants for the slot machine appearance
@@ -36,6 +37,7 @@ export function SlotMachineWheel({
   settings,
   isSpinning,
   onSpinComplete,
+  onError,
 }: SlotMachineWheelProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentPosition, setCurrentPosition] = useState(0);
@@ -102,6 +104,7 @@ export function SlotMachineWheel({
     targetTicketNumber,
     settings,
     onSpinComplete,
+    onError,
     itemHeight: ITEM_HEIGHT,
     wheelCircumference,
     currentPosition,
