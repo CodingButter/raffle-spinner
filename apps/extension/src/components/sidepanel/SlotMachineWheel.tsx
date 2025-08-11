@@ -42,6 +42,7 @@ export function SlotMachineWheel({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentPosition, setCurrentPosition] = useState(0);
   const wheelCircumference = participants.length * ITEM_HEIGHT;
+  const isAnimatingRef = useRef(false);
 
   const drawWheel = useCallback(
     (position: number) => {
@@ -103,8 +104,16 @@ export function SlotMachineWheel({
     participants,
     targetTicketNumber,
     settings,
-    onSpinComplete,
-    onError,
+    onSpinComplete: (winner) => {
+      console.log('Animation completed, resetting flag');
+      isAnimatingRef.current = false;
+      onSpinComplete(winner);
+    },
+    onError: (error) => {
+      console.log('Animation error, resetting flag');
+      isAnimatingRef.current = false;
+      if (onError) onError(error);
+    },
     itemHeight: ITEM_HEIGHT,
     wheelCircumference,
     currentPosition,
@@ -113,10 +122,15 @@ export function SlotMachineWheel({
   });
 
   useEffect(() => {
-    if (isSpinning) {
+    if (isSpinning && !isAnimatingRef.current) {
+      console.log('Starting animation from SlotMachineWheel');
+      isAnimatingRef.current = true;
       animate();
+    } else if (!isSpinning && isAnimatingRef.current) {
+      console.log('Cancelling animation from SlotMachineWheel');
+      isAnimatingRef.current = false;
+      cancelAnimation();
     }
-    return cancelAnimation;
   }, [isSpinning, animate, cancelAnimation]);
 
   useEffect(() => {

@@ -83,7 +83,7 @@ export function useSpinAnimation({
     const easingFunction = {
       slow: (t: number) => 1 - Math.pow(1 - t, 3),
       medium: (t: number) => 1 - Math.pow(1 - t, 2),
-      fast: (t: number) => (t < 0.5 ? 2 * t : 1 - Math.pow(-2 * t + 2, 2) / 2),
+      fast: (t: number) => 1 - Math.pow(1 - t, 2), // Simplified for now
     }[settings.decelerationRate];
 
     console.log('Animation config:', {
@@ -113,18 +113,22 @@ export function useSpinAnimation({
       frameCount++;
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easingFunction(progress);
+
+      // Make sure we have a valid easing function
+      const easedProgress = easingFunction ? easingFunction(progress) : progress;
 
       const position = startPosition + totalDistance * easedProgress;
       setCurrentPosition(position);
       drawWheel(position);
 
-      if (frameCount % 60 === 0) {
+      if (frameCount % 60 === 0 || progress >= 1) {
         console.log('Animation progress:', {
           frame: frameCount,
           progress: (progress * 100).toFixed(2) + '%',
           elapsed: elapsed + 'ms',
           position,
+          duration,
+          shouldStop: progress >= 1,
         });
       }
 
@@ -132,12 +136,18 @@ export function useSpinAnimation({
         animationRef.current = requestAnimationFrame(spin);
       } else {
         console.log('Animation complete! Calling onSpinComplete');
+        console.log('Final progress:', progress);
+        console.log('Target index:', targetIndex);
         const winner = participants[targetIndex];
         console.log('Winner:', winner);
+        // Clear the animation ref
+        animationRef.current = undefined;
         onSpinComplete(winner);
       }
     };
 
+    // Start the animation
+    console.log('Starting spin animation');
     spin();
   }, [
     participants,
