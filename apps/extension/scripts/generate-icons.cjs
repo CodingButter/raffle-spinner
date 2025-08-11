@@ -3,11 +3,12 @@
 /**
  * Icon Generation Script
  * SRS Reference: Support files for Chrome Extension manifest
- * Generates minimal valid PNG placeholder icons for the Chrome extension
+ * Generates Chrome extension icons from source icon.png or creates placeholders
  */
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 // Minimal valid PNG - 1x1 blue pixel
 // This is the smallest valid PNG file structure
@@ -96,14 +97,36 @@ if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }
 
-console.log('📦 Generating placeholder PNG icons...');
+// Check if source icon exists
+const sourceIcon = path.join(publicDir, 'icon.png');
 
-sizes.forEach(size => {
-  const filename = path.join(publicDir, `icon-${size}.png`);
-  const pngBuffer = createMinimalPNG(size);
+if (fs.existsSync(sourceIcon)) {
+  // Use the resize script to generate proper icons from source
+  console.log('🎨 Found icon.png, generating sized icons...');
   
-  fs.writeFileSync(filename, pngBuffer);
-  console.log(`✅ Generated icon-${size}.png (${pngBuffer.length} bytes)`);
-});
+  try {
+    execSync('node scripts/resize-icons.js', {
+      stdio: 'inherit',
+      cwd: path.resolve(__dirname, '..')
+    });
+  } catch (error) {
+    console.error('❌ Failed to resize icons:', error.message);
+    console.log('⚠️ Falling back to placeholder icons...');
+    generatePlaceholders();
+  }
+} else {
+  console.log('📦 No icon.png found, generating placeholder PNG icons...');
+  generatePlaceholders();
+}
 
-console.log('✅ All icons generated successfully!');
+function generatePlaceholders() {
+  sizes.forEach(size => {
+    const filename = path.join(publicDir, `icon-${size}.png`);
+    const pngBuffer = createMinimalPNG(size);
+    
+    fs.writeFileSync(filename, pngBuffer);
+    console.log(`✅ Generated placeholder icon-${size}.png (${pngBuffer.length} bytes)`);
+  });
+  
+  console.log('✅ All placeholder icons generated successfully!');
+}
