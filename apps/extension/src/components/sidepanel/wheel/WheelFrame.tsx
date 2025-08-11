@@ -36,20 +36,20 @@ export function drawWheelFrame({ ctx, canvasWidth, viewportHeight }: WheelFrameP
   // Draw center selection indicator (red arrows pointing to center)
   const centerLineY = viewportHeight / 2 + 40;
 
-  // Left arrow
+  // Left arrow (pointing right/inward)
   ctx.fillStyle = '#ef4444';
   ctx.beginPath();
-  ctx.moveTo(10, centerLineY);
-  ctx.lineTo(40, centerLineY - 20);
-  ctx.lineTo(40, centerLineY + 20);
+  ctx.moveTo(40, centerLineY); // Point at the right
+  ctx.lineTo(10, centerLineY - 20); // Top left corner
+  ctx.lineTo(10, centerLineY + 20); // Bottom left corner
   ctx.closePath();
   ctx.fill();
 
-  // Right arrow
+  // Right arrow (pointing left/inward)
   ctx.beginPath();
-  ctx.moveTo(canvasWidth - 10, centerLineY);
-  ctx.lineTo(canvasWidth - 40, centerLineY - 20);
-  ctx.lineTo(canvasWidth - 40, centerLineY + 20);
+  ctx.moveTo(canvasWidth - 40, centerLineY); // Point at the left
+  ctx.lineTo(canvasWidth - 10, centerLineY - 20); // Top right corner
+  ctx.lineTo(canvasWidth - 10, centerLineY + 20); // Bottom right corner
   ctx.closePath();
   ctx.fill();
 
