@@ -54,8 +54,12 @@ function SidePanelContent() {
       return;
     }
 
+    // Normalize ticket numbers for comparison (remove leading zeros, trim whitespace)
+    const normalizeTicket = (ticket: string) => ticket.trim().replace(/^0+/, '') || '0';
+    const normalizedInput = normalizeTicket(ticketNumber);
+
     const participant = selectedCompetition.participants.find(
-      (p) => p.ticketNumber === ticketNumber
+      (p) => normalizeTicket(p.ticketNumber) === normalizedInput || p.ticketNumber === ticketNumber // Also check exact match
     );
 
     if (!participant) {

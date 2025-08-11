@@ -1,150 +1,57 @@
 /**
- * Options Page Component
+ * Options Page Component (Refactored)
  *
- * Purpose: Main configuration page for the Raffle Spinner extension that handles
- * competition management, CSV uploads, column mapping, and spinner settings.
+ * Purpose: Simplified main configuration page that delegates functionality
+ * to specialized hooks and components.
  *
  * SRS Reference:
- * - FR-1.1: CSV File Upload Interface
- * - FR-1.2: CSV Parser Integration
- * - FR-1.3: File Format Validation
- * - FR-1.4: Column Mapping Interface
- * - FR-1.5: Data Validation and Error Handling
- * - FR-1.6: Competition Management
- * - FR-1.7: Spinner Physics Configuration
+ * - FR-1: Options Page Requirements (all sub-requirements)
  */
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
-import { useCSVUpload } from '@/hooks/useCSVUpload';
-import { CompetitionList } from '@/components/options/CompetitionList';
+import { useCSVImport } from '@/hooks/useCSVImport';
+import { CompetitionManagement } from '@/components/options/CompetitionManagement';
 import { CSVUploadModal } from '@/components/options/CSVUploadModal';
 import { ColumnMapper } from '@/components/options/ColumnMapper';
 import { DuplicateHandler } from '@/components/options/DuplicateHandler';
 import { DeleteConfirmDialog } from '@/components/options/DeleteConfirmDialog';
 import { SpinnerSettings } from '@/components/options/SpinnerSettings';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, CheckCircle, Settings } from 'lucide-react';
-import { ColumnMapping, Competition } from '@raffle-spinner/storage';
+import { CheckCircle } from 'lucide-react';
+import { Competition } from '@raffle-spinner/storage';
 
 function OptionsContent() {
   const { competitions, addCompetition, deleteCompetition } = useCompetitions();
   const { settings, columnMapping, updateSettings, updateColumnMapping } = useSettings();
-  const { upload, detectColumns } = useCSVUpload();
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [showNameModal, setShowNameModal] = useState(false);
-  const [showMapperModal, setShowMapperModal] = useState(false);
-  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
-  const [detectedHeaders, setDetectedHeaders] = useState<string[]>([]);
-  const [detectedMapping, setDetectedMapping] = useState<Partial<ColumnMapping>>({});
-  const [duplicates, setDuplicates] = useState<Array<{ ticketNumber: string; names: string[] }>>(
-    []
-  );
-  const [competitionName, setCompetitionName] = useState('');
-  const [importSummary, setImportSummary] = useState<{ success: boolean; message: string } | null>(
-    null
-  );
   const [competitionToDelete, setCompetitionToDelete] = useState<Competition | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setSelectedFile(file);
-    setImportSummary(null);
-
-    try {
-      const { headers, detected } = await detectColumns(file);
-      setDetectedHeaders(headers);
-
-      if (!columnMapping) {
-        setDetectedMapping({
-          firstName: detected.firstName || '',
-          lastName: detected.lastName || '',
-          ticketNumber: detected.ticketNumber || '',
-        });
-        setShowMapperModal(true);
-      } else {
-        setShowNameModal(true);
-      }
-    } catch (error) {
-      console.error('Failed to detect columns:', error);
-    }
-  };
-
-  const handleMappingConfirm = async (mapping: ColumnMapping) => {
-    await updateColumnMapping(mapping);
-    setShowMapperModal(false);
-    setShowNameModal(true);
-  };
-
-  const handleNameConfirm = async (name: string) => {
-    setCompetitionName(name);
-    setShowNameModal(false);
-
-    if (!selectedFile || !columnMapping) return;
-
-    try {
-      const result = await upload(selectedFile, name, columnMapping);
-
-      if (result.duplicates.length > 0) {
-        setDuplicates(result.duplicates);
-        setShowDuplicateModal(true);
-      } else {
-        await addCompetition(result.competition);
-        setImportSummary({
-          success: true,
-          message: `Success! ${result.competition.participants.length} participants imported. ${
-            result.skippedRows > 0
-              ? `${result.skippedRows} rows were skipped due to missing data.`
-              : ''
-          }`,
-        });
-      }
-    } catch (error) {
-      setImportSummary({
-        success: false,
-        message: 'Failed to import CSV. Please check the file format.',
-      });
-    }
-
-    setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const handleDuplicateProceed = async () => {
-    setShowDuplicateModal(false);
-
-    if (!selectedFile || !columnMapping || !competitionName) return;
-
-    try {
-      const result = await upload(selectedFile, competitionName, columnMapping);
-      await addCompetition(result.competition);
-      setImportSummary({
-        success: true,
-        message: `Success! ${result.competition.participants.length} participants imported. ${
-          result.duplicates.length
-        } duplicate ticket numbers were found (only first occurrence kept). ${
-          result.skippedRows > 0
-            ? `${result.skippedRows} rows were skipped due to missing data.`
-            : ''
-        }`,
-      });
-    } catch (error) {
-      setImportSummary({
-        success: false,
-        message: 'Failed to import CSV.',
-      });
-    }
-  };
+  const {
+    fileInputRef,
+    selectedFile,
+    showNameModal,
+    showMapperModal,
+    showDuplicateModal,
+    detectedHeaders,
+    detectedMapping,
+    duplicates,
+    importSummary,
+    handleFileSelect,
+    handleMappingConfirm,
+    handleNameConfirm,
+    handleDuplicateProceed,
+    setShowNameModal,
+    setShowMapperModal,
+    setShowDuplicateModal,
+    openMapperModal,
+  } = useCSVImport({
+    addCompetition,
+    columnMapping,
+    updateColumnMapping,
+  });
 
   const handleDeleteClick = (id: string) => {
     const competition = competitions.find((c) => c.id === id);
@@ -179,57 +86,23 @@ function OptionsContent() {
 
         {importSummary && (
           <Alert variant={importSummary.success ? 'default' : 'destructive'}>
-            {importSummary.success ? (
-              <CheckCircle className="h-4 w-4" />
-            ) : (
-              <AlertDescription>{importSummary.message}</AlertDescription>
-            )}
-            {importSummary.success && <AlertDescription>{importSummary.message}</AlertDescription>}
+            {importSummary.success && <CheckCircle className="h-4 w-4" />}
+            <AlertDescription>{importSummary.message}</AlertDescription>
           </Alert>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Competition Management</CardTitle>
-            <CardDescription>
-              Upload CSV files to create competitions for your raffles
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-4">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-              <Button onClick={() => fileInputRef.current?.click()} className="gap-2">
-                <Upload className="h-4 w-4" />
-                Upload New Competition
-              </Button>
-              {columnMapping && (
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setDetectedHeaders(['First Name', 'Last Name', 'Ticket Number']);
-                    setDetectedMapping(columnMapping);
-                    setShowMapperModal(true);
-                  }}
-                  className="gap-2"
-                >
-                  <Settings className="h-4 w-4" />
-                  Configure Column Mapping
-                </Button>
-              )}
-            </div>
-
-            <CompetitionList competitions={competitions} onDelete={handleDeleteClick} />
-          </CardContent>
-        </Card>
+        <CompetitionManagement
+          competitions={competitions}
+          columnMapping={columnMapping}
+          fileInputRef={fileInputRef}
+          onFileSelect={handleFileSelect}
+          onDeleteCompetition={handleDeleteClick}
+          onOpenMapper={openMapperModal}
+        />
 
         <SpinnerSettings settings={settings} onUpdate={updateSettings} />
 
+        {/* Modals */}
         <CSVUploadModal
           open={showNameModal}
           onClose={() => setShowNameModal(false)}
