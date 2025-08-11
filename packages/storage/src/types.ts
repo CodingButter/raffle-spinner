@@ -21,6 +21,7 @@ export interface Competition {
   id: string;
   name: string;
   participants: Participant[];
+  bannerImage?: string; // Base64 encoded image for this specific competition
   createdAt: number;
   updatedAt: number;
 }
@@ -47,10 +48,54 @@ export interface SavedMapping {
   isDefault?: boolean; // Mark one mapping as default
 }
 
+// Spinner type options
+export type SpinnerType = "slotMachine" | "wheel" | "cards";
+
+// Theme customization
+export interface ThemeColors {
+  primary: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  foreground: string;
+  card: string;
+  cardForeground: string;
+  winner: string;
+  winnerGlow: string;
+}
+
+export interface SpinnerStyle {
+  type: SpinnerType;
+  nameSize: "small" | "medium" | "large" | "extra-large";
+  ticketSize: "small" | "medium" | "large" | "extra-large";
+  nameColor: string;
+  ticketColor: string;
+  backgroundColor: string;
+  borderColor: string;
+  highlightColor: string;
+  fontFamily?: string;
+}
+
+export interface BrandingSettings {
+  logoImage?: string; // Base64 encoded logo
+  logoPosition: "left" | "center" | "right";
+  bannerImage?: string; // Base64 encoded default banner
+  companyName?: string;
+  showCompanyName: boolean;
+}
+
+export interface ThemeSettings {
+  colors: ThemeColors;
+  spinnerStyle: SpinnerStyle;
+  branding: BrandingSettings;
+  customCSS?: string; // Advanced users can add custom CSS
+}
+
 export interface StorageData {
   competitions: Competition[];
   settings: SpinnerSettings;
   columnMapping: ColumnMapping | null; // Keep for backwards compatibility
   savedMappings?: SavedMapping[]; // New: array of saved mappings
   defaultMappingId?: string; // New: ID of the default mapping
+  theme?: ThemeSettings; // New: theme customization
 }

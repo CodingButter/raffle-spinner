@@ -35,6 +35,25 @@ export function SavedMappingsManager() {
 
   useEffect(() => {
     loadMappings();
+
+    // Listen for storage changes
+    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (changes.data) {
+        const newData = changes.data.newValue;
+        if (newData?.savedMappings) {
+          setMappings(newData.savedMappings || []);
+        }
+        if (newData?.defaultMappingId !== undefined) {
+          setDefaultMappingId(newData.defaultMappingId || null);
+        }
+      }
+    };
+
+    chrome.storage.onChanged.addListener(handleStorageChange);
+
+    return () => {
+      chrome.storage.onChanged.removeListener(handleStorageChange);
+    };
   }, []);
 
   const loadMappings = async () => {

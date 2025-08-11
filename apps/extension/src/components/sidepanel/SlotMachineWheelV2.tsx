@@ -4,11 +4,13 @@
  * A cleaner implementation of the slot machine wheel visualization.
  */
 
-import { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Participant, SpinnerSettings } from '@raffle-spinner/storage';
 import { useSlotMachineAnimation } from '@/hooks/useSlotMachineAnimation';
 import { drawWheelSegment } from './wheel/WheelSegment';
 import { drawWheelFrame } from './wheel/WheelFrame';
+import { useTheme } from '@/contexts/ThemeContext';
+import { normalizeTicketNumber } from '@/lib/utils';
 
 interface SlotMachineWheelProps {
   participants: Participant[];
@@ -28,6 +30,10 @@ const PERSPECTIVE_SCALE = 0.15;
 const CANVAS_WIDTH = 400;
 const CANVAS_HEIGHT = 500;
 
+// Subset configuration
+const SUBSET_SIZE = 25; // Number of entries to show in the wheel
+const SUBSET_PADDING = Math.floor(SUBSET_SIZE / 2); // Entries before/after winner
+
 export function SlotMachineWheelV2({
   participants,
   targetTicketNumber,
@@ -38,13 +44,54 @@ export function SlotMachineWheelV2({
 }: SlotMachineWheelProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [position, setPosition] = useState(0);
+  const [displaySubset, setDisplaySubset] = useState<Participant[]>([]);
   const isAnimatingRef = useRef(false);
+  const transitionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { theme } = useTheme();
+
+  // Sort participants by ticket number to get consistent ordering - MEMOIZED
+  const sortedParticipants = React.useMemo(() => {
+    return [...participants].sort((a, b) => {
+      const aNum = parseInt(a.ticketNumber.replace(/\D/g, '')) || 0;
+      const bNum = parseInt(b.ticketNumber.replace(/\D/g, '')) || 0;
+      return aNum - bNum;
+    });
+  }, [participants]);
+
+  // Initialize with the first subset (lowest tickets) - only when participants change
+  useEffect(() => {
+    if (sortedParticipants.length > 0) {
+      // Show initial subset starting from lowest ticket
+      const initialSubset = sortedParticipants.slice(
+        0,
+        Math.min(SUBSET_SIZE, sortedParticipants.length)
+      );
+
+      // If we have fewer participants than subset size, repeat them to fill the wheel
+      if (initialSubset.length < SUBSET_SIZE) {
+        const repeated = [...initialSubset];
+        while (repeated.length < SUBSET_SIZE) {
+          repeated.push(
+            ...sortedParticipants.slice(
+              0,
+              Math.min(sortedParticipants.length, SUBSET_SIZE - repeated.length)
+            )
+          );
+        }
+        setDisplaySubset(repeated);
+      } else {
+        setDisplaySubset(initialSubset);
+      }
+
+      setPosition(0); // Reset to start
+    }
+  }, [sortedParticipants]); // Depend on the actual sorted array
 
   // Draw the wheel at a given position
   const drawWheel = useCallback(
-    (currentPosition: number) => {
+    (currentPosition: number, subset: Participant[]) => {
       const canvas = canvasRef.current;
-      if (!canvas) return;
+      if (!canvas || subset.length === 0) return;
 
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
@@ -60,8 +107,8 @@ export function SlotMachineWheelV2({
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // Calculate wheel position
-      const wheelCircumference = participants.length * ITEM_HEIGHT;
+      // Calculate wheel position (based on subset, not all participants)
+      const wheelCircumference = subset.length * ITEM_HEIGHT;
       const normalizedPos =
         ((currentPosition % wheelCircumference) + wheelCircumference) % wheelCircumference;
 
@@ -72,13 +119,13 @@ export function SlotMachineWheelV2({
       // Draw participants from top to bottom
       // We draw extra ones above and below for smooth scrolling
       for (let i = -2; i <= VISIBLE_ITEMS + 2; i++) {
-        // Calculate which participant to draw
-        let participantIndex = (topParticipantIndex + i) % participants.length;
+        // Calculate which participant to draw from the subset
+        let participantIndex = (topParticipantIndex + i) % subset.length;
         if (participantIndex < 0) {
-          participantIndex += participants.length;
+          participantIndex += subset.length;
         }
 
-        const participant = participants[participantIndex];
+        const participant = subset[participantIndex];
         const yPosition = i * ITEM_HEIGHT - pixelOffset + 40; // 40px top padding
 
         // Highlight the center position for debugging
@@ -101,6 +148,7 @@ export function SlotMachineWheelV2({
           canvasWidth: CANVAS_WIDTH,
           perspectiveScale: PERSPECTIVE_SCALE,
           ctx,
+          theme,
         });
 
         // Add debug text showing position indices (only in dev builds)
@@ -126,17 +174,62 @@ export function SlotMachineWheelV2({
         viewportHeight: VIEWPORT_HEIGHT,
       });
     },
-    [participants]
+    [theme]
   );
 
-  // Animation hook
+  // Find winner in the full participant list (not subset)
+  const findWinnerInFullList = useCallback(() => {
+    const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
+    return participants.find((p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget);
+  }, [participants, targetTicketNumber]);
+
+  // Create winner subset when spin starts
+  const createWinnerSubset = useCallback(() => {
+    // Find the winner in sorted participants
+    const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
+    const winnerIndex = sortedParticipants.findIndex(
+      (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
+    );
+
+    if (winnerIndex === -1) {
+      console.error('Winner not found in sorted list:', targetTicketNumber);
+      // This shouldn't happen as validation happens in SidePanel
+      return sortedParticipants.slice(0, SUBSET_SIZE); // Fallback to first subset
+    }
+
+    // Create subset with winner in the middle
+    const subset: Participant[] = [];
+    const startIdx = Math.max(0, winnerIndex - SUBSET_PADDING);
+    const endIdx = Math.min(sortedParticipants.length, startIdx + SUBSET_SIZE);
+
+    // Add participants around the winner
+    for (let i = startIdx; i < endIdx; i++) {
+      subset.push(sortedParticipants[i]);
+    }
+
+    // If subset is too small, pad with repeated entries
+    while (subset.length < SUBSET_SIZE) {
+      subset.push(...subset.slice(0, Math.min(subset.length, SUBSET_SIZE - subset.length)));
+    }
+
+    return subset;
+  }, [sortedParticipants, targetTicketNumber]);
+
+  // Animation hook with subset
   const { spin, cancel } = useSlotMachineAnimation({
-    participants,
+    participants: displaySubset,
     targetTicketNumber,
     settings,
-    onSpinComplete: (winner) => {
-      isAnimatingRef.current = false;
-      onSpinComplete(winner);
+    onSpinComplete: (_winner) => {
+      // Use the actual winner from the full list, not the subset
+      const actualWinner = findWinnerInFullList();
+      if (actualWinner) {
+        isAnimatingRef.current = false;
+        onSpinComplete(actualWinner);
+      } else {
+        isAnimatingRef.current = false;
+        if (onError) onError(`Ticket ${targetTicketNumber} not found`);
+      }
     },
     onError: (error) => {
       isAnimatingRef.current = false;
@@ -145,26 +238,47 @@ export function SlotMachineWheelV2({
     itemHeight: ITEM_HEIGHT,
     currentPosition: position,
     setCurrentPosition: setPosition,
-    drawWheel,
+    drawWheel: (pos) => drawWheel(pos, displaySubset),
   });
 
-  // Handle spin start/stop
+  // Handle spin start/stop with smooth subset transition
   useEffect(() => {
     if (isSpinning && !isAnimatingRef.current) {
-      // console.log('[SlotMachineWheelV2] Starting spin');
       isAnimatingRef.current = true;
+
+      // Start spinning with current subset
       spin();
+
+      // Swap to winner subset during fast spin phase (less noticeable)
+      transitionTimeoutRef.current = setTimeout(() => {
+        const winnerSubset = createWinnerSubset();
+        setDisplaySubset(winnerSubset);
+      }, 500); // Swap after 500ms when wheel is spinning fast
     } else if (!isSpinning && isAnimatingRef.current) {
-      // console.log('[SlotMachineWheelV2] Cancelling spin');
       isAnimatingRef.current = false;
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current);
+        transitionTimeoutRef.current = null;
+      }
       cancel();
     }
-  }, [isSpinning, spin, cancel]);
+  }, [isSpinning, spin, cancel, createWinnerSubset]);
 
-  // Draw wheel when position changes
+  // Draw wheel when position or subset changes
   useEffect(() => {
-    drawWheel(position);
-  }, [position, drawWheel]);
+    if (displaySubset.length > 0) {
+      drawWheel(position, displaySubset);
+    }
+  }, [position, displaySubset]); // Remove drawWheel from deps to prevent loops
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="relative w-full flex items-center justify-center bg-gradient-to-br from-gray-900 to-black rounded-lg p-4">

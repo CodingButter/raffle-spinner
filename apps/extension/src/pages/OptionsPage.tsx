@@ -11,6 +11,7 @@
 import { useState } from 'react';
 import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { useCSVImport } from '@/hooks/useCSVImport';
 import { CompetitionManagement } from '@/components/options/CompetitionManagement';
 import { CSVUploadModal } from '@/components/options/CSVUploadModal';
@@ -19,13 +20,17 @@ import { DuplicateHandler } from '@/components/options/DuplicateHandler';
 import { DeleteConfirmDialog } from '@/components/options/DeleteConfirmDialog';
 import { TicketConversionDialog } from '@/components/options/TicketConversionDialog';
 import { SpinnerSettings } from '@/components/options/SpinnerSettings';
+import { SpinnerCustomization } from '@/components/options/SpinnerCustomization';
+import { ThemeColors } from '@/components/options/ThemeColors';
+import { BrandingSettings } from '@/components/options/BrandingSettings';
 import { SavedMappingsManager } from '@/components/options/SavedMappingsManager';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle } from 'lucide-react';
 import { Competition } from '@raffle-spinner/storage';
 
 function OptionsContent() {
-  const { competitions, addCompetition, deleteCompetition } = useCompetitions();
+  const { competitions, addCompetition, deleteCompetition, updateCompetitionBanner } =
+    useCompetitions();
   const { settings, columnMapping, updateSettings, updateColumnMapping } = useSettings();
 
   const [competitionToDelete, setCompetitionToDelete] = useState<Competition | null>(null);
@@ -106,9 +111,16 @@ function OptionsContent() {
           onFileSelect={handleFileSelect}
           onDeleteCompetition={handleDeleteClick}
           onOpenMapper={openMapperModal}
+          onUpdateBanner={updateCompetitionBanner}
         />
 
         <SpinnerSettings settings={settings} onUpdate={updateSettings} />
+
+        <SpinnerCustomization />
+
+        <ThemeColors />
+
+        <BrandingSettings />
 
         <SavedMappingsManager />
 
@@ -157,10 +169,12 @@ function OptionsContent() {
 
 export function OptionsPage() {
   return (
-    <CompetitionProvider>
-      <SettingsProvider>
-        <OptionsContent />
-      </SettingsProvider>
-    </CompetitionProvider>
+    <ThemeProvider>
+      <CompetitionProvider>
+        <SettingsProvider>
+          <OptionsContent />
+        </SettingsProvider>
+      </CompetitionProvider>
+    </ThemeProvider>
   );
 }

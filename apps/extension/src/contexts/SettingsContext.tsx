@@ -32,6 +32,25 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     loadSettings();
+
+    // Listen for storage changes from other contexts (like options page)
+    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (changes.data) {
+        const newData = changes.data.newValue;
+        if (newData?.settings) {
+          setSettings(newData.settings);
+        }
+        if (newData?.columnMapping !== undefined) {
+          setColumnMapping(newData.columnMapping);
+        }
+      }
+    };
+
+    chrome.storage.onChanged.addListener(handleStorageChange);
+
+    return () => {
+      chrome.storage.onChanged.removeListener(handleStorageChange);
+    };
   }, []);
 
   const loadSettings = async () => {

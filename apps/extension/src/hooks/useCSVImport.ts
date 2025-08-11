@@ -55,9 +55,22 @@ export function useCSVImport({
     null
   );
 
-  // Load saved mappings on mount
+  // Load saved mappings on mount and listen for changes
   useEffect(() => {
     loadSavedMappings();
+
+    // Listen for storage changes to keep mappings in sync
+    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (changes.data?.newValue?.savedMappings) {
+        setSavedMappings(changes.data.newValue.savedMappings || []);
+      }
+    };
+
+    chrome.storage.onChanged.addListener(handleStorageChange);
+
+    return () => {
+      chrome.storage.onChanged.removeListener(handleStorageChange);
+    };
   }, []);
 
   const loadSavedMappings = async () => {
@@ -248,7 +261,10 @@ export function useCSVImport({
     }
   };
 
-  const openMapperModal = () => {
+  const openMapperModal = async () => {
+    // Refresh saved mappings before opening modal
+    await loadSavedMappings();
+
     setDetectedHeaders(['First Name', 'Last Name', 'Ticket Number']);
     if (columnMapping) {
       setDetectedMapping(columnMapping);

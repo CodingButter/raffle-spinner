@@ -2,38 +2,38 @@
 
 /* Tailwind v4 Configuration via CSS */
 @theme {
-  /* Brand Colors - Raffle/Lottery Theme */
-  --color-brand-blue: #007bff; /* Trust Blue - Primary brand color */
-  --color-brand-pink: #ff1493; /* Hot Pink - Secondary brand color */
-  --color-brand-gold: #ffd700; /* Winner Gold - Accent for winners */
+  /* Brand Colors - Raffle/Lottery Theme - Can be overridden by JS */
+  --color-brand-blue: var(--theme-primary, #007bff); /* Trust Blue - Primary brand color */
+  --color-brand-pink: var(--theme-secondary, #ff1493); /* Hot Pink - Secondary brand color */
+  --color-brand-gold: var(--theme-accent, #ffd700); /* Winner Gold - Accent for winners */
   --color-brand-green: #28a745; /* Success Green - Positive actions */
   --color-brand-red: #dc3545; /* Alert Red - Errors and warnings */
 
   /* Extended color palette for Tailwind classes */
   --color-*-success: #28a745;
 
-  /* Semantic Color Mappings */
-  --color-primary: var(--color-brand-blue);
-  --color-primary-foreground: #ffffff;
-  --color-secondary: var(--color-brand-pink);
-  --color-secondary-foreground: #ffffff;
+  /* Semantic Color Mappings - Use theme variables */
+  --color-primary: var(--theme-primary, var(--color-brand-blue));
+  --color-primary-foreground: var(--theme-foreground, #ffffff);
+  --color-secondary: var(--theme-secondary, var(--color-brand-pink));
+  --color-secondary-foreground: var(--theme-foreground, #ffffff);
   --color-success: var(--color-brand-green);
   --color-success-foreground: #ffffff;
   --color-destructive: var(--color-brand-red);
   --color-destructive-foreground: #ffffff;
-  --color-warning: var(--color-brand-gold);
+  --color-warning: var(--theme-winner, var(--color-brand-gold));
   --color-warning-foreground: #343a40;
 
-  /* UI Colors */
-  --color-background: #ffffff;
-  --color-foreground: #343a40;
-  --color-card: #ffffff;
-  --color-card-foreground: #343a40;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #343a40;
+  /* UI Colors - Use theme variables */
+  --color-background: var(--theme-background, #ffffff);
+  --color-foreground: var(--theme-foreground, #343a40);
+  --color-card: var(--theme-card, #ffffff);
+  --color-card-foreground: var(--theme-card-foreground, #343a40);
+  --color-popover: var(--theme-card, #ffffff);
+  --color-popover-foreground: var(--theme-card-foreground, #343a40);
   --color-muted: #f8f9fa;
   --color-muted-foreground: #6c757d;
-  --color-accent: var(--color-brand-gold);
+  --color-accent: var(--theme-accent, var(--color-brand-gold));
   --color-accent-foreground: #343a40;
 
   /* Form & Interactive Elements */
@@ -73,23 +73,23 @@
 /* Dark mode overrides - Lottery theme dark variant */
 @media (prefers-color-scheme: dark) {
   @theme {
-    /* Dark mode background */
-    --color-background: #1a1a2e;
-    --color-foreground: #f8f9fa;
-    --color-card: #0f0f23;
-    --color-card-foreground: #f8f9fa;
-    --color-popover: #0f0f23;
-    --color-popover-foreground: #f8f9fa;
+    /* Dark mode background - Use theme variables if available */
+    --color-background: var(--theme-background, #1a1a2e);
+    --color-foreground: var(--theme-foreground, #f8f9fa);
+    --color-card: var(--theme-card, #0f0f23);
+    --color-card-foreground: var(--theme-card-foreground, #f8f9fa);
+    --color-popover: var(--theme-card, #0f0f23);
+    --color-popover-foreground: var(--theme-card-foreground, #f8f9fa);
 
     /* Adjusted brand colors for dark mode */
-    --color-primary: #0066dd; /* Slightly darker blue */
-    --color-primary-foreground: #ffffff;
-    --color-secondary: #ff69b4; /* Lighter pink for visibility */
-    --color-secondary-foreground: #ffffff;
+    --color-primary: var(--theme-primary, #0066dd); /* Slightly darker blue */
+    --color-primary-foreground: var(--theme-foreground, #ffffff);
+    --color-secondary: var(--theme-secondary, #ff69b4); /* Lighter pink for visibility */
+    --color-secondary-foreground: var(--theme-foreground, #ffffff);
     --color-muted: #2a2a3e;
     --color-muted-foreground: #adb5bd;
-    --color-accent: var(--color-brand-gold);
-    --color-accent-foreground: #1a1a2e;
+    --color-accent: var(--theme-accent, var(--color-brand-gold));
+    --color-accent-foreground: var(--theme-background, #1a1a2e);
 
     /* Form elements */
     --color-border: #495057;

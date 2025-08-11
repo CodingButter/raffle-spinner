@@ -9,9 +9,10 @@
  * - FR-2.2: Winner Selection and Animation
  */
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
+import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { SlotMachineWheelV2 } from '@/components/sidepanel/SlotMachineWheelV2';
 import { SessionWinners, Winner } from '@/components/sidepanel/SessionWinners';
 import { Button } from '@/components/ui/button';
@@ -36,6 +37,7 @@ import confetti from 'canvas-confetti';
 function SidePanelContent() {
   const { competitions, selectedCompetition, selectCompetition } = useCompetitions();
   const { settings } = useSettings();
+  const { theme } = useTheme();
   const [ticketNumber, setTicketNumber] = useState('');
   const [isSpinning, setIsSpinning] = useState(false);
   const [sessionWinners, setSessionWinners] = useState<Winner[]>([]);
@@ -71,6 +73,8 @@ function SidePanelContent() {
     setCurrentWinner(null);
   };
 
+  const confettiRef = useRef<boolean>(false);
+
   const handleSpinComplete = (winner: Participant) => {
     setIsSpinning(false);
     setCurrentWinner(winner);
@@ -87,12 +91,20 @@ function SidePanelContent() {
       ...prev,
     ]);
 
-    // Trigger confetti animation
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-    });
+    // Trigger confetti animation with guard against double-firing
+    if (!confettiRef.current) {
+      confettiRef.current = true;
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+
+      // Reset the guard after animation
+      setTimeout(() => {
+        confettiRef.current = false;
+      }, 1000);
+    }
 
     // Clear the ticket input for next spin
     setTimeout(() => {
@@ -101,9 +113,44 @@ function SidePanelContent() {
     }, 5000);
   };
 
+  // Determine which banner to show
+  const bannerImage = selectedCompetition?.bannerImage || theme.branding.bannerImage;
+
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-2xl mx-auto space-y-4">
+    <div className="min-h-screen bg-background">
+      {/* Branding Header */}
+      {(bannerImage || theme.branding.logoImage) && (
+        <div className="relative">
+          {/* Banner */}
+          {bannerImage && (
+            <div className="w-full h-48 overflow-hidden">
+              <img src={bannerImage} alt="Event Banner" className="w-full h-full object-cover" />
+            </div>
+          )}
+
+          {/* Logo and Company Name - Centered in banner */}
+          {theme.branding.logoImage && (
+            <div
+              className={`${bannerImage ? 'absolute inset-0' : 'relative py-8'} flex items-center px-4 ${
+                theme.branding.logoPosition === 'center'
+                  ? 'justify-center'
+                  : theme.branding.logoPosition === 'right'
+                    ? 'justify-end'
+                    : 'justify-start'
+              }`}
+            >
+              <div className="flex items-center gap-3 bg-background/70 backdrop-blur-md px-6 py-3 rounded-lg shadow-lg border border-white/10">
+                <img src={theme.branding.logoImage} alt="Company Logo" className="h-16 w-auto" />
+                {theme.branding.showCompanyName && theme.branding.companyName && (
+                  <span className="text-2xl font-bold">{theme.branding.companyName}</span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="max-w-2xl mx-auto space-y-4 p-4">
         {/* Competition Selector - Minimal UI */}
         <div className="flex gap-2">
           <Select
@@ -211,10 +258,12 @@ function SidePanelContent() {
 
 export function SidePanel() {
   return (
-    <CompetitionProvider>
-      <SettingsProvider>
-        <SidePanelContent />
-      </SettingsProvider>
-    </CompetitionProvider>
+    <ThemeProvider>
+      <CompetitionProvider>
+        <SettingsProvider>
+          <SidePanelContent />
+        </SettingsProvider>
+      </CompetitionProvider>
+    </ThemeProvider>
   );
 }

@@ -8,7 +8,15 @@
  * - FR-2.2: Winner Selection and Animation (visual representation)
  */
 
-import { Participant } from '@raffle-spinner/storage';
+import { Participant, ThemeSettings } from '@raffle-spinner/storage';
+
+// Convert hex color to rgba
+const hexToRgba = (hex: string, alpha: number) => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 interface WheelSegmentProps {
   participant: Participant;
@@ -20,6 +28,7 @@ interface WheelSegmentProps {
   canvasWidth: number;
   perspectiveScale: number;
   ctx: CanvasRenderingContext2D;
+  theme: ThemeSettings;
 }
 
 export function drawWheelSegment({
@@ -32,6 +41,7 @@ export function drawWheelSegment({
   canvasWidth,
   perspectiveScale,
   ctx,
+  theme,
 }: WheelSegmentProps) {
   const centerY = viewportHeight / 2 + 40;
   const distanceFromCenter = Math.abs(yPos + itemHeight / 2 - centerY);
@@ -53,30 +63,27 @@ export function drawWheelSegment({
   // Draw segment background with gradient for 3D effect
   const segmentGradient = ctx.createLinearGradient(xOffset, yPos, xOffset + scaledWidth, yPos);
 
-  // Alternate colors for segments using brand colors
+  // Parse the background color from theme
+  const bgColor = theme.spinnerStyle.backgroundColor;
+
+  // Use theme background color with alternating opacity for depth
   const isEven = itemIndex % 2 === 0;
-  if (isEven) {
-    // Trust Blue (#007BFF)
-    segmentGradient.addColorStop(0, `rgba(0, 123, 255, ${opacity * 0.8})`);
-    segmentGradient.addColorStop(0.5, `rgba(0, 123, 255, ${opacity})`);
-    segmentGradient.addColorStop(1, `rgba(0, 123, 255, ${opacity * 0.8})`);
-  } else {
-    // Darker blue variant
-    segmentGradient.addColorStop(0, `rgba(0, 86, 179, ${opacity * 0.8})`);
-    segmentGradient.addColorStop(0.5, `rgba(0, 86, 179, ${opacity})`);
-    segmentGradient.addColorStop(1, `rgba(0, 86, 179, ${opacity * 0.8})`);
-  }
+  const baseAlpha = isEven ? opacity : opacity * 0.7;
+
+  segmentGradient.addColorStop(0, hexToRgba(bgColor, baseAlpha * 0.8));
+  segmentGradient.addColorStop(0.5, hexToRgba(bgColor, baseAlpha));
+  segmentGradient.addColorStop(1, hexToRgba(bgColor, baseAlpha * 0.8));
 
   ctx.fillStyle = segmentGradient;
   ctx.fillRect(xOffset, yPos, scaledWidth, itemHeight - 2);
 
-  // Draw borders for depth
-  ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.3})`;
+  // Draw borders using theme border color
+  ctx.strokeStyle = hexToRgba(theme.spinnerStyle.borderColor, opacity * 0.3);
   ctx.lineWidth = 1;
   ctx.strokeRect(xOffset, yPos, scaledWidth, itemHeight - 2);
 
-  // Draw highlight on top edge for 3D effect
-  ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.5})`;
+  // Draw highlight on top edge using highlight color
+  ctx.strokeStyle = hexToRgba(theme.spinnerStyle.highlightColor, opacity * 0.5);
   ctx.beginPath();
   ctx.moveTo(xOffset, yPos);
   ctx.lineTo(xOffset + scaledWidth, yPos);
@@ -89,18 +96,41 @@ export function drawWheelSegment({
   ctx.lineTo(xOffset + scaledWidth, yPos + itemHeight - 2);
   ctx.stroke();
 
-  // Draw text with perspective scaling
-  ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-  ctx.font = `bold ${16 * perspectiveFactor}px sans-serif`;
+  // Get font sizes from theme
+  const nameSizes = {
+    small: 14,
+    medium: 16,
+    large: 20,
+    'extra-large': 24,
+  };
+  const ticketSizes = {
+    small: 18,
+    medium: 24,
+    large: 32,
+    'extra-large': 40,
+  };
+
+  const nameSize = nameSizes[theme.spinnerStyle.nameSize];
+  const ticketSize = ticketSizes[theme.spinnerStyle.ticketSize];
+  const fontFamily = theme.spinnerStyle.fontFamily || 'sans-serif';
+
+  // Draw name with theme color and size
+  const nameColor = theme.spinnerStyle.nameColor;
+  ctx.fillStyle = hexToRgba(nameColor, opacity);
+  ctx.font = `bold ${nameSize * perspectiveFactor}px ${fontFamily}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
   const name = `${participant.firstName} ${participant.lastName}`;
-  const ticket = `Ticket #${participant.ticketNumber}`;
+  ctx.fillText(name, canvasWidth / 2, yPos + itemHeight / 2 - 15);
 
-  ctx.fillText(name, canvasWidth / 2, yPos + itemHeight / 2 - 12);
-  ctx.font = `${14 * perspectiveFactor}px sans-serif`;
-  ctx.fillText(ticket, canvasWidth / 2, yPos + itemHeight / 2 + 12);
+  // Draw ticket with theme color and size
+  const ticketColor = theme.spinnerStyle.ticketColor;
+  ctx.fillStyle = hexToRgba(ticketColor, opacity);
+  ctx.font = `bold ${ticketSize * perspectiveFactor}px ${fontFamily}`;
+
+  const ticket = `#${participant.ticketNumber}`;
+  ctx.fillText(ticket, canvasWidth / 2, yPos + itemHeight / 2 + 15);
 
   ctx.restore();
 }
