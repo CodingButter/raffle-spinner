@@ -1,8 +1,9 @@
 {
-  "buildCommand": "pnpm build",
+  "buildCommand": "pnpm build:website",
   "outputDirectory": "apps/website/.next",
   "env": {
     "ENABLE_EXPERIMENTAL_COREPACK": "1",
-    "COREPACK_ENABLE_STRICT": "0"
+    "COREPACK_ENABLE_STRICT": "0",
+    "VERCEL_FORCE_NO_BUILD_CACHE": "1"
   }
 }
