@@ -1,17 +1,17 @@
 /**
- * Home Page - Server Component
- *
- * Fetches demo assets at build time and passes them to the client component
+ * DrawDay Solutions Homepage
+ * 
+ * Main company website showcasing all services and products
  */
 
-import { getDemoAssets } from '@/lib/get-demo-assets';
-import HomePage from '@/components/HomePage';
+import DrawDayHomePage from '@/components/DrawDayHomePage';
 
-// This is a Server Component that runs at build time
+export const metadata = {
+  title: 'DrawDay Solutions - Technology Partner for UK Raffle Companies',
+  description: 'Complete technology solutions for UK raffle companies. Live draw software, streaming production, and custom websites. Trusted by companies giving away £10M+ in prizes.',
+  keywords: 'UK raffle software, competition technology, live draw software, streaming production, raffle websites',
+};
+
 export default function Home() {
-  // Get demo assets at build time (this runs on the server)
-  const demoAssets = getDemoAssets();
-
-  // Pass the assets to the client component
-  return <HomePage demoAssets={demoAssets} />;
+  return <DrawDayHomePage />;
 }

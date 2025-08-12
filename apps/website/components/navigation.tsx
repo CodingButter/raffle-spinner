@@ -3,11 +3,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@raffle-spinner/ui';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown, Monitor, Tv, Code, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -15,61 +17,120 @@ export function Navigation() {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
+    <nav className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <Image
               src="/logo.svg"
-              alt="DrawDay Logo"
+              alt="DrawDay Solutions"
               width={40}
               height={40}
               className="w-10 h-10"
             />
-            <span className="font-bold text-xl">DrawDay</span>
+            <div>
+              <span className="font-bold text-xl text-white">DrawDay</span>
+              <span className="text-xs text-gray-400 ml-2">Solutions</span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link
-              href="/features"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Features
-            </Link>
-            <Link
-              href="/demo"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Demo
-            </Link>
-            <Link
-              href="/docs"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Documentation
-            </Link>
-            <Link
-              href="/support"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Support
-            </Link>
-            <Button asChild>
-              <a
-                href="https://chrome.google.com/webstore"
-                target="_blank"
-                rel="noopener noreferrer"
+          <div className="hidden md:flex items-center gap-8">
+            {/* Services Dropdown */}
+            <div className="relative group">
+              <button
+                className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors py-2"
+                onMouseEnter={() => setServicesOpen(true)}
+                onMouseLeave={() => setServicesOpen(false)}
               >
-                Install Extension
-              </a>
+                Services
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              
+              {servicesOpen && (
+                <div 
+                  className="absolute top-full left-0 mt-2 w-72 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl overflow-hidden"
+                  onMouseEnter={() => setServicesOpen(true)}
+                  onMouseLeave={() => setServicesOpen(false)}
+                >
+                  <Link
+                    href="/spinner"
+                    className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
+                  >
+                    <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Monitor className="w-5 h-5 text-purple-400" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-white mb-1">DrawDay Spinner</div>
+                      <div className="text-sm text-gray-400">Professional live draw software</div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
+                  </Link>
+                  
+                  <Link
+                    href="/streaming"
+                    className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
+                  >
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Tv className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-white mb-1">Streaming Production</div>
+                      <div className="text-sm text-gray-400">Professional overlays & graphics</div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
+                  </Link>
+                  
+                  <Link
+                    href="/websites"
+                    className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
+                  >
+                    <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Code className="w-5 h-5 text-green-400" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-white mb-1">Custom Websites</div>
+                      <div className="text-sm text-gray-400">Bespoke competition platforms</div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <Link
+              href="/portfolio"
+              className="text-gray-300 hover:text-white transition-colors"
+            >
+              Portfolio
+            </Link>
+            <Link
+              href="/about"
+              className="text-gray-300 hover:text-white transition-colors"
+            >
+              About
+            </Link>
+            <Link
+              href="/contact"
+              className="text-gray-300 hover:text-white transition-colors"
+            >
+              Contact
+            </Link>
+            
+            <Button 
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+              asChild
+            >
+              <Link href="/contact">
+                Get Started
+              </Link>
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -79,44 +140,61 @@ export function Navigation() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t">
+          <div className="md:hidden py-4 border-t border-gray-800">
             <div className="flex flex-col gap-4">
+              <div className="text-sm font-semibold text-gray-400 uppercase tracking-wider px-2">
+                Services
+              </div>
               <Link
-                href="/features"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                href="/spinner"
+                className="text-gray-300 hover:text-white transition-colors px-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Features
+                DrawDay Spinner
               </Link>
               <Link
-                href="/demo"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                href="/streaming"
+                className="text-gray-300 hover:text-white transition-colors px-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Demo
+                Streaming Production
               </Link>
               <Link
-                href="/docs"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                href="/websites"
+                className="text-gray-300 hover:text-white transition-colors px-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Documentation
+                Custom Websites
               </Link>
-              <Link
-                href="/support"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Support
-              </Link>
-              <Button asChild className="w-full">
-                <a
-                  href="https://chrome.google.com/webstore"
-                  target="_blank"
-                  rel="noopener noreferrer"
+              
+              <div className="border-t border-gray-800 pt-4 mt-2">
+                <Link
+                  href="/portfolio"
+                  className="block text-gray-300 hover:text-white transition-colors px-2 py-2"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
-                  Install Extension
-                </a>
+                  Portfolio
+                </Link>
+                <Link
+                  href="/about"
+                  className="block text-gray-300 hover:text-white transition-colors px-2 py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  About
+                </Link>
+                <Link
+                  href="/contact"
+                  className="block text-gray-300 hover:text-white transition-colors px-2 py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Contact
+                </Link>
+              </div>
+              
+              <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600" asChild>
+                <Link href="/contact">
+                  Get Started
+                </Link>
               </Button>
             </div>
           </div>
