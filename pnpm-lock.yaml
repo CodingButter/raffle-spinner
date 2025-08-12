@@ -71,15 +71,30 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.7
         version: 1.2.7(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@raffle-spinner/contexts':
+        specifier: workspace:*
+        version: link:../../packages/contexts
       '@raffle-spinner/csv-parser':
         specifier: workspace:*
         version: link:../../packages/csv-parser
+      '@raffle-spinner/hooks':
+        specifier: workspace:*
+        version: link:../../packages/hooks
       '@raffle-spinner/spinner-physics':
         specifier: workspace:*
         version: link:../../packages/spinner-physics
       '@raffle-spinner/storage':
         specifier: workspace:*
         version: link:../../packages/storage
+      '@raffle-spinner/tailwind-config':
+        specifier: workspace:*
+        version: link:../../packages/tailwind-config
+      '@raffle-spinner/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@raffle-spinner/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       canvas-confetti:
         specifier: ^1.9.3
         version: 1.9.3
@@ -156,6 +171,12 @@ importers:
 
   apps/website:
     dependencies:
+      '@raffle-spinner/hooks':
+        specifier: workspace:*
+        version: link:../../packages/hooks
+      '@raffle-spinner/tailwind-config':
+        specifier: workspace:*
+        version: link:../../packages/tailwind-config
       '@raffle-spinner/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -187,6 +208,15 @@ importers:
       '@eslint/eslintrc':
         specifier: ^3
         version: 3.3.1
+      '@raffle-spinner/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@raffle-spinner/prettier-config':
+        specifier: workspace:*
+        version: link:../../packages/prettier-config
+      '@raffle-spinner/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.11
@@ -210,6 +240,31 @@ importers:
         version: 4.1.11
       typescript:
         specifier: ^5
+        version: 5.9.2
+
+  packages/contexts:
+    dependencies:
+      '@raffle-spinner/hooks':
+        specifier: workspace:*
+        version: link:../hooks
+      '@raffle-spinner/utils':
+        specifier: workspace:*
+        version: link:../utils
+    devDependencies:
+      '@raffle-spinner/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/react':
+        specifier: ^18.3.16
+        version: 18.3.23
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.5.1)(postcss@8.5.6)(typescript@5.9.2)(yaml@2.8.1)
+      typescript:
+        specifier: ^5.9.2
         version: 5.9.2
 
   packages/csv-parser:
@@ -268,6 +323,28 @@ importers:
         specifier: ^5.5.4
         version: 5.9.2
 
+  packages/hooks:
+    dependencies:
+      '@raffle-spinner/utils':
+        specifier: workspace:*
+        version: link:../utils
+    devDependencies:
+      '@raffle-spinner/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/react':
+        specifier: ^18.3.16
+        version: 18.3.23
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(jiti@2.5.1)(postcss@8.5.6)(typescript@5.9.2)(yaml@2.8.1)
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
   packages/prettier-config: {}
 
   packages/spinner-physics:
@@ -306,6 +383,8 @@ importers:
       typescript:
         specifier: ^5.5.4
         version: 5.9.2
+
+  packages/tailwind-config: {}
 
   packages/typescript-config: {}
 

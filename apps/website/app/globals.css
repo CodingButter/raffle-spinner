@@ -1,1 +1,23 @@
-@import '@raffle-spinner/ui/styles';
+/**
+ * Global Styles for Raffle Spinner Website
+ * 
+ * Imports shared Tailwind configuration and applies
+ * website-specific customizations.
+ */
+
+/* Import Tailwind CSS v4 */
+@import 'tailwindcss';
+
+/* Import shared Tailwind base configuration */
+@import '@raffle-spinner/tailwind-config/base';
+
+/* Import shared animations */
+@import '@raffle-spinner/tailwind-config/animations';
+
+/* Import shared utilities */
+@import '@raffle-spinner/tailwind-config/utilities';
+
+/* Website-specific customizations */
+@layer utilities {
+  /* Additional website-specific utilities can be added here */
+}

@@ -1,6 +1,22 @@
-// Components
+/**
+ * UI Components Package
+ * 
+ * Shared React components built with shadcn/ui and Radix UI
+ * All components follow Raffle Spinner design system
+ */
+
+// Button component
 export * from './components/button';
+
+// Card components
 export * from './components/card';
 
-// Re-export utils
-export { cn } from '@raffle-spinner/utils';
+// Form components
+export * from './components/input';
+export * from './components/label';
+
+// Dialog components
+export * from './components/dialog';
+
+// Utility functions
+export { cn } from './lib/utils';
