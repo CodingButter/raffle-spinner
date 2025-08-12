@@ -48,8 +48,14 @@ export function useMediaQuery(query: string): boolean {
     // Legacy browsers
     else {
       // Legacy browser support - addListener/removeListener are deprecated but still needed
-      (mediaQuery as any).addListener(handleChange);
-      return () => (mediaQuery as any).removeListener(handleChange);
+      const legacyMediaQuery = mediaQuery as MediaQueryList & {
+        addListener: (listener: (event: MediaQueryListEvent) => void) => void;
+        removeListener: (
+          listener: (event: MediaQueryListEvent) => void,
+        ) => void;
+      };
+      legacyMediaQuery.addListener(handleChange);
+      return () => legacyMediaQuery.removeListener(handleChange);
     }
   }, [query]);
 

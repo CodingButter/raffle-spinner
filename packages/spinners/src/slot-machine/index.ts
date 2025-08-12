@@ -9,5 +9,5 @@ export type { SlotMachineWheelProps } from "./SlotMachineWheel";
 
 export { useSlotMachineAnimation } from "./hooks/useSlotMachineAnimation";
 
-export { drawWheelSegment } from "./components/WheelSegment";
-export { drawWheelFrame } from "./components/WheelFrame";
+export { drawSlotMachineSegment } from "./components/SlotMachineSegment";
+export { drawSlotMachineFrame } from "./components/SlotMachineFrame";

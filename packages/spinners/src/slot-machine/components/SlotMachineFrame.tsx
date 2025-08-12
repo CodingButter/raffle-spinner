@@ -4,13 +4,13 @@
  * Renders the decorative frame, selection indicators, and glass effects
  * around the slot machine wheel viewport. Creates the distinctive slot machine
  * appearance with metallic borders and winner selection arrows.
- * 
+ *
  * Features:
  * - Metallic gradient frame with theme colors
  * - Glass overlay effect for depth
  * - Selection arrows pointing to winner position
  * - Glowing winner highlight area
- * 
+ *
  * @module WheelFrame
  * @category Components/SlotMachine
  */
@@ -45,14 +45,14 @@ interface WheelFrameProps {
 
 /**
  * Draws the decorative frame around the slot machine viewport
- * 
+ *
  * @param props - Frame rendering properties
  * @param props.ctx - Canvas 2D rendering context
  * @param props.canvasWidth - Total canvas width in pixels
  * @param props.viewportHeight - Viewport height for the wheel
  * @param props.theme - Theme settings for colors and styles
  */
-export function drawWheelFrame({
+export function drawSlotMachineFrame({
   ctx,
   canvasWidth,
   viewportHeight,

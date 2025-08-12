@@ -7,7 +7,7 @@
 
 import { useCallback, useRef } from "react";
 import { Participant, SpinnerSettings } from "@raffle-spinner/storage";
-import { normalizeTicketNumber } from "@raffle-spinner/utils";
+import { normalizeTicketNumber, logger } from "@raffle-spinner/utils";
 
 interface AnimationOptions {
   participants: Participant[];
@@ -103,8 +103,12 @@ export function useSlotMachineAnimation({
       winner = currentParticipants[middleIndex];
 
       // Don't error here - the subset will be swapped during animation
-      console.log(
+      logger.debug(
         `Ticket ${targetTicket} not in initial subset, will swap at max velocity`,
+        {
+          component: "useSlotMachineAnimation",
+          metadata: { targetTicket },
+        },
       );
     } else {
       winner = foundWinner;

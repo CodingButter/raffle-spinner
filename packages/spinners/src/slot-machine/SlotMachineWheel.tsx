@@ -3,14 +3,14 @@
  *
  * A high-performance slot machine spinner visualization that handles large participant lists
  * through intelligent subset swapping. Optimized to maintain 60fps with 5000+ participants.
- * 
+ *
  * Features:
  * - Subset swapping for performance (displays 100 entries, swaps at max velocity)
  * - Customizable theme with shadow effects
  * - Physics-based animation with configurable deceleration
  * - Canvas-based rendering for smooth performance
  * - Debug mode for development
- * 
+ *
  * @module SlotMachineWheel
  * @category Components
  */
@@ -19,8 +19,8 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Participant } from "@raffle-spinner/storage";
 import { normalizeTicketNumber } from "@raffle-spinner/utils";
 import { useSlotMachineAnimation } from "./hooks/useSlotMachineAnimation";
-import { drawWheelSegment } from "./components/WheelSegment";
-import { drawWheelFrame } from "./components/WheelFrame";
+import { drawSlotMachineSegment } from "./components/SlotMachineSegment";
+import { drawSlotMachineFrame } from "./components/SlotMachineFrame";
 import {
   BaseSpinnerProps,
   DEFAULT_SPINNER_THEME,
@@ -72,7 +72,7 @@ export interface SlotMachineWheelProps extends BaseSpinnerProps {
  * Converts the public SpinnerTheme interface to the internal ThemeSettings format
  * required by the drawing functions. This maintains backward compatibility while
  * allowing for a cleaner public API.
- * 
+ *
  * @param theme - Public theme configuration
  * @returns Internal theme settings with all required properties
  */
@@ -114,11 +114,11 @@ function convertTheme(theme: SpinnerTheme) {
 
 /**
  * SlotMachineWheel Component
- * 
+ *
  * Renders an animated slot machine wheel for participant selection.
  * Handles large datasets through subset swapping and provides smooth
  * physics-based animations.
- * 
+ *
  * @param props - Component properties
  * @param props.participants - Array of participants to display
  * @param props.targetTicketNumber - Winning ticket number to land on
@@ -130,7 +130,7 @@ function convertTheme(theme: SpinnerTheme) {
  * @param props.canvasWidth - Canvas width in pixels (default: 400)
  * @param props.canvasHeight - Canvas height in pixels (default: 500)
  * @param props.showDebug - Show debug overlay in development
- * 
+ *
  * @example
  * ```tsx
  * <SlotMachineWheel
@@ -222,7 +222,7 @@ export function SlotMachineWheel({
   /**
    * Draws the complete wheel visualization at the specified position.
    * Handles background, segments, frame, and shadow overlays.
-   * 
+   *
    * @param currentPosition - Current scroll position in pixels
    * @param subset - Current subset of participants to display
    */
@@ -276,7 +276,7 @@ export function SlotMachineWheel({
         const isCenter = i === 2;
 
         // Draw the participant segment
-        drawWheelSegment({
+        drawSlotMachineSegment({
           participant,
           yPos: yPosition,
           itemIndex: participantIndex,
@@ -286,7 +286,7 @@ export function SlotMachineWheel({
           canvasWidth,
           perspectiveScale: PERSPECTIVE_SCALE,
           ctx,
-          theme: internalTheme as any,
+          theme: internalTheme,
         });
 
         // Add debug text showing position indices (only in dev builds)
@@ -309,7 +309,7 @@ export function SlotMachineWheel({
       }
 
       // Draw frame and selection indicators
-      drawWheelFrame({
+      drawSlotMachineFrame({
         ctx,
         canvasWidth,
         viewportHeight: VIEWPORT_HEIGHT,
@@ -379,7 +379,7 @@ export function SlotMachineWheel({
   /**
    * Finds the winner in the complete participant list.
    * Necessary because the animation works with a subset.
-   * 
+   *
    * @returns The winning participant or undefined if not found
    */
   const findWinnerInFullList = useCallback(() => {
@@ -393,7 +393,7 @@ export function SlotMachineWheel({
    * Creates a new subset with the winner positioned for optimal animation.
    * Places the winner approximately in the middle of the 100-entry subset
    * to ensure smooth animation and proper landing.
-   * 
+   *
    * @returns Subset of participants with winner positioned centrally
    */
   const createWinnerSubset = useCallback(() => {
@@ -452,7 +452,7 @@ export function SlotMachineWheel({
   /**
    * Handles the subset swap at maximum velocity.
    * This creates the illusion of an infinite wheel while maintaining performance.
-   * 
+   *
    * @returns New index of the winner in the swapped subset, or -1 if already swapped
    */
   const handleMaxVelocity = useCallback(() => {

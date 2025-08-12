@@ -115,6 +115,13 @@ export function NotificationProvider({
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   /**
+   * Dismiss a specific notification
+   */
+  const dismissNotification = useCallback((id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
+
+  /**
    * Add a new notification
    */
   const addNotification = useCallback(
@@ -135,7 +142,7 @@ export function NotificationProvider({
         }, notification.duration || defaultDuration);
       }
     },
-    [maxNotifications, defaultDuration],
+    [maxNotifications, defaultDuration, dismissNotification],
   );
 
   /**
@@ -191,13 +198,6 @@ export function NotificationProvider({
     },
     [showNotification],
   );
-
-  /**
-   * Dismiss a specific notification
-   */
-  const dismissNotification = useCallback((id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  }, []);
 
   /**
    * Clear all notifications

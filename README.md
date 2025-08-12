@@ -7,7 +7,7 @@
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![pnpm](https://img.shields.io/badge/pnpm-9.0-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/CodingButter/drawday-spinner/blob/main/CONTRIBUTING.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/CodingButter/drawday-spinner/blob/main/docs/development/CONTRIBUTING.md)
 
 A professional Chrome Extension for conducting live draws in competitions - fair, transparent, and engaging winner selection.
 
@@ -181,9 +181,18 @@ Optimized for large-scale raffles:
 - ✅ Input validation and sanitization
 - 🔐 Secure Chrome storage API usage
 
+## Documentation
+
+📚 **Complete documentation is available in the [docs](./docs/) folder:**
+
+- [Architecture Documentation](./docs/architecture/) - Technical design and requirements
+- [Development Guides](./docs/development/) - Contributing and setup guides
+- [Deployment Guides](./docs/deployment/) - Hosting and deployment instructions
+- [Quality Standards](./docs/quality/) - Code quality standards and audits
+
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions! Please see [CONTRIBUTING.md](./docs/development/CONTRIBUTING.md) for guidelines.
 
 ### Development Setup
 

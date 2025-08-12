@@ -2,18 +2,26 @@
 
 /**
  * Generate Competition Sample CSV
- * Creates realistic raffle competition CSV files for testing
+ *
+ * @description
+ * Creates realistic raffle competition CSV files for testing purposes.
+ * Supports multiple formats, participant counts, and ticket numbering schemes.
+ *
+ * @module samples/generate-competition
  */
 
 import { writeFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { logger } from "@raffle-spinner/utils";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Common first names for realistic data
-const firstNames = [
+/**
+ * Common first names for realistic data generation
+ */
+const firstNames: readonly string[] = [
   "James",
   "Mary",
   "John",
@@ -112,8 +120,10 @@ const firstNames = [
   "Janet",
 ];
 
-// Common last names for realistic data
-const lastNames = [
+/**
+ * Common last names for realistic data generation
+ */
+const lastNames: readonly string[] = [
   "Smith",
   "Johnson",
   "Williams",
@@ -212,11 +222,31 @@ const lastNames = [
   "Myers",
 ];
 
-// Different ticket prefix options
-const ticketPrefixes = ["", "TK-", "R", "TICKET", "NUM", "ENTRY", "#"];
+/**
+ * Different ticket prefix options
+ */
+const ticketPrefixes: readonly string[] = [
+  "",
+  "TK-",
+  "R",
+  "TICKET",
+  "NUM",
+  "ENTRY",
+  "#",
+];
 
-// Different CSV formats
-const formats = {
+/**
+ * CSV format definition interface
+ */
+interface CsvFormat {
+  headers: string;
+  getRow: (first: string, last: string, ticket: string) => string;
+}
+
+/**
+ * Different CSV format options
+ */
+const formats: Record<string, CsvFormat> = {
   simple: {
     headers: "First,Last,Ticket",
     getRow: (first, last, ticket) => `${first},${last},${ticket}`,
@@ -243,9 +273,28 @@ const formats = {
   },
 };
 
-function generateTicket(index, prefix = "") {
+/**
+ * Generation options interface
+ */
+interface GenerationOptions {
+  count: number;
+  format: string;
+  multipleEntries: boolean;
+  multipleEntriesMax?: number;
+  prefix: string;
+  output?: string | null;
+}
+
+/**
+ * Generate a ticket number with various formats
+ *
+ * @param index - The ticket index
+ * @param prefix - Optional prefix for the ticket
+ * @returns Formatted ticket number
+ */
+function generateTicket(index: number, prefix: string = ""): string {
   // Different ticket formats
-  const formats = [
+  const ticketFormats = [
     () => `${prefix}${String(index).padStart(4, "0")}`, // 0001
     () => `${prefix}${String(index).padStart(6, "0")}`, // 000001
     () => `${prefix}${2024000 + index}`, // 2024001
@@ -257,10 +306,16 @@ function generateTicket(index, prefix = "") {
 
   // Pick a consistent format based on prefix
   const formatIndex = prefix ? ticketPrefixes.indexOf(prefix) : 0;
-  return formats[formatIndex % formats.length]();
+  return ticketFormats[formatIndex % ticketFormats.length]();
 }
 
-function generateCompetition(options = {}) {
+/**
+ * Generate a competition CSV with specified options
+ *
+ * @param options - Generation options
+ * @returns CSV string content
+ */
+function generateCompetition(options: Partial<GenerationOptions> = {}): string {
   const {
     count = 100,
     format = "standard",
@@ -302,15 +357,14 @@ function generateCompetition(options = {}) {
   return rows.join("\n");
 }
 
-// Main function
-function main() {
-  const args = process.argv.slice(2);
-
-  if (args.includes("--help") || args.includes("-h")) {
-    console.log(`
+/**
+ * Display help information
+ */
+function showHelp(): void {
+  const helpText = `
 Generate Competition Sample CSV Files
 
-Usage: node generate-competition.js [options]
+Usage: tsx generate-competition.ts [options]
 
 Options:
   --count, -c <number>      Number of entries (default: 100)
@@ -321,15 +375,28 @@ Options:
   --help, -h                Show this help message
 
 Examples:
-  node generate-competition.js --count 1000
-  node generate-competition.js -c 500 -f fullname -p "TK-"
-  node generate-competition.js --count 5000 --multiple --prefix "RAFFLE"
-`);
+  tsx generate-competition.ts --count 1000
+  tsx generate-competition.ts -c 500 -f fullname -p "TK-"
+  tsx generate-competition.ts --count 5000 --multiple --prefix "RAFFLE"
+`;
+
+  // Use process.stdout.write for help text (acceptable for CLI tools)
+  process.stdout.write(helpText);
+}
+
+/**
+ * Main function to generate competition CSV
+ */
+function main(): void {
+  const args = process.argv.slice(2);
+
+  if (args.includes("--help") || args.includes("-h")) {
+    showHelp();
     process.exit(0);
   }
 
   // Parse arguments
-  const options = {
+  const options: GenerationOptions = {
     count: 100,
     format: "standard",
     multipleEntries: false,
@@ -372,11 +439,15 @@ Examples:
     options.output = `${parts.join("-")}.csv`;
   }
 
-  console.log(`📝 Generating competition CSV...`);
-  console.log(`   Format: ${options.format}`);
-  console.log(`   Entries: ${options.count}`);
-  console.log(`   Multiple entries: ${options.multipleEntries ? "Yes" : "No"}`);
-  console.log(`   Ticket prefix: ${options.prefix || "(none)"}`);
+  logger.info("Generating competition CSV", {
+    component: "generate-competition",
+    metadata: {
+      format: options.format,
+      entries: options.count,
+      multipleEntries: options.multipleEntries,
+      ticketPrefix: options.prefix || "(none)",
+    },
+  });
 
   // Generate CSV
   const csv = generateCompetition(options);
@@ -389,12 +460,19 @@ Examples:
   const sizeInBytes = Buffer.byteLength(csv, "utf8");
   const sizeInKB = (sizeInBytes / 1024).toFixed(2);
 
-  console.log(`\n✅ Generated ${options.output}`);
-  console.log(`   Size: ${sizeInKB} KB`);
-  console.log(`   Location: ${filepath}`);
+  logger.info("CSV generation complete", {
+    component: "generate-competition",
+    metadata: {
+      filename: options.output,
+      sizeKB: sizeInKB,
+      location: filepath,
+    },
+  });
 }
 
 // Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
+
+export { generateCompetition, generateTicket, GenerationOptions };

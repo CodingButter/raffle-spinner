@@ -21,6 +21,9 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\""
   },
+  "dependencies": {
+    "@raffle-spinner/types": "workspace:*"
+  },
   "devDependencies": {
     "@raffle-spinner/eslint-config": "workspace:*",
     "@raffle-spinner/typescript-config": "workspace:*",

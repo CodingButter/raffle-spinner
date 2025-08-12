@@ -1,11 +1,24 @@
 /**
- * Test file to verify subset logic
- * This can be run in the browser console to test the logic
+ * Test file for subset logic verification
+ *
+ * @description
+ * Tests the subset creation logic used in the slot machine animation
+ * to ensure proper wrap-around effects and winner positioning
+ *
+ * @module tests/subset-logic
  */
 
-// Mock participants generator
-function generateParticipants(count) {
-  const participants = [];
+import { logger } from '@raffle-spinner/utils';
+import type { Participant } from '@raffle-spinner/storage';
+
+/**
+ * Generate mock participants for testing
+ *
+ * @param count - Number of participants to generate
+ * @returns Array of mock participants
+ */
+function generateParticipants(count: number): Participant[] {
+  const participants: Participant[] = [];
   for (let i = 1; i <= count; i++) {
     participants.push({
       firstName: `First${i}`,
@@ -16,12 +29,17 @@ function generateParticipants(count) {
   return participants;
 }
 
-// Test initial subset creation
-function createInitialSubset(sortedParticipants) {
+/**
+ * Create initial subset for animation start
+ *
+ * @param sortedParticipants - All participants sorted by ticket number
+ * @returns Subset of participants for initial display
+ */
+function createInitialSubset(sortedParticipants: Participant[]): Participant[] {
   const SUBSET_SIZE = 100;
   const SUBSET_HALF = 50;
 
-  let initialSubset;
+  let initialSubset: Participant[];
 
   if (sortedParticipants.length <= SUBSET_SIZE) {
     // If we have 100 or fewer participants, use all of them
@@ -50,8 +68,14 @@ function createInitialSubset(sortedParticipants) {
   return initialSubset;
 }
 
-// Test winner subset creation
-function createWinnerSubset(sortedParticipants, winnerIndex) {
+/**
+ * Create subset with winner positioned appropriately
+ *
+ * @param sortedParticipants - All participants sorted by ticket number
+ * @param winnerIndex - Index of the winner in sorted participants
+ * @returns Subset of participants with winner positioned
+ */
+function createWinnerSubset(sortedParticipants: Participant[], winnerIndex: number): Participant[] {
   const SUBSET_SIZE = 100;
   const SUBSET_HALF = 50;
 
@@ -71,11 +95,11 @@ function createWinnerSubset(sortedParticipants, winnerIndex) {
   }
 
   // Create subset with winner approximately in the middle
-  const subset = [];
+  const subset: Participant[] = [];
   const halfSize = Math.floor(SUBSET_SIZE / 2);
 
   // Calculate start index to center the winner
-  let startIdx = winnerIndex - halfSize;
+  const startIdx = winnerIndex - halfSize;
 
   if (startIdx < 0) {
     // Winner is in the first half, need to wrap around
@@ -95,9 +119,11 @@ function createWinnerSubset(sortedParticipants, winnerIndex) {
   return subset;
 }
 
-// Run tests
-function runTests() {
-  console.log('🧪 Testing Subset Logic\n');
+/**
+ * Run all subset logic tests
+ */
+export function runTests(): void {
+  logger.info('Testing Subset Logic', { component: 'subset-logic-test' });
 
   // Test with different participant counts
   const testCases = [
@@ -111,55 +137,49 @@ function runTests() {
   ];
 
   testCases.forEach((test) => {
-    console.log(`\n📊 Test: ${test.description}`);
+    logger.debug(`Test: ${test.description}`, { component: 'subset-logic-test' });
     const participants = generateParticipants(test.count);
 
     // Test initial subset
     const initial = createInitialSubset(participants);
-    console.log(`Initial subset: ${initial.length} entries`);
-    console.log(
-      `  First 3: ${initial
-        .slice(0, 3)
-        .map((p) => p.ticketNumber)
-        .join(', ')}`
-    );
-    console.log(
-      `  Last 3: ${initial
-        .slice(-3)
-        .map((p) => p.ticketNumber)
-        .join(', ')}`
-    );
+    logger.debug(`Initial subset: ${initial.length} entries`, {
+      component: 'subset-logic-test',
+      metadata: {
+        first3: initial
+          .slice(0, 3)
+          .map((p) => p.ticketNumber)
+          .join(', '),
+        last3: initial
+          .slice(-3)
+          .map((p) => p.ticketNumber)
+          .join(', '),
+      },
+    });
 
     // Test winner subset
     const winner = createWinnerSubset(participants, test.winnerIndex);
     const winnerPos = winner.findIndex(
       (p) => p.ticketNumber === participants[test.winnerIndex].ticketNumber
     );
-    console.log(`Winner subset: ${winner.length} entries`);
-    console.log(
-      `  Winner ticket #${participants[test.winnerIndex].ticketNumber} at position ${winnerPos}`
-    );
-    console.log(
-      `  First 3: ${winner
-        .slice(0, 3)
-        .map((p) => p.ticketNumber)
-        .join(', ')}`
-    );
-    console.log(
-      `  Last 3: ${winner
-        .slice(-3)
-        .map((p) => p.ticketNumber)
-        .join(', ')}`
-    );
+    logger.debug(`Winner subset: ${winner.length} entries`, {
+      component: 'subset-logic-test',
+      metadata: {
+        winnerTicket: participants[test.winnerIndex].ticketNumber,
+        winnerPosition: winnerPos,
+        first3: winner
+          .slice(0, 3)
+          .map((p) => p.ticketNumber)
+          .join(', '),
+        last3: winner
+          .slice(-3)
+          .map((p) => p.ticketNumber)
+          .join(', '),
+      },
+    });
   });
 
-  console.log('\n✅ Tests complete!');
+  logger.info('Tests complete!', { component: 'subset-logic-test' });
 }
 
-// Export for testing
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { generateParticipants, createInitialSubset, createWinnerSubset, runTests };
-} else {
-  // Run tests if loaded in browser
-  runTests();
-}
+// Export functions for testing
+export { generateParticipants, createInitialSubset, createWinnerSubset };

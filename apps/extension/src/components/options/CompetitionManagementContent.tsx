@@ -5,6 +5,7 @@
  */
 
 import { Competition, ColumnMapping } from '@raffle-spinner/storage';
+import { logger } from '@raffle-spinner/utils';
 import { Button } from '@/components/ui/button';
 import { Upload, Settings, Play } from 'lucide-react';
 import { CompetitionList } from './CompetitionList';
@@ -52,11 +53,19 @@ export function CompetitionManagementContent({
             // Send message to background script to open side panel
             chrome.runtime.sendMessage({ action: 'openSidePanel' }, (response) => {
               if (chrome.runtime.lastError) {
-                console.error('Failed to open side panel:', chrome.runtime.lastError);
+                logger.error('Failed to open side panel', {
+                  component: 'CompetitionManagementContent',
+                  error: chrome.runtime.lastError,
+                });
               } else if (response && !response.success) {
-                console.error('Failed to open side panel:', response.error);
+                logger.error('Failed to open side panel', {
+                  component: 'CompetitionManagementContent',
+                  error: response.error,
+                });
               } else {
-                console.log('Side panel opened successfully');
+                logger.debug('Side panel opened successfully', {
+                  component: 'CompetitionManagementContent',
+                });
               }
             });
           }}

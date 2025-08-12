@@ -1,5 +1,5 @@
 {
-  "name": "@raffle-spinner/utils",
+  "name": "@raffle-spinner/types",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -16,10 +16,6 @@
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
     "@raffle-spinner/typescript-config": "workspace:*",

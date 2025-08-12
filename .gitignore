@@ -2,6 +2,8 @@
 node_modules/
 .pnp
 .pnp.js
+package-lock.json
+yarn.lock
 
 # Build outputs
 dist/
@@ -9,6 +11,7 @@ build/
 RaffleSpinner/
 DrawDaySpinner/
 *.local
+.next/
 
 # Debug
 npm-debug.log*
@@ -33,17 +36,25 @@ lerna-debug.log*
 .env.local
 .env.*.local
 
+# Local settings
+.claude/settings.local.json
+*.local.json
+
 # Logs
 logs
 *.log
 
 # OS files
 Thumbs.db
+*.Zone.Identifier
+desktop.ini
 
 # Chrome extension specific
 *.pem
 *.crx
 *.zip
+apps/extension/DrawDaySpinner/
+apps/extension/RaffleSpinner/
 
 # Wiki (separate repository)
 wiki/
