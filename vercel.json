@@ -1,7 +1,6 @@
 {
-  "installCommand": "npx pnpm@9.6.0 install --frozen-lockfile",
-  "buildCommand": "npx pnpm@9.6.0 --filter @raffle-spinner/website build",
+  "installCommand": "npx --yes pnpm@9.6.0 install --frozen-lockfile",
+  "buildCommand": "npx --yes pnpm@9.6.0 --filter @raffle-spinner/website build",
   "outputDirectory": "apps/website/.next",
-  "framework": "nextjs",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ."
+  "framework": "nextjs"
 }
