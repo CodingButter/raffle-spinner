@@ -20,13 +20,13 @@ function generateParticipants(count) {
 function createInitialSubset(sortedParticipants) {
   const SUBSET_SIZE = 100;
   const SUBSET_HALF = 50;
-  
+
   let initialSubset;
-  
+
   if (sortedParticipants.length <= SUBSET_SIZE) {
     // If we have 100 or fewer participants, use all of them
     initialSubset = [...sortedParticipants];
-    
+
     // If we have fewer than SUBSET_SIZE, repeat to fill the wheel
     if (initialSubset.length < SUBSET_SIZE) {
       const repeated = [...initialSubset];
@@ -46,7 +46,7 @@ function createInitialSubset(sortedParticipants) {
     const lastHalf = sortedParticipants.slice(-SUBSET_HALF);
     initialSubset = [...firstHalf, ...lastHalf];
   }
-  
+
   return initialSubset;
 }
 
@@ -54,7 +54,7 @@ function createInitialSubset(sortedParticipants) {
 function createWinnerSubset(sortedParticipants, winnerIndex) {
   const SUBSET_SIZE = 100;
   const SUBSET_HALF = 50;
-  
+
   if (winnerIndex === -1) {
     // Winner not found - fallback to initial subset pattern
     if (sortedParticipants.length <= SUBSET_SIZE) {
@@ -73,10 +73,10 @@ function createWinnerSubset(sortedParticipants, winnerIndex) {
   // Create subset with winner approximately in the middle
   const subset = [];
   const halfSize = Math.floor(SUBSET_SIZE / 2);
-  
+
   // Calculate start index to center the winner
   let startIdx = winnerIndex - halfSize;
-  
+
   if (startIdx < 0) {
     // Winner is in the first half, need to wrap around
     const fromEnd = sortedParticipants.slice(startIdx); // Get from end
@@ -98,7 +98,7 @@ function createWinnerSubset(sortedParticipants, winnerIndex) {
 // Run tests
 function runTests() {
   console.log('🧪 Testing Subset Logic\n');
-  
+
   // Test with different participant counts
   const testCases = [
     { count: 50, winnerIndex: 25, description: '50 participants (less than subset)' },
@@ -109,26 +109,50 @@ function runTests() {
     { count: 1000, winnerIndex: 10, description: '1000 participants, winner at start' },
     { count: 1000, winnerIndex: 990, description: '1000 participants, winner at end' },
   ];
-  
-  testCases.forEach(test => {
+
+  testCases.forEach((test) => {
     console.log(`\n📊 Test: ${test.description}`);
     const participants = generateParticipants(test.count);
-    
+
     // Test initial subset
     const initial = createInitialSubset(participants);
     console.log(`Initial subset: ${initial.length} entries`);
-    console.log(`  First 3: ${initial.slice(0, 3).map(p => p.ticketNumber).join(', ')}`);
-    console.log(`  Last 3: ${initial.slice(-3).map(p => p.ticketNumber).join(', ')}`);
-    
+    console.log(
+      `  First 3: ${initial
+        .slice(0, 3)
+        .map((p) => p.ticketNumber)
+        .join(', ')}`
+    );
+    console.log(
+      `  Last 3: ${initial
+        .slice(-3)
+        .map((p) => p.ticketNumber)
+        .join(', ')}`
+    );
+
     // Test winner subset
     const winner = createWinnerSubset(participants, test.winnerIndex);
-    const winnerPos = winner.findIndex(p => p.ticketNumber === participants[test.winnerIndex].ticketNumber);
+    const winnerPos = winner.findIndex(
+      (p) => p.ticketNumber === participants[test.winnerIndex].ticketNumber
+    );
     console.log(`Winner subset: ${winner.length} entries`);
-    console.log(`  Winner ticket #${participants[test.winnerIndex].ticketNumber} at position ${winnerPos}`);
-    console.log(`  First 3: ${winner.slice(0, 3).map(p => p.ticketNumber).join(', ')}`);
-    console.log(`  Last 3: ${winner.slice(-3).map(p => p.ticketNumber).join(', ')}`);
+    console.log(
+      `  Winner ticket #${participants[test.winnerIndex].ticketNumber} at position ${winnerPos}`
+    );
+    console.log(
+      `  First 3: ${winner
+        .slice(0, 3)
+        .map((p) => p.ticketNumber)
+        .join(', ')}`
+    );
+    console.log(
+      `  Last 3: ${winner
+        .slice(-3)
+        .map((p) => p.ticketNumber)
+        .join(', ')}`
+    );
   });
-  
+
   console.log('\n✅ Tests complete!');
 }
 

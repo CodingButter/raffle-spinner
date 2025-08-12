@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Raffle Winner Spinner",
+  "name": "DrawDay Spinner",
   "version": "1.0.0",
-  "description": "A Chrome extension for conducting live raffle draws with an animated spinner wheel",
+  "description": "Professional live draw spinner for competitions - conduct fair, transparent raffles with style",
   "permissions": ["storage", "sidePanel"],
   "background": {
     "service_worker": "background.js"
@@ -18,6 +18,6 @@
     "128": "icon-128.png"
   },
   "action": {
-    "default_title": "Open Raffle Spinner"
+    "default_title": "Open DrawDay Spinner"
   }
 }

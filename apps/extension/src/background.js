@@ -17,10 +17,20 @@ chrome.action.onClicked.addListener(() => {
 // Allow side panel to be opened programmatically
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'openSidePanel') {
-    chrome.sidePanel
-      .open({ windowId: sender.tab.windowId })
-      .then(() => sendResponse({ success: true }))
-      .catch((err) => sendResponse({ success: false, error: err.message }));
+    // Get the current window ID - works from both tabs and extension pages
+    chrome.windows.getCurrent((window) => {
+      chrome.sidePanel
+        .open({ windowId: window.id })
+        .then(() => sendResponse({ success: true }))
+        .catch((err) => {
+          console.error('Failed to open side panel:', err);
+          // Try without window ID as fallback
+          chrome.sidePanel
+            .open()
+            .then(() => sendResponse({ success: true }))
+            .catch((fallbackErr) => sendResponse({ success: false, error: fallbackErr.message }));
+        });
+    });
     return true; // Keep message channel open for async response
   }
 });

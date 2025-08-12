@@ -1,24 +1,17 @@
 /**
- * Home Page
- * 
- * The main landing page for the Raffle Winner Spinner website.
- * Composed of modular sections showcasing product features and benefits.
+ * Home Page - Server Component
+ *
+ * Fetches demo assets at build time and passes them to the client component
  */
 
-import { HeroSection } from '@/components/hero-section';
-import { FeaturesSection } from '@/components/features-section';
-import { CTASection } from '@/components/cta-section';
+import { getDemoAssets } from '@/lib/get-demo-assets';
+import HomePage from '@/components/HomePage';
 
-/**
- * Main Home Page Component
- * Combines all landing page sections with gradient background
- */
+// This is a Server Component that runs at build time
 export default function Home() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-blue/10 to-brand-pink/10">
-      <HeroSection />
-      <FeaturesSection />
-      <CTASection />
-    </div>
-  );
+  // Get demo assets at build time (this runs on the server)
+  const demoAssets = getDemoAssets();
+
+  // Pass the assets to the client component
+  return <HomePage demoAssets={demoAssets} />;
 }

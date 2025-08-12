@@ -3,9 +3,11 @@
 ## 1. Introduction
 
 ### Project Overview
+
 We are developing a marketing website for the Raffle Winner Spinner, a professional Chrome Extension designed for fair and transparent raffle winner selection. The extension uses CSV data to manage participant entries and features an interactive slot machine-style spinning wheel for selecting winners, making it ideal for live draws in competitions.
 
 The core utility of the Raffle Winner Spinner lies in its ability to handle large-scale raffles (up to 5,000+ participants) with high performance, realistic physics-based animations at 60fps, and complete privacy (all data stored locally in the browser with no external connections). Key features include:
+
 - **CSV Import and Smart Mapping**: Intelligent column detection for headers like names, ticket numbers, and emails, with saved mappings, automatic splitting of single "Name" columns, validation for duplicates/errors, and handling of various delimiters.
 - **Competition Management**: Create and manage multiple raffles with custom branding, track winners with session history, and export results.
 - **Interactive Slot Machine-Style Wheel**: A visually engaging vertical spinner with 3D perspective, gradient effects, smooth scrolling animations, subset swapping for performance, and customizable physics (e.g., spin duration, deceleration curves).
@@ -18,6 +20,7 @@ The extension targets organizers in the UK competition industry, where live draw
 This document outlines the requirements for a new marketing website to showcase the extension's utility, drive downloads/installations, and attract potential users (e.g., competition companies). The site should be visually compelling, user-friendly, and optimized for conversions (e.g., Chrome Web Store installs or sign-ups). The specification has been updated to reflect the production-ready features from the Software Requirements Specification (SRS) v4.0, including enhanced UI, performance optimizations, and additional capabilities.
 
 ### Target Audience
+
 - **Primary**: UK-based competition organizers, raffle companies, and event hosts who run live draws for prizes like luxury cars, performance bikes, trucks, vans, cash, tech, and holidays.
 - **Secondary**: Charities, event planners, or businesses running promotional raffles.
 - **User Journey**: Visitors should quickly understand the tool's value, see it in action via demos, and be guided to install it from the Chrome Web Store.
@@ -27,6 +30,7 @@ This document outlines the requirements for a new marketing website to showcase 
 The UK competition industry is a thriving sector focused on online raffles and prize draws, often featuring high-value items like luxury cars (e.g., supercars, classics), bikes, trucks, vans, and other vehicles. Popular platforms include Rev Comps, Dream Car Giveaways, BOTB, Elite Competitions, R Kings Competitions, Lucky Day Competitions, Prestige Prizes, LLF Games, Retroshite, Nitrous Competitions, and McKinney Competitions. These sites have given away over £75M in prizes, with tens of thousands of winners annually.
 
 ### Key Industry Characteristics
+
 - **Prizes and Scale**: Competitions raffle everything from performance cars (e.g., VW Golf R, Ford Ranger Raptor) and bikes to trucks (e.g., Dodge Ram TRX) and cash alternatives (e.g., £250,000). Tickets start as low as 50p–99p, with fixed odds and guaranteed draws.
 - **Business Model**: Revenue from ticket sales; if entries don't sell out, winners may receive 50–75% of sales or guaranteed prizes. Many are family-run or app-based, with over 3 million users across platforms.
 - **Live Draws**: A core feature for transparency. Draws are broadcast live on social media (e.g., Facebook, YouTube, TikTok) or websites, using random number generators. Winners are selected in real-time, called immediately, and prizes delivered (e.g., cars loaded and shipped). This builds trust, as audiences watch the process unfold.
@@ -49,6 +53,7 @@ The website must emphasize how the Raffle Winner Spinner addresses these needs: 
 The site should be a single-page application (SPA) or multi-page with smooth navigation, using a modern framework like React or Next.js for interactivity. Include high-quality visuals (e.g., animations mimicking the slot machine wheel).
 
 ### Key Sections
+
 1. **Hero Section (Home Page Top)**
    - Eye-catching headline: "Revolutionize Your Live Draws with the Ultimate Raffle Winner Spinner – Fair, Fun, and Transparent!"
    - Subheadline: "Perfect for UK competitions raffling cars, bikes, trucks, and more. Handle 5,000+ entries with realistic slot machine spins and custom branding."
@@ -103,6 +108,7 @@ The site should be a single-page application (SPA) or multi-page with smooth nav
    - Social Proof: Badges for Chrome Store ratings, industry mentions.
 
 ### Additional Features
+
 - **Interactive Elements**: Slot machine animations on hover/scroll for engagement.
 - **Forms**: Newsletter sign-up, demo request.
 - **Analytics**: Integrate Google Analytics for tracking.
@@ -129,7 +135,7 @@ The site should be a single-page application (SPA) or multi-page with smooth nav
 - **Security**: HTTPS, no user data collection beyond forms.
 - **Testing**: Cross-browser (focus on Chrome), device testing.
 - **Deployment**: CI/CD pipeline; domain: Suggest rafflespinner.com or similar.
-- **Timeline & Milestones**: 
+- **Timeline & Milestones**:
   - Week 1: Wireframes & Design Mockups.
   - Week 2-3: Development & Testing.
   - Week 4: Launch & Iterations.
@@ -144,5 +150,6 @@ The site should be a single-page application (SPA) or multi-page with smooth nav
 This website will position the Raffle Winner Spinner as the go-to tool for UK competition live draws, highlighting its utility in making raffles more transparent and exciting. Let's build something awesome!
 
 **Document History:**
+
 - Original: Based on initial pasted content.
-- Updated: August 11, 2025 – Integrated production features from SRS v4.0 (e.g., slot machine spinner, theming, performance enhancements). 
+- Updated: August 11, 2025 – Integrated production features from SRS v4.0 (e.g., slot machine spinner, theming, performance enhancements).

@@ -32,7 +32,12 @@ const DEFAULT_SPINNER_STYLE: SpinnerStyle = {
   ticketSize: 'extra-large',
   nameColor: '#fafafa',
   ticketColor: '#FFD700',
-  backgroundColor: '#1a1a1a',
+  backgroundColor: '#1a1a1a', // Panel background
+  canvasBackground: '#09090b', // Slot machine canvas background
+  topShadowOpacity: 0.3, // Top shadow opacity
+  bottomShadowOpacity: 0.3, // Bottom shadow opacity
+  shadowSize: 30, // Shadow size as percentage
+  shadowColor: undefined, // Use panel background by default
   borderColor: '#FFD700',
   highlightColor: '#FF1493',
   fontFamily: 'system-ui',
@@ -93,7 +98,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const result = await chrome.storage.local.get('data');
     const data = result.data || {};
     if (data.theme) {
-      setTheme(data.theme);
+      // Merge with defaults to ensure all properties exist
+      const loadedTheme = {
+        colors: { ...DEFAULT_COLORS, ...data.theme.colors },
+        spinnerStyle: { ...DEFAULT_SPINNER_STYLE, ...data.theme.spinnerStyle },
+        branding: { ...DEFAULT_BRANDING, ...data.theme.branding },
+        customCSS: data.theme.customCSS,
+      };
+      setTheme(loadedTheme);
     }
   };
 

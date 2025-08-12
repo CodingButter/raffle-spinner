@@ -12,8 +12,9 @@ import { useState } from 'react';
 import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { CollapsibleStateProvider, useCollapsibleState } from '@/contexts/CollapsibleStateContext';
 import { useCSVImport } from '@/hooks/useCSVImport';
-import { CompetitionManagement } from '@/components/options/CompetitionManagement';
+import { CompetitionManagementContent } from '@/components/options/CompetitionManagementContent';
 import { CSVUploadModal } from '@/components/options/CSVUploadModal';
 import { ColumnMapper } from '@/components/options/ColumnMapper';
 import { DuplicateHandler } from '@/components/options/DuplicateHandler';
@@ -25,13 +26,16 @@ import { ThemeColors } from '@/components/options/ThemeColors';
 import { BrandingSettings } from '@/components/options/BrandingSettings';
 import { SavedMappingsManager } from '@/components/options/SavedMappingsManager';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CheckCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import { Competition } from '@raffle-spinner/storage';
 
 function OptionsContent() {
   const { competitions, addCompetition, deleteCompetition, updateCompetitionBanner } =
     useCompetitions();
   const { settings, columnMapping, updateSettings, updateColumnMapping } = useSettings();
+  const { collapsedSections, toggleSection } = useCollapsibleState();
 
   const [competitionToDelete, setCompetitionToDelete] = useState<Competition | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -104,25 +108,140 @@ function OptionsContent() {
           </Alert>
         )}
 
-        <CompetitionManagement
-          competitions={competitions}
-          columnMapping={columnMapping}
-          fileInputRef={fileInputRef}
-          onFileSelect={handleFileSelect}
-          onDeleteCompetition={handleDeleteClick}
-          onOpenMapper={openMapperModal}
-          onUpdateBanner={updateCompetitionBanner}
-        />
+        <Card>
+          <CardHeader
+            className="cursor-pointer select-none"
+            onClick={() => toggleSection('competitions')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Competition Management</CardTitle>
+                <CardDescription>Import and manage raffle competitions</CardDescription>
+              </div>
+              <Button variant="ghost" size="icon">
+                {collapsedSections.competitions ? (
+                  <ChevronRight className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+          {!collapsedSections.competitions && (
+            <CardContent>
+              <CompetitionManagementContent
+                competitions={competitions}
+                columnMapping={columnMapping}
+                fileInputRef={fileInputRef}
+                onFileSelect={handleFileSelect}
+                onDeleteCompetition={handleDeleteClick}
+                onOpenMapper={openMapperModal}
+                onUpdateBanner={updateCompetitionBanner}
+              />
+            </CardContent>
+          )}
+        </Card>
 
-        <SpinnerSettings settings={settings} onUpdate={updateSettings} />
+        <Card>
+          <CardHeader
+            className="cursor-pointer select-none"
+            onClick={() => toggleSection('settings')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Spinner Settings</CardTitle>
+                <CardDescription>Configure spin duration and physics</CardDescription>
+              </div>
+              <Button variant="ghost" size="icon">
+                {collapsedSections.settings ? (
+                  <ChevronRight className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+          {!collapsedSections.settings && (
+            <CardContent>
+              <SpinnerSettings settings={settings} onUpdate={updateSettings} />
+            </CardContent>
+          )}
+        </Card>
 
-        <SpinnerCustomization />
+        <Card>
+          <CardHeader className="cursor-pointer select-none" onClick={() => toggleSection('theme')}>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Spinner Appearance</CardTitle>
+                <CardDescription>Customize the look of your spinner</CardDescription>
+              </div>
+              <Button variant="ghost" size="icon">
+                {collapsedSections.theme ? (
+                  <ChevronRight className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+          {!collapsedSections.theme && (
+            <CardContent>
+              <SpinnerCustomization />
+              <div className="mt-6">
+                <ThemeColors />
+              </div>
+            </CardContent>
+          )}
+        </Card>
 
-        <ThemeColors />
+        <Card>
+          <CardHeader
+            className="cursor-pointer select-none"
+            onClick={() => toggleSection('branding')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Branding</CardTitle>
+                <CardDescription>Add your logo and company information</CardDescription>
+              </div>
+              <Button variant="ghost" size="icon">
+                {collapsedSections.branding ? (
+                  <ChevronRight className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+          {!collapsedSections.branding && (
+            <CardContent>
+              <BrandingSettings />
+            </CardContent>
+          )}
+        </Card>
 
-        <BrandingSettings />
-
-        <SavedMappingsManager />
+        <Card>
+          <CardHeader className="cursor-pointer select-none" onClick={() => toggleSection('help')}>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>CSV Column Mappings</CardTitle>
+                <CardDescription>Manage saved column mapping templates</CardDescription>
+              </div>
+              <Button variant="ghost" size="icon">
+                {collapsedSections.help ? (
+                  <ChevronRight className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+          {!collapsedSections.help && (
+            <CardContent>
+              <SavedMappingsManager />
+            </CardContent>
+          )}
+        </Card>
 
         {/* Modals */}
         <CSVUploadModal
@@ -172,7 +291,9 @@ export function OptionsPage() {
     <ThemeProvider>
       <CompetitionProvider>
         <SettingsProvider>
-          <OptionsContent />
+          <CollapsibleStateProvider>
+            <OptionsContent />
+          </CollapsibleStateProvider>
         </SettingsProvider>
       </CompetitionProvider>
     </ThemeProvider>

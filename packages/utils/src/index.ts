@@ -1,5 +1,5 @@
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -21,7 +21,7 @@ export function cn(...inputs: ClassValue[]) {
 export function normalizeTicketNumber(ticket: string): string {
   const trimmed = ticket.trim();
   // Remove leading zeros but keep single '0'
-  return trimmed.replace(/^0+/, '') || '0';
+  return trimmed.replace(/^0+/, "") || "0";
 }
 
 /**
@@ -38,7 +38,7 @@ export function normalizeTicketNumber(ticket: string): string {
  * extractNumericTicket('ABC') // returns null
  */
 export function extractNumericTicket(ticket: string): string | null {
-  const digits = ticket.replace(/\D/g, '');
+  const digits = ticket.replace(/\D/g, "");
   return digits.length > 0 ? digits : null;
 }
 

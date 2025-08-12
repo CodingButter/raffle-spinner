@@ -1,8 +1,8 @@
 {
-  "name": "raffle-spinner",
+  "name": "drawday-spinner",
   "version": "1.0.0",
   "private": true,
-  "description": "Raffle Winner Spinner - Chrome Extension Monorepo",
+  "description": "DrawDay Spinner - Professional Live Draw Chrome Extension",
   "scripts": {
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r --filter='!@raffle-spinner/extension' build && pnpm --filter @raffle-spinner/extension build",

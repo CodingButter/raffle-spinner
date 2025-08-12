@@ -1,9 +1,9 @@
 /**
  * useMediaQuery Hook
- * 
+ *
  * A React hook for responsive design that tracks if a media query matches.
  * Useful for conditional rendering based on screen size.
- * 
+ *
  * @example
  * ```tsx
  * const isMobile = useMediaQuery('(max-width: 768px)');
@@ -11,11 +11,11 @@
  * ```
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
  * Custom hook to track media query matches
- * 
+ *
  * @param query - The media query string to match
  * @returns Boolean indicating if the media query matches
  */
@@ -25,7 +25,7 @@ export function useMediaQuery(query: string): boolean {
 
   useEffect(() => {
     // Check if window is defined (client-side)
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -42,15 +42,14 @@ export function useMediaQuery(query: string): boolean {
 
     // Modern browsers
     if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
     }
     // Legacy browsers
     else {
-      // @ts-expect-error - Legacy browser support
-      mediaQuery.addListener(handleChange);
-      // @ts-expect-error - Legacy browser support
-      return () => mediaQuery.removeListener(handleChange);
+      // Legacy browser support - addListener/removeListener are deprecated but still needed
+      (mediaQuery as any).addListener(handleChange);
+      return () => (mediaQuery as any).removeListener(handleChange);
     }
   }, [query]);
 
@@ -62,29 +61,29 @@ export function useMediaQuery(query: string): boolean {
  */
 export const mediaQueries = {
   /** Mobile devices (< 640px) */
-  mobile: '(max-width: 639px)',
+  mobile: "(max-width: 639px)",
   /** Small devices (>= 640px) */
-  sm: '(min-width: 640px)',
+  sm: "(min-width: 640px)",
   /** Medium devices (>= 768px) */
-  md: '(min-width: 768px)',
+  md: "(min-width: 768px)",
   /** Large devices (>= 1024px) */
-  lg: '(min-width: 1024px)',
+  lg: "(min-width: 1024px)",
   /** Extra large devices (>= 1280px) */
-  xl: '(min-width: 1280px)',
+  xl: "(min-width: 1280px)",
   /** 2XL devices (>= 1536px) */
-  '2xl': '(min-width: 1536px)',
+  "2xl": "(min-width: 1536px)",
   /** Portrait orientation */
-  portrait: '(orientation: portrait)',
+  portrait: "(orientation: portrait)",
   /** Landscape orientation */
-  landscape: '(orientation: landscape)',
+  landscape: "(orientation: landscape)",
   /** Dark mode preference */
-  darkMode: '(prefers-color-scheme: dark)',
+  darkMode: "(prefers-color-scheme: dark)",
   /** Light mode preference */
-  lightMode: '(prefers-color-scheme: light)',
+  lightMode: "(prefers-color-scheme: light)",
   /** Reduced motion preference */
-  reducedMotion: '(prefers-reduced-motion: reduce)',
+  reducedMotion: "(prefers-reduced-motion: reduce)",
   /** High contrast preference */
-  highContrast: '(prefers-contrast: high)',
+  highContrast: "(prefers-contrast: high)",
 } as const;
 
 /**

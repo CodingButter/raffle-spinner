@@ -7,157 +7,169 @@
   /* =========================
    * Brand Color Utilities
    * ========================= */
-  
+
   /* Text colors */
   .text-brand-blue {
     color: var(--color-brand-blue);
   }
-  
+
   .text-brand-pink {
     color: var(--color-brand-pink);
   }
-  
+
   .text-brand-gold {
     color: var(--color-brand-gold);
   }
-  
+
   .text-brand-green {
     color: var(--color-brand-green);
   }
-  
+
   .text-brand-red {
     color: var(--color-brand-red);
   }
-  
+
   /* Background colors */
   .bg-brand-blue {
     background-color: var(--color-brand-blue);
   }
-  
+
   .bg-brand-pink {
     background-color: var(--color-brand-pink);
   }
-  
+
   .bg-brand-gold {
     background-color: var(--color-brand-gold);
   }
-  
+
   .bg-brand-green {
     background-color: var(--color-brand-green);
   }
-  
+
   .bg-brand-red {
     background-color: var(--color-brand-red);
   }
-  
+
   /* Border colors */
   .border-brand-blue {
     border-color: var(--color-brand-blue);
   }
-  
+
   .border-brand-pink {
     border-color: var(--color-brand-pink);
   }
-  
+
   .border-brand-gold {
     border-color: var(--color-brand-gold);
   }
-  
+
   .border-brand-green {
     border-color: var(--color-brand-green);
   }
-  
+
   .border-brand-red {
     border-color: var(--color-brand-red);
   }
-  
+
   /* =========================
    * Gradient Utilities
    * ========================= */
-  
+
   .gradient-brand {
-    background: linear-gradient(135deg, var(--color-brand-blue), var(--color-brand-pink));
+    background: linear-gradient(
+      135deg,
+      var(--color-brand-blue),
+      var(--color-brand-pink)
+    );
   }
-  
+
   .gradient-winner {
-    background: linear-gradient(135deg, var(--color-brand-gold), var(--color-brand-pink));
+    background: linear-gradient(
+      135deg,
+      var(--color-brand-gold),
+      var(--color-brand-pink)
+    );
   }
-  
+
   .gradient-success {
-    background: linear-gradient(135deg, var(--color-brand-green), var(--color-brand-blue));
+    background: linear-gradient(
+      135deg,
+      var(--color-brand-green),
+      var(--color-brand-blue)
+    );
   }
-  
+
   /* =========================
    * Text Gradient Utilities
    * ========================= */
-  
+
   .text-gradient-brand {
     @apply bg-gradient-to-r from-brand-blue to-brand-pink bg-clip-text text-transparent;
   }
-  
+
   .text-gradient-winner {
     @apply bg-gradient-to-r from-brand-gold to-brand-pink bg-clip-text text-transparent;
   }
-  
+
   /* =========================
    * Animation State Utilities
    * ========================= */
-  
+
   .animate-paused {
     animation-play-state: paused;
   }
-  
+
   .animate-running {
     animation-play-state: running;
   }
-  
+
   /* =========================
    * Scrollbar Utilities
    * ========================= */
-  
+
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: var(--color-primary) var(--color-muted);
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-track {
     background: var(--color-muted);
     border-radius: 4px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background: var(--color-primary);
     border-radius: 4px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background: var(--color-secondary);
   }
-  
+
   /* =========================
    * Focus Utilities
    * ========================= */
-  
+
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background;
   }
-  
+
   /* =========================
    * Glass Morphism
    * ========================= */
-  
+
   .glass {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
-  
+
   .glass-dark {
     background: rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
