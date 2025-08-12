@@ -58,3 +58,4 @@ apps/extension/RaffleSpinner/
 
 # Wiki (separate repository)
 wiki/
+.vercel
