@@ -7,7 +7,6 @@
 
 module.exports = {
   extends: [
-    '@raffle-spinner/eslint-config',
     'next/core-web-vitals'
   ],
   parserOptions: {

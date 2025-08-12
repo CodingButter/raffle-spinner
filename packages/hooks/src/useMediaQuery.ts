@@ -47,9 +47,9 @@ export function useMediaQuery(query: string): boolean {
     }
     // Legacy browsers
     else {
-      // @ts-ignore - Legacy browser support
+      // @ts-expect-error - Legacy browser support
       mediaQuery.addListener(handleChange);
-      // @ts-ignore - Legacy browser support
+      // @ts-expect-error - Legacy browser support
       return () => mediaQuery.removeListener(handleChange);
     }
   }, [query]);

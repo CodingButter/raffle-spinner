@@ -13,6 +13,7 @@ module.exports = {
     "packages/eslint-config/",
     "packages/prettier-config/",
     "packages/typescript-config/",
+    "apps/website/",
   ],
   rules: {
     // Start with basic rules and gradually increase strictness

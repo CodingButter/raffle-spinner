@@ -31,8 +31,8 @@ const CANVAS_WIDTH = 400;
 const CANVAS_HEIGHT = 500;
 
 // Subset configuration
-const SUBSET_SIZE = 25; // Number of entries to show in the wheel
-const SUBSET_PADDING = Math.floor(SUBSET_SIZE / 2); // Entries before/after winner
+const SUBSET_SIZE = 100; // Total entries to show in the wheel (50 first + 50 last)
+const SUBSET_HALF = 50; // Half of the subset size
 
 export function SlotMachineWheel({
   participants,
@@ -58,32 +58,45 @@ export function SlotMachineWheel({
     });
   }, [participants]);
 
-  // Initialize with the first subset (lowest tickets) - only when participants change
+  /**
+   * Initialize with a subset containing first 50 and last 50 entries
+   * This creates the illusion of a complete wheel that wraps around
+   */
   useEffect(() => {
     if (sortedParticipants.length > 0) {
-      // Show initial subset starting from lowest ticket
-      const initialSubset = sortedParticipants.slice(
-        0,
-        Math.min(SUBSET_SIZE, sortedParticipants.length)
-      );
-
-      // If we have fewer participants than subset size, repeat them to fill the wheel
-      if (initialSubset.length < SUBSET_SIZE) {
-        const repeated = [...initialSubset];
-        while (repeated.length < SUBSET_SIZE) {
-          repeated.push(
-            ...sortedParticipants.slice(
-              0,
-              Math.min(sortedParticipants.length, SUBSET_SIZE - repeated.length)
-            )
-          );
+      let initialSubset: Participant[];
+      
+      if (sortedParticipants.length <= SUBSET_SIZE) {
+        // If we have 100 or fewer participants, use all of them
+        initialSubset = [...sortedParticipants];
+        
+        // If we have fewer than SUBSET_SIZE, repeat to fill the wheel
+        if (initialSubset.length < SUBSET_SIZE) {
+          const repeated = [...initialSubset];
+          while (repeated.length < SUBSET_SIZE) {
+            repeated.push(
+              ...sortedParticipants.slice(
+                0,
+                Math.min(sortedParticipants.length, SUBSET_SIZE - repeated.length)
+              )
+            );
+          }
+          initialSubset = repeated;
         }
-        setDisplaySubset(repeated);
       } else {
-        setDisplaySubset(initialSubset);
+        // Take first 50 and last 50 entries to create wrap-around effect
+        const firstHalf = sortedParticipants.slice(0, SUBSET_HALF);
+        const lastHalf = sortedParticipants.slice(-SUBSET_HALF);
+        initialSubset = [...firstHalf, ...lastHalf];
       }
-
-      setPosition(0); // Reset to start
+      
+      setDisplaySubset(initialSubset);
+      
+      // Start with the first ticket centered in view
+      // The center position is at index 2 (VISIBLE_ITEMS / 2, rounded down)
+      // To center the first ticket, we need to move up by 2 positions
+      const startPosition = -2 * ITEM_HEIGHT;
+      setPosition(startPosition);
     }
   }, [sortedParticipants]); // Depend on the actual sorted array
 
@@ -183,7 +196,10 @@ export function SlotMachineWheel({
     return participants.find((p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget);
   }, [participants, targetTicketNumber]);
 
-  // Create winner subset when spin starts
+  /**
+   * Create winner subset when spin starts
+   * Places the winner approximately in the middle of the subset
+   */
   const createWinnerSubset = useCallback(() => {
     // Find the winner in sorted participants
     const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
@@ -192,23 +208,41 @@ export function SlotMachineWheel({
     );
 
     if (winnerIndex === -1) {
-      // Winner not found in sorted list - shouldn't happen as validation is in SidePanel
-      return sortedParticipants.slice(0, SUBSET_SIZE); // Fallback to first subset
+      // Winner not found - shouldn't happen as validation is in SidePanel
+      // Fallback to initial subset pattern
+      if (sortedParticipants.length <= SUBSET_SIZE) {
+        return sortedParticipants;
+      }
+      const firstHalf = sortedParticipants.slice(0, SUBSET_HALF);
+      const lastHalf = sortedParticipants.slice(-SUBSET_HALF);
+      return [...firstHalf, ...lastHalf];
     }
 
-    // Create subset with winner in the middle
+    // If we have 100 or fewer participants, return all of them
+    if (sortedParticipants.length <= SUBSET_SIZE) {
+      return [...sortedParticipants];
+    }
+
+    // Create subset with winner approximately in the middle
     const subset: Participant[] = [];
-    const startIdx = Math.max(0, winnerIndex - SUBSET_PADDING);
-    const endIdx = Math.min(sortedParticipants.length, startIdx + SUBSET_SIZE);
-
-    // Add participants around the winner
-    for (let i = startIdx; i < endIdx; i++) {
-      subset.push(sortedParticipants[i]);
-    }
-
-    // If subset is too small, pad with repeated entries
-    while (subset.length < SUBSET_SIZE) {
-      subset.push(...subset.slice(0, Math.min(subset.length, SUBSET_SIZE - subset.length)));
+    const halfSize = Math.floor(SUBSET_SIZE / 2);
+    
+    // Calculate start index to center the winner
+    let startIdx = winnerIndex - halfSize;
+    
+    if (startIdx < 0) {
+      // Winner is in the first half, need to wrap around
+      const fromEnd = sortedParticipants.slice(startIdx); // Get from end
+      const fromStart = sortedParticipants.slice(0, winnerIndex + halfSize);
+      subset.push(...fromEnd, ...fromStart);
+    } else if (startIdx + SUBSET_SIZE > sortedParticipants.length) {
+      // Winner is in the last half, need to wrap around
+      const fromMiddle = sortedParticipants.slice(startIdx);
+      const fromBeginning = sortedParticipants.slice(0, SUBSET_SIZE - fromMiddle.length);
+      subset.push(...fromMiddle, ...fromBeginning);
+    } else {
+      // Winner is in the middle, can take a continuous slice
+      subset.push(...sortedParticipants.slice(startIdx, startIdx + SUBSET_SIZE));
     }
 
     return subset;
