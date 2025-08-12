@@ -1,0 +1,101 @@
+@import 'tailwindcss';
+
+/* Tailwind v4 Configuration via CSS */
+@theme {
+  /* Brand Colors - Raffle/Lottery Theme */
+  --color-brand-blue: #007bff;
+  --color-brand-pink: #ff1493;
+  --color-brand-gold: #ffd700;
+  --color-brand-green: #28a745;
+  --color-brand-red: #dc3545;
+
+  /* Semantic Color Mappings */
+  --color-primary: var(--color-brand-blue);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--color-brand-pink);
+  --color-secondary-foreground: #ffffff;
+  --color-success: var(--color-brand-green);
+  --color-success-foreground: #ffffff;
+  --color-destructive: var(--color-brand-red);
+  --color-destructive-foreground: #ffffff;
+  --color-warning: var(--color-brand-gold);
+  --color-warning-foreground: #343a40;
+
+  /* UI Colors */
+  --color-background: #ffffff;
+  --color-foreground: #343a40;
+  --color-card: #ffffff;
+  --color-card-foreground: #343a40;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #343a40;
+  --color-muted: #f8f9fa;
+  --color-muted-foreground: #6c757d;
+  --color-accent: var(--color-brand-gold);
+  --color-accent-foreground: #343a40;
+
+  /* Form & Interactive Elements */
+  --color-border: #dee2e6;
+  --color-input: #ffffff;
+  --color-ring: var(--color-brand-blue);
+
+  /* Border radius */
+  --radius-lg: 0.5rem;
+  --radius-md: calc(0.5rem - 2px);
+  --radius-sm: calc(0.5rem - 4px);
+
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background: #1a1a2e;
+    --color-foreground: #f8f9fa;
+    --color-card: #0f0f23;
+    --color-card-foreground: #f8f9fa;
+    --color-popover: #0f0f23;
+    --color-popover-foreground: #f8f9fa;
+    --color-primary: #0066dd;
+    --color-primary-foreground: #ffffff;
+    --color-secondary: #ff69b4;
+    --color-secondary-foreground: #ffffff;
+    --color-muted: #2a2a3e;
+    --color-muted-foreground: #adb5bd;
+    --color-accent: var(--color-brand-gold);
+    --color-accent-foreground: #1a1a2e;
+    --color-border: #495057;
+    --color-input: #2a2a3e;
+    --color-ring: var(--color-brand-blue);
+  }
+}
+
+/* Base styles */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Animations */
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
