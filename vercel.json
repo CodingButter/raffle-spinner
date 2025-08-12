@@ -1,9 +1,8 @@
 {
-  "installCommand": "corepack enable && corepack prepare pnpm@latest --activate && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --filter @raffle-spinner/website build",
   "outputDirectory": "apps/website/.next",
-  "framework": null,
   "env": {
-    "ENABLE_EXPERIMENTAL_COREPACK": "1"
+    "ENABLE_EXPERIMENTAL_COREPACK": "1",
+    "COREPACK_ENABLE_STRICT": "0"
   }
 }
