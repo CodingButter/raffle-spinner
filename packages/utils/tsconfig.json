@@ -5,7 +5,10 @@
     "rootDir": "src",
     "declaration": true,
     "lib": ["ES2015", "DOM"],
-    "target": "ES2015"
+    "target": "ES2015",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
