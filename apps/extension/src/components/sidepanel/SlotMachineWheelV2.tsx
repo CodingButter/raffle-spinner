@@ -46,7 +46,7 @@ export function SlotMachineWheelV2({
   const [position, setPosition] = useState(0);
   const [displaySubset, setDisplaySubset] = useState<Participant[]>([]);
   const isAnimatingRef = useRef(false);
-  const transitionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasSwappedRef = useRef(false);
   const { theme } = useTheme();
 
   // Sort participants by ticket number to get consistent ordering - MEMOIZED
@@ -215,6 +215,33 @@ export function SlotMachineWheelV2({
     return subset;
   }, [sortedParticipants, targetTicketNumber]);
 
+  // Callback to swap subset at max velocity and return new winner index
+  const handleMaxVelocity = useCallback(() => {
+    if (!hasSwappedRef.current) {
+      hasSwappedRef.current = true;
+      const winnerSubset = createWinnerSubset();
+      console.log('🔄 Swapping to winner subset at max velocity');
+
+      // Find winner's new index in the subset
+      const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
+      const newWinnerIndex = winnerSubset.findIndex(
+        (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
+      );
+
+      setDisplaySubset(winnerSubset);
+
+      // Return the new index so animation can adjust
+      return newWinnerIndex;
+    }
+    return -1;
+  }, [createWinnerSubset, targetTicketNumber]);
+
+  // Store current subset in a ref for animation to access
+  const currentSubsetRef = useRef(displaySubset);
+  useEffect(() => {
+    currentSubsetRef.current = displaySubset;
+  }, [displaySubset]);
+
   // Animation hook with subset
   const { spin, cancel } = useSlotMachineAnimation({
     participants: displaySubset,
@@ -225,44 +252,40 @@ export function SlotMachineWheelV2({
       const actualWinner = findWinnerInFullList();
       if (actualWinner) {
         isAnimatingRef.current = false;
+        hasSwappedRef.current = false; // Reset for next spin
         onSpinComplete(actualWinner);
       } else {
         isAnimatingRef.current = false;
+        hasSwappedRef.current = false;
         if (onError) onError(`Ticket ${targetTicketNumber} not found`);
       }
     },
     onError: (error) => {
       isAnimatingRef.current = false;
+      hasSwappedRef.current = false;
       if (onError) onError(error);
     },
+    onMaxVelocity: handleMaxVelocity,
     itemHeight: ITEM_HEIGHT,
     currentPosition: position,
     setCurrentPosition: setPosition,
-    drawWheel: (pos) => drawWheel(pos, displaySubset),
+    drawWheel: (pos) => drawWheel(pos, currentSubsetRef.current),
+    getParticipants: () => currentSubsetRef.current,
   });
 
-  // Handle spin start/stop with smooth subset transition
+  // Handle spin start/stop
   useEffect(() => {
     if (isSpinning && !isAnimatingRef.current) {
       isAnimatingRef.current = true;
-
-      // Start spinning with current subset
+      hasSwappedRef.current = false; // Reset swap flag
+      // Start spinning with current subset (will swap at max velocity)
       spin();
-
-      // Swap to winner subset during fast spin phase (less noticeable)
-      transitionTimeoutRef.current = setTimeout(() => {
-        const winnerSubset = createWinnerSubset();
-        setDisplaySubset(winnerSubset);
-      }, 500); // Swap after 500ms when wheel is spinning fast
     } else if (!isSpinning && isAnimatingRef.current) {
       isAnimatingRef.current = false;
-      if (transitionTimeoutRef.current) {
-        clearTimeout(transitionTimeoutRef.current);
-        transitionTimeoutRef.current = null;
-      }
+      hasSwappedRef.current = false;
       cancel();
     }
-  }, [isSpinning, spin, cancel, createWinnerSubset]);
+  }, [isSpinning, spin, cancel]);
 
   // Draw wheel when position or subset changes
   useEffect(() => {
@@ -270,15 +293,6 @@ export function SlotMachineWheelV2({
       drawWheel(position, displaySubset);
     }
   }, [position, displaySubset]); // Remove drawWheel from deps to prevent loops
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (transitionTimeoutRef.current) {
-        clearTimeout(transitionTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <div className="relative w-full flex items-center justify-center bg-gradient-to-br from-gray-900 to-black rounded-lg p-4">
