@@ -19,6 +19,8 @@ interface UseSlotMachineAnimationProps {
   currentPosition: number;
   setCurrentPosition: (position: number) => void;
   drawWheel: (position: number) => void;
+  onMaxVelocity?: () => number | void; // Callback when max velocity is reached, returns new winner index
+  getParticipants?: () => Participant[]; // Get current participants (may have changed)
 }
 
 export function useSlotMachineAnimation({
@@ -31,24 +33,25 @@ export function useSlotMachineAnimation({
   currentPosition,
   setCurrentPosition,
   drawWheel,
+  onMaxVelocity,
+  getParticipants,
 }: UseSlotMachineAnimationProps) {
   const animationRef = useRef<number>();
-  const wheelCircumference = participants.length * itemHeight;
 
   const spin = useCallback(() => {
-    // console.log('=== STARTING SLOT MACHINE SPIN ===');
+    // Get initial participants
+    let currentParticipants = getParticipants ? getParticipants() : participants;
+    let wheelCircumference = currentParticipants.length * itemHeight;
 
-    // Find the target participant in the subset
+    // Find the target participant in the initial subset
     const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
-    const winnerIndex = participants.findIndex(
+    const winnerIndex = currentParticipants.findIndex(
       (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
     );
 
-    // If winner not in subset, just spin to the middle position
-    // The actual winner will be determined by the parent component
-    const targetIndex = winnerIndex !== -1 ? winnerIndex : Math.floor(participants.length / 2);
-    const winner = participants[targetIndex];
-    // console.log(`Target: ${winner.ticketNumber} at index ${targetIndex}`);
+    // If winner not in initial subset, spin to middle (will be corrected after swap)
+    let targetIndex = winnerIndex !== -1 ? winnerIndex : Math.floor(currentParticipants.length / 2);
+    let winner = currentParticipants[targetIndex];
 
     // Animation setup
     const duration = settings.minSpinDuration * 1000;
@@ -105,14 +108,14 @@ export function useSlotMachineAnimation({
       forwardDistance += wheelCircumference;
     }
 
-    const totalDistance = extraDistance + forwardDistance;
-    const finalPosition = startPos + totalDistance;
+    let totalDistance = extraDistance + forwardDistance;
+    let finalPosition = startPos + totalDistance;
 
     // VERIFY CALCULATION - FIXED
     const testFinalNorm =
       ((finalPosition % wheelCircumference) + wheelCircumference) % wheelCircumference;
     const testTopIndex = Math.floor(testFinalNorm / itemHeight);
-    const testCenterIndex = (testTopIndex + 2) % participants.length;
+    const testCenterIndex = (testTopIndex + 2) % currentParticipants.length;
 
     // Debug: Animation target
     // console.log('🎯 Animation Target:', {
@@ -135,7 +138,7 @@ export function useSlotMachineAnimation({
     if (testCenterIndex !== targetIndex) {
       console.error('⚠️ PRE-FLIGHT CHECK FAILED - Calculation will be wrong!');
       console.error('Expected to show:', winner.ticketNumber);
-      console.error('Will actually show:', participants[testCenterIndex]?.ticketNumber);
+      console.error('Will actually show:', currentParticipants[testCenterIndex]?.ticketNumber);
     }
 
     // Easing functions
@@ -146,6 +149,11 @@ export function useSlotMachineAnimation({
     };
     const easing = easingFunctions[settings.decelerationRate];
 
+    // Track if we've triggered max velocity callback
+    let hasTriggeredMaxVelocity = false;
+    let recalculatedTarget = false;
+    const maxVelocityThreshold = 0.2; // Trigger at 20% progress when velocity is highest
+
     // Animation loop
     const animate = () => {
       const elapsed = Date.now() - startTime;
@@ -153,7 +161,60 @@ export function useSlotMachineAnimation({
       const easedProgress = easing(progress);
 
       // Calculate current position
-      const currentPos = startPos + totalDistance * easedProgress;
+      let currentPos = startPos + totalDistance * easedProgress;
+
+      // Trigger max velocity callback and recalculate if needed
+      if (
+        !hasTriggeredMaxVelocity &&
+        progress >= maxVelocityThreshold &&
+        progress < 0.4 &&
+        onMaxVelocity
+      ) {
+        hasTriggeredMaxVelocity = true;
+        const newWinnerIndex = onMaxVelocity();
+
+        if (typeof newWinnerIndex === 'number' && newWinnerIndex >= 0 && !recalculatedTarget) {
+          recalculatedTarget = true;
+
+          // Get updated participants after swap
+          currentParticipants = getParticipants ? getParticipants() : participants;
+          wheelCircumference = currentParticipants.length * itemHeight;
+
+          // Update target with new index
+          targetIndex = newWinnerIndex;
+          winner = currentParticipants[targetIndex];
+
+          // Recalculate target position for new subset
+          let requiredTopIndex = targetIndex - 2;
+          if (requiredTopIndex < 0) {
+            requiredTopIndex += currentParticipants.length;
+          }
+          const newTargetPosition = requiredTopIndex * itemHeight;
+
+          // Calculate how much distance we've already traveled
+          const distanceTraveled = currentPos - startPos;
+
+          // Calculate remaining distance to new target
+          const currentNormalized =
+            ((currentPos % wheelCircumference) + wheelCircumference) % wheelCircumference;
+          let newForwardDistance = newTargetPosition - currentNormalized;
+          if (newForwardDistance <= 0) {
+            newForwardDistance += wheelCircumference;
+          }
+
+          // Add some extra spins for effect
+          const remainingSpins = 2 + Math.random();
+          const newTotalDistance =
+            distanceTraveled + remainingSpins * wheelCircumference + newForwardDistance;
+
+          // Update animation parameters
+          totalDistance = newTotalDistance;
+          finalPosition = startPos + totalDistance;
+
+          // Recalculate current position with new total distance
+          currentPos = startPos + totalDistance * easedProgress;
+        }
+      }
 
       // Update position and redraw
       setCurrentPosition(currentPos);
@@ -218,12 +279,13 @@ export function useSlotMachineAnimation({
     targetTicketNumber,
     settings,
     currentPosition,
-    wheelCircumference,
     itemHeight,
     setCurrentPosition,
     drawWheel,
     onSpinComplete,
     onError,
+    onMaxVelocity,
+    getParticipants,
   ]);
 
   const cancel = useCallback(() => {
