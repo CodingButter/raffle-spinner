@@ -1,0 +1,7 @@
+{
+  "installCommand": "corepack enable && corepack prepare pnpm@9.6.0 --activate && pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @raffle-spinner/website build",
+  "outputDirectory": "apps/website/.next",
+  "framework": "nextjs",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ."
+}
