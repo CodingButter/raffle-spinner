@@ -1,161 +1,124 @@
 /**
  * Wheel Frame Component
  *
- * Renders the frame and selection indicators for the slot machine wheel.
- * This includes the center selection area and visual guides.
+ * Renders the decorative frame, selection indicators, and glass effects
+ * around the slot machine wheel viewport. Creates the distinctive slot machine
+ * appearance with metallic borders and winner selection arrows.
+ * 
+ * Features:
+ * - Metallic gradient frame with theme colors
+ * - Glass overlay effect for depth
+ * - Selection arrows pointing to winner position
+ * - Glowing winner highlight area
+ * 
+ * @module WheelFrame
+ * @category Components/SlotMachine
  */
+
+import type { ThemeSettings } from "@raffle-spinner/storage";
+
+/**
+ * Adjusts the brightness of a hex color for gradient effects
+ * @param color - Hex color string
+ * @param percent - Brightness adjustment (-255 to 255)
+ * @returns Adjusted hex color
+ * @internal
+ */
+function adjustBrightness(color: string, percent: number): string {
+  // Handle hex colors
+  if (color.startsWith("#")) {
+    const num = parseInt(color.replace("#", ""), 16);
+    const r = Math.max(0, Math.min(255, ((num >> 16) & 255) + percent));
+    const g = Math.max(0, Math.min(255, ((num >> 8) & 255) + percent));
+    const b = Math.max(0, Math.min(255, (num & 255) + percent));
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
+  }
+  return color;
+}
 
 interface WheelFrameProps {
   ctx: CanvasRenderingContext2D;
   canvasWidth: number;
-  canvasHeight: number;
   viewportHeight: number;
+  theme?: ThemeSettings;
 }
 
+/**
+ * Draws the decorative frame around the slot machine viewport
+ * 
+ * @param props - Frame rendering properties
+ * @param props.ctx - Canvas 2D rendering context
+ * @param props.canvasWidth - Total canvas width in pixels
+ * @param props.viewportHeight - Viewport height for the wheel
+ * @param props.theme - Theme settings for colors and styles
+ */
 export function drawWheelFrame({
   ctx,
   canvasWidth,
-  canvasHeight,
   viewportHeight,
-}: WheelFrameProps): void {
-  // Center the frame vertically in the viewport (which starts at y=40)
-  const wheelTop = 40;
-  const centerY = wheelTop + viewportHeight / 2;
-  const wheelLeft = (canvasWidth - 350) / 2 - 10;
-  const wheelWidth = 350 + 20;
-  const cornerRadius = 20;
-
-  // Draw selection indicator (the center line where winner is shown)
+  theme,
+}: WheelFrameProps) {
+  // Draw viewport frame with glass effect
   ctx.save();
 
-  // Draw subtle guide lines
+  // Draw outer frame using theme colors
+  const borderColor = theme?.spinnerStyle?.borderColor || "#FFD700";
+  const frameGradient = ctx.createLinearGradient(0, 40, 0, viewportHeight + 40);
+  frameGradient.addColorStop(0, adjustBrightness(borderColor, -40));
+  frameGradient.addColorStop(0.5, adjustBrightness(borderColor, -60));
+  frameGradient.addColorStop(1, adjustBrightness(borderColor, -40));
+
+  ctx.strokeStyle = frameGradient;
+  ctx.lineWidth = 8;
+  ctx.strokeRect(20, 40, canvasWidth - 40, viewportHeight);
+
+  // Draw inner frame highlight
   ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(24, 44, canvasWidth - 48, viewportHeight - 8);
+
+  // Draw center selection indicator using Hot Pink arrows
+  const centerLineY = viewportHeight / 2 + 40;
+
+  // Left arrow (pointing right/inward) - Theme highlight color
+  ctx.fillStyle = theme?.spinnerStyle?.highlightColor || "#FF1493";
+  ctx.beginPath();
+  ctx.moveTo(40, centerLineY); // Point at the right
+  ctx.lineTo(10, centerLineY - 20); // Top left corner
+  ctx.lineTo(10, centerLineY + 20); // Bottom left corner
+  ctx.closePath();
+  ctx.fill();
+
+  // Right arrow (pointing left/inward) - Hot Pink
+  ctx.beginPath();
+  ctx.moveTo(canvasWidth - 40, centerLineY); // Point at the left
+  ctx.lineTo(canvasWidth - 10, centerLineY - 20); // Top right corner
+  ctx.lineTo(canvasWidth - 10, centerLineY + 20); // Bottom right corner
+  ctx.closePath();
+  ctx.fill();
+
+  // Draw selection line - Theme border/winner color
+  ctx.strokeStyle =
+    theme?.colors?.winner || theme?.spinnerStyle?.borderColor || "#FFD700";
+  ctx.lineWidth = 3;
   ctx.setLineDash([5, 5]);
-
-  // Top guide line
   ctx.beginPath();
-  ctx.moveTo(20, centerY - 40);
-  ctx.lineTo(canvasWidth - 20, centerY - 40);
+  ctx.moveTo(40, centerLineY);
+  ctx.lineTo(canvasWidth - 40, centerLineY);
   ctx.stroke();
-
-  // Bottom guide line
-  ctx.beginPath();
-  ctx.moveTo(20, centerY + 40);
-  ctx.lineTo(canvasWidth - 20, centerY + 40);
-  ctx.stroke();
-
   ctx.setLineDash([]);
 
-  // Draw selection arrows pointing inward to center
-  const arrowSize = 15;
-  const arrowX = 15;
-
-  // Left arrow (pointing right toward center)
-  ctx.fillStyle = "#ff1493"; // Hot pink
-  ctx.beginPath();
-  ctx.moveTo(arrowX + arrowSize, centerY); // Point of arrow
-  ctx.lineTo(arrowX, centerY - arrowSize / 2); // Top of base
-  ctx.lineTo(arrowX, centerY + arrowSize / 2); // Bottom of base
-  ctx.closePath();
-  ctx.fill();
-
-  // Right arrow (pointing left toward center)
-  ctx.beginPath();
-  ctx.moveTo(canvasWidth - arrowX - arrowSize, centerY); // Point of arrow
-  ctx.lineTo(canvasWidth - arrowX, centerY - arrowSize / 2); // Top of base
-  ctx.lineTo(canvasWidth - arrowX, centerY + arrowSize / 2); // Bottom of base
-  ctx.closePath();
-  ctx.fill();
-
-  // Draw glow effect around center area
-  const glowGradient = ctx.createLinearGradient(
+  // Add glass reflection effect
+  const glassGradient = ctx.createLinearGradient(
     0,
-    centerY - 40,
+    40,
     0,
-    centerY + 40,
+    viewportHeight / 3 + 40,
   );
-  glowGradient.addColorStop(0, "rgba(255, 215, 0, 0)");
-  glowGradient.addColorStop(0.5, "rgba(255, 215, 0, 0.1)");
-  glowGradient.addColorStop(1, "rgba(255, 215, 0, 0)");
-
-  ctx.fillStyle = glowGradient;
-  ctx.fillRect(0, centerY - 40, canvasWidth, 80);
-
-  // Draw top and bottom shadows for depth - covering full canvas
-  // Top shadow from canvas top to wheel top area
-  const topShadow = ctx.createLinearGradient(0, 0, 0, wheelTop + 80);
-  topShadow.addColorStop(0, "rgba(0, 0, 0, 0.9)");
-  topShadow.addColorStop(0.5, "rgba(0, 0, 0, 0.7)");
-  topShadow.addColorStop(1, "rgba(0, 0, 0, 0)");
-  ctx.fillStyle = topShadow;
-  ctx.fillRect(0, 0, canvasWidth, wheelTop + 80);
-
-  // Bottom shadow from wheel bottom to canvas bottom
-  const bottomShadow = ctx.createLinearGradient(
-    0,
-    wheelTop + viewportHeight - 80,
-    0,
-    canvasHeight,
-  );
-  bottomShadow.addColorStop(0, "rgba(0, 0, 0, 0)");
-  bottomShadow.addColorStop(0.5, "rgba(0, 0, 0, 0.7)");
-  bottomShadow.addColorStop(1, "rgba(0, 0, 0, 0.9)");
-  ctx.fillStyle = bottomShadow;
-  ctx.fillRect(
-    0,
-    wheelTop + viewportHeight - 80,
-    canvasWidth,
-    canvasHeight - (wheelTop + viewportHeight - 80),
-  );
-
-  // Draw rounded border frame
-  ctx.strokeStyle = "rgba(255, 215, 0, 0.3)"; // Golden border
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(wheelLeft + cornerRadius, wheelTop);
-  ctx.lineTo(wheelLeft + wheelWidth - cornerRadius, wheelTop);
-  ctx.quadraticCurveTo(
-    wheelLeft + wheelWidth,
-    wheelTop,
-    wheelLeft + wheelWidth,
-    wheelTop + cornerRadius,
-  );
-  ctx.lineTo(wheelLeft + wheelWidth, wheelTop + viewportHeight - cornerRadius);
-  ctx.quadraticCurveTo(
-    wheelLeft + wheelWidth,
-    wheelTop + viewportHeight,
-    wheelLeft + wheelWidth - cornerRadius,
-    wheelTop + viewportHeight,
-  );
-  ctx.lineTo(wheelLeft + cornerRadius, wheelTop + viewportHeight);
-  ctx.quadraticCurveTo(
-    wheelLeft,
-    wheelTop + viewportHeight,
-    wheelLeft,
-    wheelTop + viewportHeight - cornerRadius,
-  );
-  ctx.lineTo(wheelLeft, wheelTop + cornerRadius);
-  ctx.quadraticCurveTo(wheelLeft, wheelTop, wheelLeft + cornerRadius, wheelTop);
-  ctx.closePath();
-  ctx.stroke();
-
-  // Add inner glow
-  const innerGlow = ctx.createRadialGradient(
-    canvasWidth / 2,
-    centerY,
-    0,
-    canvasWidth / 2,
-    centerY,
-    wheelWidth / 2,
-  );
-  innerGlow.addColorStop(0, "rgba(255, 215, 0, 0)");
-  innerGlow.addColorStop(0.8, "rgba(255, 215, 0, 0)");
-  innerGlow.addColorStop(1, "rgba(255, 215, 0, 0.15)");
-
-  ctx.strokeStyle = innerGlow;
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  glassGradient.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+  glassGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+  ctx.fillStyle = glassGradient;
+  ctx.fillRect(24, 44, canvasWidth - 48, viewportHeight / 3);
 
   ctx.restore();
 }

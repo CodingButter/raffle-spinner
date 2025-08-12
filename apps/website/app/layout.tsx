@@ -14,7 +14,8 @@ export const metadata: Metadata = {
   title: 'DrawDay Spinner - Professional Live Draw Management',
   description:
     'Turn your live draws into unforgettable experiences with DrawDay Spinner. The professional Chrome extension for fair, transparent, and exciting competition draws.',
-  keywords: 'drawday, raffle, lottery, spinner, chrome extension, live draw, competition, giveaway, UK competitions',
+  keywords:
+    'drawday, raffle, lottery, spinner, chrome extension, live draw, competition, giveaway, UK competitions',
   authors: [{ name: 'DrawDay Team' }],
   icons: {
     icon: '/favicon.png',
@@ -42,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
+    <html lang="en" className="dark">
+      <body className={`${inter.variable} font-sans antialiased bg-night text-white`}>
         <div className="min-h-screen flex flex-col">
           <Navigation />
           <main className="flex-1">{children}</main>

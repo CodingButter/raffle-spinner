@@ -55,7 +55,7 @@ export function HeroSection() {
         <div className="text-center mb-12">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
             Run{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-pink">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-drawday-gold to-amber">
               Fair & Exciting
             </span>{' '}
             Raffles

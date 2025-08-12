@@ -1,6 +1,7 @@
 # Video Optimization Instructions
 
 ## Current Status
+
 - **File**: `Spinner-Demo-Video.mp4`
 - **Size**: 37 MB (too large for optimal web performance)
 - **Location**: `/apps/website/public/assets/see-it-in-action/`
@@ -8,6 +9,7 @@
 ## Recommended Compression Settings
 
 ### Option 1: Use FFmpeg (Recommended)
+
 ```bash
 # Install ffmpeg first
 # macOS: brew install ffmpeg
@@ -20,6 +22,7 @@ cd apps/website
 ```
 
 ### Option 2: Use Node.js Script
+
 ```bash
 # This will auto-install dependencies
 cd apps/website
@@ -27,6 +30,7 @@ node scripts/compress-video.js
 ```
 
 ### Option 3: Online Compression Tools (Quick & Easy)
+
 Use one of these free online video compressors:
 
 1. **HandBrake (Desktop App)** - https://handbrake.fr/
@@ -59,6 +63,7 @@ Use one of these free online video compressors:
 ## Optimal Settings for Web
 
 ### Video Settings:
+
 - **Codec**: H.264 (best compatibility)
 - **Resolution**: 1280x720 (720p) or 1920x1080 (1080p)
 - **Bitrate**: 1000-2000 kbps
@@ -67,15 +72,18 @@ Use one of these free online video compressors:
 - **Level**: 3.1 or 4.0
 
 ### Audio Settings:
+
 - **Codec**: AAC
 - **Bitrate**: 96-128 kbps
 - **Sample Rate**: 44100 Hz
 
 ### Container:
+
 - **Format**: MP4
 - **Fast Start**: Enabled (for web streaming)
 
 ## Target File Size
+
 - **Current**: 37 MB
 - **Target**: 5-10 MB (75-85% reduction)
 - **Acceptable Quality Loss**: Minimal at these settings
@@ -83,6 +91,7 @@ Use one of these free online video compressors:
 ## Manual FFmpeg Commands
 
 ### High Quality (10-15 MB):
+
 ```bash
 ffmpeg -i Spinner-Demo-Video.mp4 \
   -c:v libx264 -preset slow -crf 23 \
@@ -93,6 +102,7 @@ ffmpeg -i Spinner-Demo-Video.mp4 \
 ```
 
 ### Medium Quality (5-10 MB):
+
 ```bash
 ffmpeg -i Spinner-Demo-Video.mp4 \
   -c:v libx264 -preset medium -crf 28 \
@@ -103,6 +113,7 @@ ffmpeg -i Spinner-Demo-Video.mp4 \
 ```
 
 ### Low Quality (3-5 MB):
+
 ```bash
 ffmpeg -i Spinner-Demo-Video.mp4 \
   -c:v libx264 -preset fast -crf 32 \
@@ -113,6 +124,7 @@ ffmpeg -i Spinner-Demo-Video.mp4 \
 ```
 
 ## Alternative: Convert to WebM
+
 WebM provides better compression but less compatibility:
 
 ```bash
@@ -129,6 +141,7 @@ ffmpeg -i Spinner-Demo-Video.mp4 \
 3. Keep a backup of the original if needed
 
 ## Benefits of Compression
+
 - ✅ Faster page load times
 - ✅ Better user experience
 - ✅ Reduced bandwidth costs

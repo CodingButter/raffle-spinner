@@ -4,10 +4,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@raffle-spinner/ui';
 import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b">
@@ -15,10 +20,10 @@ export function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
-            <Image 
-              src="/logo.svg" 
-              alt="DrawDay Logo" 
-              width={40} 
+            <Image
+              src="/logo.svg"
+              alt="DrawDay Logo"
+              width={40}
               height={40}
               className="w-10 h-10"
             />
@@ -68,7 +73,7 @@ export function Navigation() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mounted && (mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />)}
           </button>
         </div>
 

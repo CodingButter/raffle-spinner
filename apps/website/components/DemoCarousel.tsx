@@ -69,7 +69,9 @@ export function DemoCarousel({ assets, className }: DemoCarouselProps) {
     if (video && isVideo) {
       video.muted = isMuted;
       if (isPlaying) {
-        video.play().catch(console.error);
+        video.play().catch(() => {
+          // Silently handle autoplay errors
+        });
       } else {
         video.pause();
       }
