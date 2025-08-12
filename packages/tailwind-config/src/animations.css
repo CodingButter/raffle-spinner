@@ -1,0 +1,252 @@
+/**
+ * Animation Definitions
+ * Shared animations for Raffle Spinner applications
+ */
+
+/* =========================
+ * Keyframe Definitions
+ * ========================= */
+
+/* Accordion animations for Radix UI */
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+/* Winner celebration animation */
+@keyframes winner-glow {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px var(--color-brand-gold),
+      0 0 40px var(--color-brand-gold);
+  }
+  50% {
+    box-shadow: 
+      0 0 40px var(--color-brand-gold),
+      0 0 60px var(--color-brand-gold),
+      0 0 80px var(--color-brand-gold);
+  }
+}
+
+/* Pulse animation for attention */
+@keyframes pulse-brand {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Bounce animation for icons */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Fade in animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fade up animation */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale in animation */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Spin animation override for smoother rotation */
+@keyframes spin-smooth {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Shimmer effect for loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Float animation for decorative elements */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* =========================
+ * Animation Utilities
+ * ========================= */
+
+@layer utilities {
+  /* Winner glow effect */
+  .animate-winner-glow {
+    animation: winner-glow 2s ease-in-out infinite;
+  }
+  
+  /* Pulse brand color */
+  .animate-pulse-brand {
+    animation: pulse-brand 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Bounce effect */
+  .animate-bounce-slow {
+    animation: bounce 2s infinite;
+  }
+  
+  /* Fade animations */
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+  
+  .animate-fade-up {
+    animation: fade-up 0.5s ease-out;
+  }
+  
+  /* Scale animation */
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+  }
+  
+  /* Smooth spin */
+  .animate-spin-smooth {
+    animation: spin-smooth 1s linear infinite;
+  }
+  
+  /* Shimmer loading effect */
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--color-muted) 0%,
+      var(--color-muted-foreground) 50%,
+      var(--color-muted) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+  }
+  
+  /* Float effect */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Accordion animations */
+  .animate-accordion-down {
+    animation: accordion-down 0.2s ease-out;
+  }
+  
+  .animate-accordion-up {
+    animation: accordion-up 0.2s ease-out;
+  }
+  
+  /* Animation duration utilities */
+  .animation-duration-75 {
+    animation-duration: 75ms;
+  }
+  
+  .animation-duration-100 {
+    animation-duration: 100ms;
+  }
+  
+  .animation-duration-150 {
+    animation-duration: 150ms;
+  }
+  
+  .animation-duration-200 {
+    animation-duration: 200ms;
+  }
+  
+  .animation-duration-300 {
+    animation-duration: 300ms;
+  }
+  
+  .animation-duration-500 {
+    animation-duration: 500ms;
+  }
+  
+  .animation-duration-700 {
+    animation-duration: 700ms;
+  }
+  
+  .animation-duration-1000 {
+    animation-duration: 1000ms;
+  }
+  
+  /* Animation delay utilities */
+  .animation-delay-75 {
+    animation-delay: 75ms;
+  }
+  
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+  
+  .animation-delay-150 {
+    animation-delay: 150ms;
+  }
+  
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+}

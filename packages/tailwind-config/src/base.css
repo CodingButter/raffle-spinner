@@ -1,0 +1,178 @@
+/**
+ * Base Tailwind CSS v4 Configuration
+ * Shared across all Raffle Spinner applications
+ * 
+ * Note: The actual @import 'tailwindcss' should be done
+ * in the consuming application's CSS file
+ */
+
+/* 
+ * Theme Configuration
+ * Using CSS variables for dynamic theming support
+ */
+@theme {
+  /* =========================
+   * Brand Colors
+   * ========================= */
+  
+  /* Primary brand colors */
+  --color-brand-blue: #007bff;     /* Trust Blue - Primary brand color */
+  --color-brand-pink: #ff1493;     /* Hot Pink - Secondary brand color */
+  --color-brand-gold: #ffd700;     /* Winner Gold - Accent for winners */
+  --color-brand-green: #28a745;    /* Success Green - Positive actions */
+  --color-brand-red: #dc3545;      /* Alert Red - Errors and warnings */
+
+  /* =========================
+   * Semantic Color Mappings
+   * ========================= */
+  
+  /* Primary colors */
+  --color-primary: var(--color-brand-blue);
+  --color-primary-foreground: #ffffff;
+  
+  /* Secondary colors */
+  --color-secondary: var(--color-brand-pink);
+  --color-secondary-foreground: #ffffff;
+  
+  /* State colors */
+  --color-success: var(--color-brand-green);
+  --color-success-foreground: #ffffff;
+  --color-destructive: var(--color-brand-red);
+  --color-destructive-foreground: #ffffff;
+  --color-warning: var(--color-brand-gold);
+  --color-warning-foreground: #343a40;
+
+  /* =========================
+   * UI Colors
+   * ========================= */
+  
+  /* Background and foreground */
+  --color-background: #ffffff;
+  --color-foreground: #343a40;
+  
+  /* Card components */
+  --color-card: #ffffff;
+  --color-card-foreground: #343a40;
+  
+  /* Popover components */
+  --color-popover: #ffffff;
+  --color-popover-foreground: #343a40;
+  
+  /* Muted elements */
+  --color-muted: #f8f9fa;
+  --color-muted-foreground: #6c757d;
+  
+  /* Accent elements */
+  --color-accent: var(--color-brand-gold);
+  --color-accent-foreground: #343a40;
+
+  /* =========================
+   * Form & Interactive Elements
+   * ========================= */
+  
+  --color-border: #dee2e6;
+  --color-input: #ffffff;
+  --color-ring: var(--color-brand-blue);
+
+  /* =========================
+   * Border Radius
+   * ========================= */
+  
+  --radius-lg: 0.5rem;
+  --radius-md: calc(0.5rem - 2px);
+  --radius-sm: calc(0.5rem - 4px);
+
+  /* =========================
+   * Typography Scale
+   * ========================= */
+  
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+  --font-size-5xl: 3rem;       /* 48px */
+}
+
+/* =========================
+ * Dark Mode Overrides
+ * ========================= */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    /* Background colors */
+    --color-background: #1a1a2e;
+    --color-foreground: #f8f9fa;
+    
+    /* Card colors */
+    --color-card: #0f0f23;
+    --color-card-foreground: #f8f9fa;
+    
+    /* Popover colors */
+    --color-popover: #0f0f23;
+    --color-popover-foreground: #f8f9fa;
+    
+    /* Adjusted brand colors for dark mode */
+    --color-primary: #0066dd;
+    --color-primary-foreground: #ffffff;
+    --color-secondary: #ff69b4;
+    --color-secondary-foreground: #ffffff;
+    
+    /* Muted colors */
+    --color-muted: #2a2a3e;
+    --color-muted-foreground: #adb5bd;
+    
+    /* Accent colors */
+    --color-accent: var(--color-brand-gold);
+    --color-accent-foreground: #1a1a2e;
+    
+    /* Form elements */
+    --color-border: #495057;
+    --color-input: #2a2a3e;
+    --color-ring: var(--color-brand-blue);
+  }
+}
+
+/* =========================
+ * Base Layer Styles
+ * ========================= */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Typography defaults */
+  h1 {
+    @apply text-4xl font-bold tracking-tight;
+  }
+  
+  h2 {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+  
+  h3 {
+    @apply text-2xl font-semibold;
+  }
+  
+  h4 {
+    @apply text-xl font-semibold;
+  }
+  
+  h5 {
+    @apply text-lg font-semibold;
+  }
+  
+  h6 {
+    @apply text-base font-semibold;
+  }
+  
+  p {
+    @apply leading-7;
+  }
+}
