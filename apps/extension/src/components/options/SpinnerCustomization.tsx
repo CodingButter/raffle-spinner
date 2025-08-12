@@ -239,9 +239,13 @@ export function SpinnerCustomization() {
                       <Button variant="outline" className="w-full justify-start gap-2">
                         <div
                           className="h-4 w-4 rounded border border-border"
-                          style={{ backgroundColor: theme.spinnerStyle.canvasBackground || '#09090b' }}
+                          style={{
+                            backgroundColor: theme.spinnerStyle.canvasBackground || '#09090b',
+                          }}
                         />
-                        <span className="font-mono text-xs">{theme.spinnerStyle.canvasBackground || '#09090b'}</span>
+                        <span className="font-mono text-xs">
+                          {theme.spinnerStyle.canvasBackground || '#09090b'}
+                        </span>
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-3">
@@ -266,7 +270,7 @@ export function SpinnerCustomization() {
               {/* Shadow Controls */}
               <div className="pb-3 border-b space-y-4">
                 <Label className="text-sm font-medium">Shadow Effects</Label>
-                
+
                 {/* Top Shadow Opacity */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -277,14 +281,16 @@ export function SpinnerCustomization() {
                   </div>
                   <Slider
                     value={[(theme.spinnerStyle.topShadowOpacity || 0.3) * 100]}
-                    onValueChange={([value]) => updateSpinnerStyle({ topShadowOpacity: value / 100 })}
+                    onValueChange={([value]) =>
+                      updateSpinnerStyle({ topShadowOpacity: value / 100 })
+                    }
                     min={0}
                     max={100}
                     step={5}
                     className="w-full"
                   />
                 </div>
-                
+
                 {/* Bottom Shadow Opacity */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -295,14 +301,16 @@ export function SpinnerCustomization() {
                   </div>
                   <Slider
                     value={[(theme.spinnerStyle.bottomShadowOpacity || 0.3) * 100]}
-                    onValueChange={([value]) => updateSpinnerStyle({ bottomShadowOpacity: value / 100 })}
+                    onValueChange={([value]) =>
+                      updateSpinnerStyle({ bottomShadowOpacity: value / 100 })
+                    }
                     min={0}
                     max={100}
                     step={5}
                     className="w-full"
                   />
                 </div>
-                
+
                 {/* Shadow Size */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -320,7 +328,7 @@ export function SpinnerCustomization() {
                     className="w-full"
                   />
                 </div>
-                
+
                 {/* Shadow Color */}
                 <div className="flex items-center gap-2">
                   <Label className="text-xs min-w-[80px]">Shadow Color</Label>
@@ -332,7 +340,12 @@ export function SpinnerCustomization() {
                       <Button variant="outline" size="sm" className="flex-1 justify-start gap-2">
                         <div
                           className="h-3 w-3 rounded border border-border"
-                          style={{ backgroundColor: theme.spinnerStyle.shadowColor || theme.spinnerStyle.backgroundColor || '#1a1a1a' }}
+                          style={{
+                            backgroundColor:
+                              theme.spinnerStyle.shadowColor ||
+                              theme.spinnerStyle.backgroundColor ||
+                              '#1a1a1a',
+                          }}
                         />
                         <span className="font-mono text-xs">
                           {theme.spinnerStyle.shadowColor || 'Auto'}
@@ -341,12 +354,18 @@ export function SpinnerCustomization() {
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-3">
                       <HexColorPicker
-                        color={theme.spinnerStyle.shadowColor || theme.spinnerStyle.backgroundColor || '#1a1a1a'}
+                        color={
+                          theme.spinnerStyle.shadowColor ||
+                          theme.spinnerStyle.backgroundColor ||
+                          '#1a1a1a'
+                        }
                         onChange={(newColor) => updateSpinnerStyle({ shadowColor: newColor })}
                       />
                       <Input
                         value={theme.spinnerStyle.shadowColor || ''}
-                        onChange={(e) => updateSpinnerStyle({ shadowColor: e.target.value || undefined })}
+                        onChange={(e) =>
+                          updateSpinnerStyle({ shadowColor: e.target.value || undefined })
+                        }
                         className="mt-2"
                         placeholder="Auto (uses panel color)"
                       />
@@ -361,7 +380,7 @@ export function SpinnerCustomization() {
                     </PopoverContent>
                   </Popover>
                 </div>
-                
+
                 <p className="text-xs text-muted-foreground">
                   Creates a fade effect at the top and bottom of the slot machine
                 </p>

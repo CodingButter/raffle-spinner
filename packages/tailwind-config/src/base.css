@@ -12,67 +12,87 @@
  */
 @theme {
   /* =========================
-   * Brand Colors
+   * Brand Colors - Complete DrawDay Palette
    * ========================= */
 
-  /* Primary brand colors */
-  --color-brand-blue: #007bff; /* Trust Blue - Primary brand color */
-  --color-brand-pink: #ff1493; /* Hot Pink - Secondary brand color */
-  --color-brand-gold: #ffd700; /* Winner Gold - Accent for winners */
-  --color-brand-green: #28a745; /* Success Green - Positive actions */
-  --color-brand-red: #dc3545; /* Alert Red - Errors and warnings */
+  /* Core brand colors */
+  --color-drawday-navy: #0b1e3a; /* DrawDay Navy - Brand primary */
+  --color-drawday-gold: #e6b540; /* DrawDay Gold - Brand accent/highlight */
+  
+  /* Dark backgrounds */
+  --color-night: #0c0e11; /* Night - Deep dark background */
+  --color-rich-black: #161b21; /* Rich Black - Surface level 1 */
+  --color-raisin-black: #1e1f23; /* Raisin Black - Surface level 2 */
+  
+  /* Neutral colors */
+  --color-silver: #b4b3b5; /* Silver - Borders and muted elements */
+  --color-white: #fdfeff; /* White - Text on dark, light surfaces */
+  
+  /* Accent colors */
+  --color-vermilion: #e24536; /* Vermilion - Warm accent, errors */
+  --color-fire-brick: #af3729; /* Fire Brick - Deep warm accent */
+  --color-emerald: #22c55e; /* Emerald - Success states */
+  --color-amber: #f59e0b; /* Amber - Warning states */
+  --color-azure: #0ea5e9; /* Azure - Info, links */
+
+  /* Legacy mappings for compatibility */
+  --color-brand-blue: var(--color-drawday-navy);
+  --color-brand-pink: var(--color-vermilion);
+  --color-brand-gold: var(--color-drawday-gold);
+  --color-brand-green: var(--color-emerald);
+  --color-brand-red: var(--color-fire-brick);
 
   /* =========================
    * Semantic Color Mappings
    * ========================= */
 
   /* Primary colors */
-  --color-primary: var(--color-brand-blue);
-  --color-primary-foreground: #ffffff;
+  --color-primary: var(--color-drawday-navy);
+  --color-primary-foreground: var(--color-white);
 
   /* Secondary colors */
-  --color-secondary: var(--color-brand-pink);
-  --color-secondary-foreground: #ffffff;
+  --color-secondary: var(--color-drawday-gold);
+  --color-secondary-foreground: var(--color-rich-black);
 
   /* State colors */
-  --color-success: var(--color-brand-green);
-  --color-success-foreground: #ffffff;
-  --color-destructive: var(--color-brand-red);
-  --color-destructive-foreground: #ffffff;
-  --color-warning: var(--color-brand-gold);
-  --color-warning-foreground: #343a40;
+  --color-success: var(--color-emerald);
+  --color-success-foreground: var(--color-white);
+  --color-destructive: var(--color-vermilion);
+  --color-destructive-foreground: var(--color-white);
+  --color-warning: var(--color-amber);
+  --color-warning-foreground: var(--color-rich-black);
 
   /* =========================
    * UI Colors
    * ========================= */
 
   /* Background and foreground */
-  --color-background: #ffffff;
-  --color-foreground: #343a40;
+  --color-background: var(--color-white);
+  --color-foreground: var(--color-rich-black);
 
   /* Card components */
-  --color-card: #ffffff;
-  --color-card-foreground: #343a40;
+  --color-card: var(--color-white);
+  --color-card-foreground: var(--color-rich-black);
 
   /* Popover components */
-  --color-popover: #ffffff;
-  --color-popover-foreground: #343a40;
+  --color-popover: var(--color-white);
+  --color-popover-foreground: var(--color-rich-black);
 
   /* Muted elements */
-  --color-muted: #f8f9fa;
-  --color-muted-foreground: #6c757d;
+  --color-muted: #f4f4f5; /* Light gray background */
+  --color-muted-foreground: #71717a; /* Medium gray text for better contrast */
 
   /* Accent elements */
-  --color-accent: var(--color-brand-gold);
-  --color-accent-foreground: #343a40;
+  --color-accent: var(--color-drawday-gold);
+  --color-accent-foreground: var(--color-rich-black);
 
   /* =========================
    * Form & Interactive Elements
    * ========================= */
 
-  --color-border: #dee2e6;
-  --color-input: #ffffff;
-  --color-ring: var(--color-brand-blue);
+  --color-border: #e4e4e7; /* Lighter border for better visibility */
+  --color-input: var(--color-white);
+  --color-ring: var(--color-drawday-gold);
 
   /* =========================
    * Border Radius
@@ -103,35 +123,35 @@
 @media (prefers-color-scheme: dark) {
   @theme {
     /* Background colors */
-    --color-background: #1a1a2e;
-    --color-foreground: #f8f9fa;
+    --color-background: var(--color-night);
+    --color-foreground: var(--color-white);
 
     /* Card colors */
-    --color-card: #0f0f23;
-    --color-card-foreground: #f8f9fa;
+    --color-card: var(--color-rich-black);
+    --color-card-foreground: var(--color-white);
 
     /* Popover colors */
-    --color-popover: #0f0f23;
-    --color-popover-foreground: #f8f9fa;
+    --color-popover: var(--color-rich-black);
+    --color-popover-foreground: var(--color-white);
 
     /* Adjusted brand colors for dark mode */
-    --color-primary: #0066dd;
-    --color-primary-foreground: #ffffff;
-    --color-secondary: #ff69b4;
-    --color-secondary-foreground: #ffffff;
+    --color-primary: var(--color-drawday-navy);
+    --color-primary-foreground: var(--color-white);
+    --color-secondary: var(--color-drawday-gold);
+    --color-secondary-foreground: var(--color-rich-black);
 
     /* Muted colors */
-    --color-muted: #2a2a3e;
-    --color-muted-foreground: #adb5bd;
+    --color-muted: var(--color-raisin-black);
+    --color-muted-foreground: #9ca3af; /* Lighter gray for better contrast on dark */
 
     /* Accent colors */
-    --color-accent: var(--color-brand-gold);
-    --color-accent-foreground: #1a1a2e;
+    --color-accent: var(--color-drawday-gold);
+    --color-accent-foreground: var(--color-rich-black);
 
     /* Form elements */
-    --color-border: #495057;
-    --color-input: #2a2a3e;
-    --color-ring: var(--color-brand-blue);
+    --color-border: var(--color-raisin-black);
+    --color-input: var(--color-rich-black);
+    --color-ring: var(--color-drawday-gold);
   }
 }
 

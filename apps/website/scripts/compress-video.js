@@ -2,7 +2,7 @@
 
 /**
  * Video Compression Script for Raffle Spinner Demo
- * 
+ *
  * This script provides video compression without requiring system ffmpeg
  * Uses @ffmpeg-installer/ffmpeg for cross-platform support
  */
@@ -43,11 +43,11 @@ try {
 } catch (e) {
   console.log('📥 Installing required packages...');
   console.log('   This is a one-time setup that may take a minute...\n');
-  
+
   try {
     execSync('npm install --no-save @ffmpeg-installer/ffmpeg fluent-ffmpeg', {
       stdio: 'inherit',
-      cwd: path.join(__dirname, '..')
+      cwd: path.join(__dirname, '..'),
     });
   } catch (installError) {
     console.error('❌ Failed to install dependencies:', installError.message);
@@ -73,22 +73,22 @@ const compressionPresets = {
     audioBitrate: '128k',
     size: '1280x?',
     preset: 'slow',
-    crf: 23
+    crf: 23,
   },
   medium: {
     videoBitrate: '1000k',
     audioBitrate: '96k',
     size: '1280x?',
     preset: 'medium',
-    crf: 28
+    crf: 28,
   },
   low: {
     videoBitrate: '750k',
     audioBitrate: '96k',
     size: '960x?',
     preset: 'medium',
-    crf: 30
-  }
+    crf: 30,
+  },
 };
 
 // Use medium quality by default (good balance)
@@ -98,7 +98,7 @@ const settings = compressionPresets.medium;
 let progress = 0;
 const progressBar = (percent) => {
   const barLength = 40;
-  const filled = Math.round(barLength * percent / 100);
+  const filled = Math.round((barLength * percent) / 100);
   const bar = '█'.repeat(filled) + '░'.repeat(barLength - filled);
   process.stdout.write(`\r  Progress: [${bar}] ${percent.toFixed(1)}%`);
 };
@@ -114,7 +114,7 @@ ffmpeg(ORIGINAL_VIDEO)
     '-preset ' + settings.preset,
     '-crf ' + settings.crf,
     '-movflags +faststart', // Optimize for web streaming
-    '-pix_fmt yuv420p'      // Maximum compatibility
+    '-pix_fmt yuv420p', // Maximum compatibility
   ])
   .on('progress', (info) => {
     if (info.percent) {
@@ -123,26 +123,26 @@ ffmpeg(ORIGINAL_VIDEO)
   })
   .on('end', () => {
     console.log('\n\n✅ Compression complete!');
-    
+
     // Get compressed file size
     const compressedStats = fs.statSync(COMPRESSED_VIDEO);
     const compressedSizeMB = (compressedStats.size / (1024 * 1024)).toFixed(2);
     const savings = ((1 - compressedStats.size / originalStats.size) * 100).toFixed(1);
-    
+
     console.log(`📊 Compressed video size: ${compressedSizeMB} MB`);
     console.log(`💰 Size reduction: ${savings}%\n`);
-    
+
     // Replace original with compressed
     fs.unlinkSync(ORIGINAL_VIDEO);
     fs.renameSync(COMPRESSED_VIDEO, ORIGINAL_VIDEO);
-    
+
     console.log('📁 Files:');
     console.log(`   • Backup: ${BACKUP_VIDEO}`);
     console.log(`   • Compressed: ${ORIGINAL_VIDEO}\n`);
-    
+
     console.log('🔄 To restore original, run:');
     console.log(`   mv "${BACKUP_VIDEO}" "${ORIGINAL_VIDEO}"`);
-    
+
     // Clean up node_modules if installed locally
     const localModules = path.join(__dirname, '../node_modules');
     if (fs.existsSync(path.join(localModules, '@ffmpeg-installer'))) {
@@ -157,14 +157,14 @@ ffmpeg(ORIGINAL_VIDEO)
   })
   .on('error', (err) => {
     console.error('\n\n❌ Compression failed:', err.message);
-    
+
     // Restore backup
     if (fs.existsSync(BACKUP_VIDEO)) {
       console.log('🔄 Restoring original video...');
       fs.copyFileSync(BACKUP_VIDEO, ORIGINAL_VIDEO);
       fs.unlinkSync(BACKUP_VIDEO);
     }
-    
+
     process.exit(1);
   })
   .save(COMPRESSED_VIDEO);

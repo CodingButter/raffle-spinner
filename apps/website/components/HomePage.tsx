@@ -79,14 +79,14 @@ export default function HomePage({ demoAssets }: HomePageProps) {
           <div className="text-center mb-12">
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
               Run{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-pink">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-drawday-gold to-amber">
                 Fair & Exciting
               </span>{' '}
               Raffles
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              DrawDay Spinner - The professional Chrome extension trusted by UK competition operators
-              to deliver transparent, engaging live draws that build customer trust
+              DrawDay Spinner - The professional Chrome extension trusted by UK competition
+              operators to deliver transparent, engaging live draws that build customer trust
             </p>
 
             {/* CTA Buttons */}
@@ -177,26 +177,26 @@ export default function HomePage({ demoAssets }: HomePageProps) {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-primary">
+              <div className="text-4xl font-bold text-drawday-gold">
                 <AnimatedCounter target={50000} />+
               </div>
               <p className="text-muted-foreground mt-2">Raffles Completed</p>
             </div>
             <div>
-              <div className="text-4xl font-bold text-primary">
+              <div className="text-4xl font-bold text-drawday-gold">
                 <AnimatedCounter target={500} />+
               </div>
               <p className="text-muted-foreground mt-2">UK Operators</p>
             </div>
             <div>
-              <div className="text-4xl font-bold text-primary">
+              <div className="text-4xl font-bold text-drawday-gold">
                 <AnimatedCounter target={99} />
                 .9%
               </div>
               <p className="text-muted-foreground mt-2">Uptime</p>
             </div>
             <div>
-              <div className="text-4xl font-bold text-primary">
+              <div className="text-4xl font-bold text-drawday-gold">
                 <AnimatedCounter target={5} />⭐
               </div>
               <p className="text-muted-foreground mt-2">User Rating</p>

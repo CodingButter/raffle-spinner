@@ -9,17 +9,18 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <Image 
-                src="/logo.svg" 
-                alt="DrawDay Logo" 
-                width={32} 
+              <Image
+                src="/logo.svg"
+                alt="DrawDay Logo"
+                width={32}
                 height={32}
                 className="w-8 h-8"
               />
               <span className="font-bold text-lg">DrawDay</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Professional live draw management for UK competitions. Fair, transparent, and exciting.
+              Professional live draw management for UK competitions. Fair, transparent, and
+              exciting.
             </p>
           </div>
 

@@ -15,31 +15,31 @@ import type {
 
 // Default theme configuration
 const DEFAULT_COLORS: ThemeColors = {
-  primary: '#007BFF',
-  secondary: '#FF1493',
-  accent: '#FFD700',
-  background: '#09090b',
-  foreground: '#fafafa',
-  card: '#09090b',
-  cardForeground: '#fafafa',
-  winner: '#FFD700',
-  winnerGlow: '#FFD700',
+  primary: '#0b1e3a', // DrawDay Navy - Primary brand color
+  secondary: '#e6b540', // DrawDay Gold - Brand accent
+  accent: '#e6b540', // DrawDay Gold - Highlight
+  background: '#fdfeff', // White - Light mode background
+  foreground: '#161b21', // Rich Black - Text on light
+  card: '#fdfeff', // White - Card backgrounds
+  cardForeground: '#161b21', // Rich Black - Card text
+  winner: '#e6b540', // DrawDay Gold for winner highlight
+  winnerGlow: '#e6b540', // DrawDay Gold glow
 };
 
 const DEFAULT_SPINNER_STYLE: SpinnerStyle = {
   type: 'slotMachine',
   nameSize: 'large',
   ticketSize: 'extra-large',
-  nameColor: '#fafafa',
-  ticketColor: '#FFD700',
-  backgroundColor: '#1a1a1a', // Panel background
-  canvasBackground: '#09090b', // Slot machine canvas background
+  nameColor: '#fdfeff', // White - Names on dark background
+  ticketColor: '#e6b540', // DrawDay Gold - Ticket numbers
+  backgroundColor: '#1e1f23', // Raisin black - Panel background
+  canvasBackground: '#0c0e11', // Night - Slot machine canvas background
   topShadowOpacity: 0.3, // Top shadow opacity
   bottomShadowOpacity: 0.3, // Bottom shadow opacity
   shadowSize: 30, // Shadow size as percentage
   shadowColor: undefined, // Use panel background by default
-  borderColor: '#FFD700',
-  highlightColor: '#FF1493',
+  borderColor: '#e6b540', // DrawDay Gold - Borders
+  highlightColor: '#e6b540', // DrawDay Gold - Highlights
   fontFamily: 'system-ui',
 };
 

@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SlotMachineWheel } from '@raffle-spinner/spinners';
 import type { Participant, SpinnerSettings } from '@raffle-spinner/storage';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@raffle-spinner/ui';
@@ -59,6 +59,7 @@ const DEFAULT_SETTINGS: SpinnerSettings = {
 };
 
 export default function DemoPage() {
+  const [mounted, setMounted] = useState(false);
   const [participants, setParticipants] = useState<Participant[]>(() =>
     generateSampleParticipants(100)
   );
@@ -74,6 +75,10 @@ export default function DemoPage() {
     }>
   >([]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleSpin = () => {
     setError(null);
 
@@ -84,13 +89,6 @@ export default function DemoPage() {
 
     // Normalize the input - remove leading zeros for comparison, or pad if needed
     const normalizedInput = ticketNumber.trim();
-
-    // Debug log
-    console.log('Looking for ticket:', normalizedInput);
-    console.log(
-      'Available tickets:',
-      participants.slice(0, 5).map((p) => p.ticketNumber)
-    );
 
     const participant = participants.find((p) => {
       // Compare both with padding and without
@@ -191,7 +189,7 @@ export default function DemoPage() {
                       placeholder="100"
                     />
                     <Button onClick={handleGenerateNew} variant="secondary" size="sm">
-                      <RotateCcw className="w-4 h-4" />
+                      {mounted && <RotateCcw className="w-4 h-4" />}
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -226,7 +224,7 @@ export default function DemoPage() {
                       disabled={isSpinning || participants.length === 0}
                       title="Pick random ticket"
                     >
-                      <Shuffle className="w-4 h-4" />
+                      {mounted && <Shuffle className="w-4 h-4" />}
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -241,7 +239,7 @@ export default function DemoPage() {
                   className="w-full"
                   size="lg"
                 >
-                  <Play className="w-5 h-5 mr-2" />
+                  {mounted && <Play className="w-5 h-5 mr-2" />}
                   {isSpinning ? 'Spinning...' : 'Spin to Win!'}
                 </Button>
 
@@ -256,7 +254,7 @@ export default function DemoPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1 max-h-48 overflow-y-auto">
-                  {participants.slice(0, 10).map((p) => (
+                  {mounted && participants.slice(0, 10).map((p) => (
                     <div
                       key={p.ticketNumber}
                       className="flex justify-between text-xs p-1 hover:bg-muted rounded cursor-pointer"
@@ -305,9 +303,9 @@ export default function DemoPage() {
               <CardContent className="p-8">
                 {/* Winner Display */}
                 {currentWinner && (
-                  <div className="mb-6 p-4 bg-gradient-to-r from-brand-gold/20 to-brand-gold/10 border border-brand-gold rounded-lg">
+                  <div className="mb-6 p-4 bg-gradient-to-r from-drawday-gold/20 to-drawday-gold/10 border border-drawday-gold rounded-lg">
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-brand-gold">🎉 Winner! 🎉</p>
+                      <p className="text-2xl font-bold text-drawday-gold">🎉 Winner! 🎉</p>
                       <p className="text-xl mt-2">
                         {currentWinner.firstName} {currentWinner.lastName}
                       </p>
@@ -320,27 +318,36 @@ export default function DemoPage() {
 
                 {/* Spinner Component */}
                 <div className="flex justify-center">
-                  <SlotMachineWheel
-                    participants={participants}
-                    targetTicketNumber={ticketNumber}
-                    settings={DEFAULT_SETTINGS}
-                    isSpinning={isSpinning}
-                    onSpinComplete={handleSpinComplete}
-                    onError={(error) => {
-                      setError(error);
-                      setIsSpinning(false);
-                    }}
-                    theme={{
-                      nameColor: '#ffffff',
-                      ticketColor: '#fbbf24',
-                      backgroundColor: '#1f2937',
-                      borderColor: '#fbbf24',
-                      highlightColor: '#ec4899',
-                      nameSize: 'large',
-                      ticketSize: 'extra-large',
-                      fontFamily: 'system-ui',
-                    }}
-                  />
+                  {mounted ? (
+                    <SlotMachineWheel
+                      participants={participants}
+                      targetTicketNumber={ticketNumber}
+                      settings={DEFAULT_SETTINGS}
+                      isSpinning={isSpinning}
+                      onSpinComplete={handleSpinComplete}
+                      onError={(error) => {
+                        setError(error);
+                        setIsSpinning(false);
+                      }}
+                      theme={{
+                        nameColor: '#fdfeff', // White
+                        ticketColor: '#e6b540', // DrawDay Gold
+                        backgroundColor: '#1e1f23', // Raisin black - Panel background
+                        canvasBackground: '#0c0e11', // Night - Canvas background
+                        borderColor: '#e6b540', // DrawDay Gold
+                        highlightColor: '#e6b540', // DrawDay Gold
+                        nameSize: 'large',
+                        ticketSize: 'extra-large',
+                        fontFamily: 'system-ui',
+                        topShadowOpacity: 0.3,
+                        bottomShadowOpacity: 0.3,
+                        shadowSize: 30,
+                        shadowColor: undefined, // Uses backgroundColor by default
+                      }}
+                    />
+                  ) : (
+                    <div className="w-[400px] h-[500px] bg-night rounded-lg animate-pulse" />
+                  )}
                 </div>
 
                 {/* Instructions */}
@@ -360,7 +367,7 @@ export default function DemoPage() {
 
         {/* Feature Highlights */}
         <div className="mt-12 grid md:grid-cols-3 gap-6">
-          <Card className="bg-gradient-to-br from-brand-blue/10 to-brand-blue/5">
+          <Card className="bg-gradient-to-br from-drawday-navy/10 to-drawday-navy/5">
             <CardContent className="p-6">
               <h3 className="font-semibold mb-2">🎯 Performance Optimized</h3>
               <p className="text-sm text-muted-foreground">
@@ -369,7 +376,7 @@ export default function DemoPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-brand-pink/10 to-brand-pink/5">
+          <Card className="bg-gradient-to-br from-drawday-gold/10 to-drawday-gold/5">
             <CardContent className="p-6">
               <h3 className="font-semibold mb-2">🎨 Customizable Theme</h3>
               <p className="text-sm text-muted-foreground">
@@ -378,7 +385,7 @@ export default function DemoPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-brand-gold/10 to-brand-gold/5">
+          <Card className="bg-gradient-to-br from-azure/10 to-azure/5">
             <CardContent className="p-6">
               <h3 className="font-semibold mb-2">🎰 Slot Machine Style</h3>
               <p className="text-sm text-muted-foreground">
@@ -389,7 +396,7 @@ export default function DemoPage() {
         </div>
 
         {/* CTA */}
-        <Card className="mt-8 bg-gradient-to-r from-brand-blue/20 to-brand-pink/20">
+        <Card className="mt-8 bg-gradient-to-r from-drawday-navy/20 to-drawday-gold/20">
           <CardContent className="py-12">
             <div className="text-center">
               <h2 className="text-3xl font-bold mb-4">Ready for the Full Experience?</h2>

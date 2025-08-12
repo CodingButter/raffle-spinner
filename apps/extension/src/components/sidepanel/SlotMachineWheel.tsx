@@ -130,7 +130,7 @@ export function SlotMachineWheel({
       // Use the dedicated canvas background color, not the app background
       const canvasBgColor = theme?.spinnerStyle?.canvasBackground || '#09090b';
       const bgGradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
-      
+
       // Create gradient based on the theme background color
       bgGradient.addColorStop(0, adjustBrightness(canvasBgColor, -20));
       bgGradient.addColorStop(0.5, canvasBgColor);
@@ -210,20 +210,23 @@ export function SlotMachineWheel({
       const topShadowOpacity = theme?.spinnerStyle?.topShadowOpacity ?? 0.3;
       const bottomShadowOpacity = theme?.spinnerStyle?.bottomShadowOpacity ?? 0.3;
       const shadowSize = (theme?.spinnerStyle?.shadowSize ?? 30) / 100; // Convert percentage to decimal
-      const shadowColor = theme?.spinnerStyle?.shadowColor || theme?.spinnerStyle?.backgroundColor || '#1a1a1a';
-      
+      const shadowColor =
+        theme?.spinnerStyle?.shadowColor || theme?.spinnerStyle?.backgroundColor || '#1a1a1a';
+
       // Parse hex color to RGB
       const hexToRgb = (hex: string) => {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16)
-        } : { r: 26, g: 26, b: 26 }; // Fallback to #1a1a1a
+        return result
+          ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16),
+            }
+          : { r: 26, g: 26, b: 26 }; // Fallback to #1a1a1a
       };
-      
+
       const rgb = hexToRgb(shadowColor);
-      
+
       // Top shadow gradient
       if (topShadowOpacity > 0) {
         const topShadowHeight = VIEWPORT_HEIGHT * shadowSize;
@@ -233,14 +236,17 @@ export function SlotMachineWheel({
         ctx.fillStyle = topGradient;
         ctx.fillRect(0, 0, CANVAS_WIDTH, topShadowHeight);
       }
-      
+
       // Bottom shadow gradient
       if (bottomShadowOpacity > 0) {
         const bottomShadowHeight = VIEWPORT_HEIGHT * shadowSize;
         const bottomStart = VIEWPORT_HEIGHT - bottomShadowHeight;
         const bottomGradient = ctx.createLinearGradient(0, bottomStart, 0, VIEWPORT_HEIGHT);
         bottomGradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
-        bottomGradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${bottomShadowOpacity})`);
+        bottomGradient.addColorStop(
+          1,
+          `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${bottomShadowOpacity})`
+        );
         ctx.fillStyle = bottomGradient;
         ctx.fillRect(0, bottomStart, CANVAS_WIDTH, bottomShadowHeight);
       }

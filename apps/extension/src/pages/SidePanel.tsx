@@ -194,11 +194,16 @@ function SidePanelContent() {
                     nameColor: theme.spinnerStyle.nameColor,
                     ticketColor: theme.spinnerStyle.ticketColor,
                     backgroundColor: theme.spinnerStyle.backgroundColor,
+                    canvasBackground: theme.spinnerStyle.canvasBackground,
                     borderColor: theme.spinnerStyle.borderColor,
                     highlightColor: theme.spinnerStyle.highlightColor,
                     nameSize: theme.spinnerStyle.nameSize,
                     ticketSize: theme.spinnerStyle.ticketSize,
                     fontFamily: theme.spinnerStyle.fontFamily,
+                    topShadowOpacity: theme.spinnerStyle.topShadowOpacity,
+                    bottomShadowOpacity: theme.spinnerStyle.bottomShadowOpacity,
+                    shadowSize: theme.spinnerStyle.shadowSize,
+                    shadowColor: theme.spinnerStyle.shadowColor,
                   } as SpinnerTheme
                 }
               />

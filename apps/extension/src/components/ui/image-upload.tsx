@@ -119,7 +119,7 @@ export function ImageUpload({
 
   if (value) {
     return (
-      <div 
+      <div
         className={cn(
           'relative group border-2 border-transparent hover:border-dashed hover:border-primary/50 rounded overflow-hidden transition-all',
           isDragging && 'border-primary bg-primary/10',
@@ -139,18 +139,16 @@ export function ImageUpload({
           onChange={handleFileSelect}
           className="hidden"
         />
-        
-        <img
-          src={value}
-          alt="Uploaded image"
-          className="w-full h-full object-cover"
-        />
-        
+
+        <img src={value} alt="Uploaded image" className="w-full h-full object-cover" />
+
         {/* Overlay on hover/drag */}
-        <div className={cn(
-          'absolute inset-0 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2',
-          isDragging && 'opacity-100'
-        )}>
+        <div
+          className={cn(
+            'absolute inset-0 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2',
+            isDragging && 'opacity-100'
+          )}
+        >
           {isDragging ? (
             <div className="text-white text-center">
               <Upload className="h-8 w-8 mx-auto mb-2" />
@@ -212,8 +210,8 @@ export function ImageUpload({
         onClick={() => fileInputRef.current?.click()}
         className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
       >
-        {placeholder || (
-          compact ? (
+        {placeholder ||
+          (compact ? (
             // Compact mode - just icon, no text
             <div className="flex flex-col items-center justify-center">
               <ImageIcon className="h-6 w-6" />
@@ -230,8 +228,7 @@ export function ImageUpload({
                 Max size: {Math.round(maxSize / 1024 / 1024)}MB
               </p>
             </>
-          )
-        )}
+          ))}
       </button>
     </div>
   );
