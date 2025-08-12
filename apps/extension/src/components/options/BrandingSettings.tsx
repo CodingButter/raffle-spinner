@@ -95,7 +95,7 @@ export function BrandingSettings() {
               onError={setUploadError}
               width="w-32"
               height="h-20"
-              className="object-contain p-2"
+              compact={true}
             />
 
             <div className="flex-1">

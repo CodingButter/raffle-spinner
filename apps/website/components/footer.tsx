@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Trophy } from 'lucide-react';
+import Image from 'next/image';
 
 export function Footer() {
   return (
@@ -8,14 +8,18 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 font-bold text-lg">
-              <div className="w-8 h-8 rounded bg-gradient-to-br from-brand-blue to-brand-pink flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-white" />
-              </div>
-              <span>Raffle Spinner</span>
+            <div className="flex items-center gap-3">
+              <Image 
+                src="/logo.svg" 
+                alt="DrawDay Logo" 
+                width={32} 
+                height={32}
+                className="w-8 h-8"
+              />
+              <span className="font-bold text-lg">DrawDay</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Professional raffle management for live events. Fair, transparent, and exciting.
+              Professional live draw management for UK competitions. Fair, transparent, and exciting.
             </p>
           </div>
 
@@ -39,9 +43,9 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="https://chrome.google.com/webstore" 
-                  target="_blank" 
+                <a
+                  href="https://chrome.google.com/webstore"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-foreground transition-colors"
                 >
@@ -93,9 +97,9 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="https://github.com/yourusername/raffle-spinner" 
-                  target="_blank" 
+                <a
+                  href="https://github.com/CodingButter/drawday-spinner"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-foreground transition-colors"
                 >
@@ -112,7 +116,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Raffle Winner Spinner. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} DrawDay. All rights reserved.</p>
         </div>
       </div>
     </footer>

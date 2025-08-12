@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Chrome Extension project called "Raffle Winner Spinner" - a client-side browser extension for conducting live raffle draws. The extension operates entirely locally without external network calls.
+This is a Chrome Extension project called "DrawDay Spinner" - a client-side browser extension for conducting live draws in UK competitions. The extension operates entirely locally without external network calls.
 
 ## Architecture
 

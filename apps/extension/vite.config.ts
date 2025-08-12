@@ -11,10 +11,10 @@ export default defineConfig({
     {
       name: 'copy-manifest',
       writeBundle() {
-        // Copy manifest.json to dist
+        // Copy manifest.json to DrawDaySpinner
         copyFileSync(
           resolve(__dirname, 'public/manifest.json'),
-          resolve(__dirname, 'dist/manifest.json')
+          resolve(__dirname, 'DrawDaySpinner/manifest.json')
         );
       },
     },
@@ -25,7 +25,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'dist',
+    outDir: 'DrawDaySpinner',
     emptyOutDir: true,
     rollupOptions: {
       input: {

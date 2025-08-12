@@ -11,8 +11,8 @@ const fs = require('fs');
 const path = require('path');
 const archiver = require('archiver');
 
-const distDir = path.resolve(__dirname, '../dist');
-const outputZip = path.resolve(__dirname, '../raffle-spinner-extension.zip');
+const distDir = path.resolve(__dirname, '../DrawDaySpinner');
+const outputZip = path.resolve(__dirname, '../drawday-spinner-extension.zip');
 
 console.log('🏗️  Building Chrome Extension...');
 
@@ -34,7 +34,7 @@ try {
   console.log('📦 Building extension...');
   execSync('tsc --noEmit && vite build', { stdio: 'inherit', cwd: path.resolve(__dirname, '..') });
 
-  // Copy manifest and icons to dist
+  // Copy manifest and icons to DrawDaySpinner
   console.log('📋 Copying manifest and icons...');
   const publicDir = path.resolve(__dirname, '../public');
   const files = fs.readdirSync(publicDir);
@@ -64,9 +64,9 @@ try {
     const sizeInMB = (stats.size / (1024 * 1024)).toFixed(2);
     
     console.log('\n✅ Extension built successfully!');
-    console.log(`📦 Package: raffle-spinner-extension.zip`);
+    console.log(`📦 Package: drawday-spinner-extension.zip`);
     console.log(`📏 Size: ${sizeInMB} MB`);
-    console.log(`📍 Location: apps/extension/raffle-spinner-extension.zip`);
+    console.log(`📍 Location: apps/extension/drawday-spinner-extension.zip`);
     console.log('\n🎉 Ready to upload to Chrome Web Store!');
   });
 
@@ -77,7 +77,7 @@ try {
 
   archive.pipe(output);
   
-  // Add dist folder contents
+  // Add DrawDaySpinner folder contents
   archive.directory(distDir, false);
   
   archive.finalize();

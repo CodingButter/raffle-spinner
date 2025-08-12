@@ -28,13 +28,14 @@
 
 /* Winner celebration animation */
 @keyframes winner-glow {
-  0%, 100% {
-    box-shadow: 
+  0%,
+  100% {
+    box-shadow:
       0 0 20px var(--color-brand-gold),
       0 0 40px var(--color-brand-gold);
   }
   50% {
-    box-shadow: 
+    box-shadow:
       0 0 40px var(--color-brand-gold),
       0 0 60px var(--color-brand-gold),
       0 0 80px var(--color-brand-gold);
@@ -43,7 +44,8 @@
 
 /* Pulse animation for attention */
 @keyframes pulse-brand {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -53,7 +55,8 @@
 
 /* Bounce animation for icons */
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(-25%);
     animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
   }
@@ -97,6 +100,18 @@
   }
 }
 
+/* Winner reveal animation - dramatic zoom and fade */
+@keyframes winner-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.7) translateY(-50%);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(-50%);
+  }
+}
+
 /* Spin animation override for smoother rotation */
 @keyframes spin-smooth {
   from {
@@ -119,7 +134,8 @@
 
 /* Float animation for decorative elements */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -136,36 +152,41 @@
   .animate-winner-glow {
     animation: winner-glow 2s ease-in-out infinite;
   }
-  
+
   /* Pulse brand color */
   .animate-pulse-brand {
     animation: pulse-brand 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-  
+
   /* Bounce effect */
   .animate-bounce-slow {
     animation: bounce 2s infinite;
   }
-  
+
   /* Fade animations */
   .animate-fade-in {
     animation: fade-in 0.5s ease-out;
   }
-  
+
   .animate-fade-up {
     animation: fade-up 0.5s ease-out;
   }
-  
+
   /* Scale animation */
   .animate-scale-in {
     animation: scale-in 0.3s ease-out;
   }
-  
+
+  /* Winner reveal animation */
+  .animate-winner-reveal {
+    animation: winner-reveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
   /* Smooth spin */
   .animate-spin-smooth {
     animation: spin-smooth 1s linear infinite;
   }
-  
+
   /* Shimmer loading effect */
   .animate-shimmer {
     background: linear-gradient(
@@ -177,75 +198,75 @@
     background-size: 1000px 100%;
     animation: shimmer 2s infinite;
   }
-  
+
   /* Float effect */
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
-  
+
   /* Accordion animations */
   .animate-accordion-down {
     animation: accordion-down 0.2s ease-out;
   }
-  
+
   .animate-accordion-up {
     animation: accordion-up 0.2s ease-out;
   }
-  
+
   /* Animation duration utilities */
   .animation-duration-75 {
     animation-duration: 75ms;
   }
-  
+
   .animation-duration-100 {
     animation-duration: 100ms;
   }
-  
+
   .animation-duration-150 {
     animation-duration: 150ms;
   }
-  
+
   .animation-duration-200 {
     animation-duration: 200ms;
   }
-  
+
   .animation-duration-300 {
     animation-duration: 300ms;
   }
-  
+
   .animation-duration-500 {
     animation-duration: 500ms;
   }
-  
+
   .animation-duration-700 {
     animation-duration: 700ms;
   }
-  
+
   .animation-duration-1000 {
     animation-duration: 1000ms;
   }
-  
+
   /* Animation delay utilities */
   .animation-delay-75 {
     animation-delay: 75ms;
   }
-  
+
   .animation-delay-100 {
     animation-delay: 100ms;
   }
-  
+
   .animation-delay-150 {
     animation-delay: 150ms;
   }
-  
+
   .animation-delay-200 {
     animation-delay: 200ms;
   }
-  
+
   .animation-delay-300 {
     animation-delay: 300ms;
   }
-  
+
   .animation-delay-500 {
     animation-delay: 500ms;
   }

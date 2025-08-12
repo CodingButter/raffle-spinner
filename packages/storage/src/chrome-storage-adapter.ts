@@ -35,6 +35,7 @@ export class ChromeStorageAdapter implements StorageAdapter {
         columnMapping: null,
         savedMappings: [],
         defaultMappingId: undefined,
+        theme: undefined, // Include theme in default structure
       }
     );
   }

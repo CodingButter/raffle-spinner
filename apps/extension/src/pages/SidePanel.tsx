@@ -13,7 +13,8 @@ import { useState, useRef } from 'react';
 import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
-import { SlotMachineWheel } from '@/components/sidepanel/SlotMachineWheel';
+import { SlotMachineWheel } from '@raffle-spinner/spinners';
+import type { SpinnerTheme } from '@raffle-spinner/spinners';
 import { SessionWinners, Winner } from '@/components/sidepanel/SessionWinners';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -176,36 +177,53 @@ function SidePanelContent() {
         {/* Main Spinner Area */}
         {selectedCompetition && (
           <>
-            <SlotMachineWheel
-              participants={selectedCompetition.participants}
-              targetTicketNumber={ticketNumber}
-              settings={settings}
-              isSpinning={isSpinning}
-              onSpinComplete={handleSpinComplete}
-              onError={(error) => {
-                setError(error);
-                setIsSpinning(false);
-              }}
-            />
+            {/* Spinner Container with relative positioning for winner overlay */}
+            <div className="relative">
+              <SlotMachineWheel
+                participants={selectedCompetition.participants}
+                targetTicketNumber={ticketNumber}
+                settings={settings}
+                isSpinning={isSpinning}
+                onSpinComplete={handleSpinComplete}
+                onError={(error) => {
+                  setError(error);
+                  setIsSpinning(false);
+                }}
+                theme={
+                  {
+                    nameColor: theme.spinnerStyle.nameColor,
+                    ticketColor: theme.spinnerStyle.ticketColor,
+                    backgroundColor: theme.spinnerStyle.backgroundColor,
+                    borderColor: theme.spinnerStyle.borderColor,
+                    highlightColor: theme.spinnerStyle.highlightColor,
+                    nameSize: theme.spinnerStyle.nameSize,
+                    ticketSize: theme.spinnerStyle.ticketSize,
+                    fontFamily: theme.spinnerStyle.fontFamily,
+                  } as SpinnerTheme
+                }
+              />
 
-            {/* Winner Display */}
-            {currentWinner && (
-              <Card className="bg-gradient-to-r from-brand-gold/20 to-brand-gold/10 border-brand-gold winner-glow">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3">
-                    <Sparkles className="h-8 w-8 text-brand-gold animate-pulse" />
-                    <div className="flex-1">
-                      <p className="text-2xl font-bold text-brand-gold">
-                        🎉 {currentWinner.firstName} {currentWinner.lastName}
-                      </p>
-                      <p className="text-lg text-brand-pink">
-                        Ticket #{currentWinner.ticketNumber}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+              {/* Winner Display - Absolute positioned overlay */}
+              {currentWinner && (
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-4 z-10 animate-winner-reveal">
+                  <Card className="bg-gradient-to-r from-brand-gold/95 to-brand-gold/90 border-brand-gold animate-winner-glow shadow-2xl">
+                    <CardContent className="p-8">
+                      <div className="flex items-center gap-4">
+                        <Sparkles className="h-12 w-12 text-gray-900 animate-pulse flex-shrink-0" />
+                        <div className="flex-1 text-center">
+                          <p className="text-4xl font-bold text-gray-900 leading-tight">
+                            🎉 {currentWinner.firstName} {currentWinner.lastName}
+                          </p>
+                          <p className="text-2xl font-semibold text-gray-800 mt-2">
+                            Ticket #{currentWinner.ticketNumber}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </div>
 
             {/* Spin Controls */}
             <div className="space-y-2">

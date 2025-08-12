@@ -1,19 +1,19 @@
-# 🎡 Raffle Winner Spinner - Chrome Extension
+# 🎯 DrawDay Spinner - Chrome Extension
 
-[![CI](https://github.com/CodingButter/raffle-spinner/actions/workflows/ci.yml/badge.svg)](https://github.com/CodingButter/raffle-spinner/actions/workflows/ci.yml)
+[![CI](https://github.com/CodingButter/drawday-spinner/actions/workflows/ci.yml/badge.svg)](https://github.com/CodingButter/drawday-spinner/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-4285F4?logo=googlechrome&logoColor=white)](https://chrome.google.com/webstore)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![pnpm](https://img.shields.io/badge/pnpm-9.0-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/CodingButter/raffle-spinner/blob/main/CONTRIBUTING.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/CodingButter/drawday-spinner/blob/main/CONTRIBUTING.md)
 
-A professional Chrome Extension for fair and transparent raffle winner selection from CSV data.
+A professional Chrome Extension for conducting live draws in competitions - fair, transparent, and engaging winner selection.
 
 ## Overview
 
-The Raffle Winner Spinner is a Chrome Extension that provides organizations with a reliable, visually engaging way to select raffle winners. It features CSV data import, intelligent column mapping, competition management, and an interactive spinning wheel with realistic physics.
+DrawDay Spinner is a Chrome Extension designed for the UK competition industry, providing a professional, visually engaging way to conduct live draws. Perfect for raffling cars, bikes, trucks, and other prizes with complete transparency. Features include CSV data import, intelligent column mapping, competition management, and an interactive slot machine-style spinner with realistic physics.
 
 ## Key Features
 

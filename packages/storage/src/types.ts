@@ -70,7 +70,12 @@ export interface SpinnerStyle {
   ticketSize: "small" | "medium" | "large" | "extra-large";
   nameColor: string;
   ticketColor: string;
-  backgroundColor: string;
+  backgroundColor: string; // Panel background color
+  canvasBackground?: string; // Slot machine canvas background
+  topShadowOpacity?: number; // Top shadow opacity (0-1)
+  bottomShadowOpacity?: number; // Bottom shadow opacity (0-1)
+  shadowSize?: number; // Shadow size as percentage of viewport (0-50)
+  shadowColor?: string; // Shadow gradient color (defaults to panel background)
   borderColor: string;
   highlightColor: string;
   fontFamily?: string;

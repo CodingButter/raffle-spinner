@@ -34,6 +34,20 @@ const CANVAS_HEIGHT = 500;
 const SUBSET_SIZE = 100; // Total entries to show in the wheel (50 first + 50 last)
 const SUBSET_HALF = 50; // Half of the subset size
 
+// Helper function to adjust color brightness
+function adjustBrightness(color: string, percent: number): string {
+  // Handle hex colors
+  if (color.startsWith('#')) {
+    const num = parseInt(color.replace('#', ''), 16);
+    const r = Math.max(0, Math.min(255, ((num >> 16) & 255) + percent));
+    const g = Math.max(0, Math.min(255, ((num >> 8) & 255) + percent));
+    const b = Math.max(0, Math.min(255, (num & 255) + percent));
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+  }
+  // For non-hex colors, return with opacity adjustment
+  return color;
+}
+
 export function SlotMachineWheel({
   participants,
   targetTicketNumber,
@@ -65,11 +79,11 @@ export function SlotMachineWheel({
   useEffect(() => {
     if (sortedParticipants.length > 0) {
       let initialSubset: Participant[];
-      
+
       if (sortedParticipants.length <= SUBSET_SIZE) {
         // If we have 100 or fewer participants, use all of them
         initialSubset = [...sortedParticipants];
-        
+
         // If we have fewer than SUBSET_SIZE, repeat to fill the wheel
         if (initialSubset.length < SUBSET_SIZE) {
           const repeated = [...initialSubset];
@@ -89,9 +103,9 @@ export function SlotMachineWheel({
         const lastHalf = sortedParticipants.slice(-SUBSET_HALF);
         initialSubset = [...firstHalf, ...lastHalf];
       }
-      
+
       setDisplaySubset(initialSubset);
-      
+
       // Start with the first ticket centered in view
       // The center position is at index 2 (VISIBLE_ITEMS / 2, rounded down)
       // To center the first ticket, we need to move up by 2 positions
@@ -112,11 +126,15 @@ export function SlotMachineWheel({
       // Clear canvas
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // Draw background
+      // Draw background using theme colors
+      // Use the dedicated canvas background color, not the app background
+      const canvasBgColor = theme?.spinnerStyle?.canvasBackground || '#09090b';
       const bgGradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
-      bgGradient.addColorStop(0, '#1a1a2e');
-      bgGradient.addColorStop(0.5, '#0f0f23');
-      bgGradient.addColorStop(1, '#1a1a2e');
+      
+      // Create gradient based on the theme background color
+      bgGradient.addColorStop(0, adjustBrightness(canvasBgColor, -20));
+      bgGradient.addColorStop(0.5, canvasBgColor);
+      bgGradient.addColorStop(1, adjustBrightness(canvasBgColor, -20));
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -185,7 +203,47 @@ export function SlotMachineWheel({
         ctx,
         canvasWidth: CANVAS_WIDTH,
         viewportHeight: VIEWPORT_HEIGHT,
+        theme,
       });
+
+      // Draw top and bottom shadow overlays
+      const topShadowOpacity = theme?.spinnerStyle?.topShadowOpacity ?? 0.3;
+      const bottomShadowOpacity = theme?.spinnerStyle?.bottomShadowOpacity ?? 0.3;
+      const shadowSize = (theme?.spinnerStyle?.shadowSize ?? 30) / 100; // Convert percentage to decimal
+      const shadowColor = theme?.spinnerStyle?.shadowColor || theme?.spinnerStyle?.backgroundColor || '#1a1a1a';
+      
+      // Parse hex color to RGB
+      const hexToRgb = (hex: string) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : { r: 26, g: 26, b: 26 }; // Fallback to #1a1a1a
+      };
+      
+      const rgb = hexToRgb(shadowColor);
+      
+      // Top shadow gradient
+      if (topShadowOpacity > 0) {
+        const topShadowHeight = VIEWPORT_HEIGHT * shadowSize;
+        const topGradient = ctx.createLinearGradient(0, 0, 0, topShadowHeight);
+        topGradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${topShadowOpacity})`);
+        topGradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+        ctx.fillStyle = topGradient;
+        ctx.fillRect(0, 0, CANVAS_WIDTH, topShadowHeight);
+      }
+      
+      // Bottom shadow gradient
+      if (bottomShadowOpacity > 0) {
+        const bottomShadowHeight = VIEWPORT_HEIGHT * shadowSize;
+        const bottomStart = VIEWPORT_HEIGHT - bottomShadowHeight;
+        const bottomGradient = ctx.createLinearGradient(0, bottomStart, 0, VIEWPORT_HEIGHT);
+        bottomGradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+        bottomGradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${bottomShadowOpacity})`);
+        ctx.fillStyle = bottomGradient;
+        ctx.fillRect(0, bottomStart, CANVAS_WIDTH, bottomShadowHeight);
+      }
     },
     [theme]
   );
@@ -226,10 +284,10 @@ export function SlotMachineWheel({
     // Create subset with winner approximately in the middle
     const subset: Participant[] = [];
     const halfSize = Math.floor(SUBSET_SIZE / 2);
-    
+
     // Calculate start index to center the winner
-    let startIdx = winnerIndex - halfSize;
-    
+    const startIdx = winnerIndex - halfSize;
+
     if (startIdx < 0) {
       // Winner is in the first half, need to wrap around
       const fromEnd = sortedParticipants.slice(startIdx); // Get from end
@@ -320,15 +378,15 @@ export function SlotMachineWheel({
     }
   }, [isSpinning, spin, cancel]);
 
-  // Draw wheel when position or subset changes
+  // Draw wheel when position, subset, or theme changes
   useEffect(() => {
     if (displaySubset.length > 0) {
       drawWheel(position, displaySubset);
     }
-  }, [position, displaySubset]); // Remove drawWheel from deps to prevent loops
+  }, [position, displaySubset, drawWheel]);
 
   return (
-    <div className="relative w-full flex items-center justify-center bg-gradient-to-br from-gray-900 to-black rounded-lg p-4">
+    <div className="relative w-full flex items-center justify-center rounded-lg p-4">
       <canvas
         ref={canvasRef}
         width={CANVAS_WIDTH}

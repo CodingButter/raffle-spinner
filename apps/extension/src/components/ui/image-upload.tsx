@@ -8,7 +8,7 @@
 import { useRef, useState, DragEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { X, Image as ImageIcon } from 'lucide-react';
+import { Image as ImageIcon, Upload, Trash2 } from 'lucide-react';
 
 interface ImageUploadProps {
   value?: string; // Base64 encoded image
@@ -119,24 +119,68 @@ export function ImageUpload({
 
   if (value) {
     return (
-      <div className={cn('relative group', className)}>
+      <div 
+        className={cn(
+          'relative group border-2 border-transparent hover:border-dashed hover:border-primary/50 rounded overflow-hidden transition-all',
+          isDragging && 'border-primary bg-primary/10',
+          width,
+          height,
+          className
+        )}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={accept}
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+        
         <img
           src={value}
           alt="Uploaded image"
-          className={cn('object-cover rounded border', width, height)}
+          className="w-full h-full object-cover"
         />
-        <Button
-          size="icon"
-          variant="destructive"
-          className={cn(
-            'absolute opacity-0 group-hover:opacity-100 transition-opacity',
-            compact ? 'top-1 right-1 h-6 w-6' : 'top-2 right-2'
+        
+        {/* Overlay on hover/drag */}
+        <div className={cn(
+          'absolute inset-0 bg-black/50 rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2',
+          isDragging && 'opacity-100'
+        )}>
+          {isDragging ? (
+            <div className="text-white text-center">
+              <Upload className="h-8 w-8 mx-auto mb-2" />
+              <p className="text-sm">Drop to replace</p>
+            </div>
+          ) : (
+            <>
+              <Button
+                size="icon"
+                variant="secondary"
+                className={compact ? 'h-8 w-8' : 'h-10 w-10'}
+                onClick={() => fileInputRef.current?.click()}
+                type="button"
+                title="Replace image"
+              >
+                <Upload className={compact ? 'h-4 w-4' : 'h-5 w-5'} />
+              </Button>
+              <Button
+                size="icon"
+                variant="destructive"
+                className={compact ? 'h-8 w-8' : 'h-10 w-10'}
+                onClick={handleRemove}
+                type="button"
+                title="Remove image"
+              >
+                <Trash2 className={compact ? 'h-4 w-4' : 'h-5 w-5'} />
+              </Button>
+            </>
           )}
-          onClick={handleRemove}
-          type="button"
-        >
-          <X className={compact ? 'h-3 w-3' : 'h-4 w-4'} />
-        </Button>
+        </div>
       </div>
     );
   }
@@ -169,17 +213,24 @@ export function ImageUpload({
         className="absolute inset-0 w-full h-full flex flex-col items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
       >
         {placeholder || (
-          <>
-            <ImageIcon className={compact ? 'h-6 w-6 mb-1' : 'h-8 w-8 mb-2'} />
-            <p className={compact ? 'text-xs' : 'text-sm'}>
-              {isDragging ? 'Drop image here' : 'Drop or click to upload'}
-            </p>
-            {!compact && (
+          compact ? (
+            // Compact mode - just icon, no text
+            <div className="flex flex-col items-center justify-center">
+              <ImageIcon className="h-6 w-6" />
+              {isDragging && <p className="text-xs mt-1">Drop</p>}
+            </div>
+          ) : (
+            // Normal mode - icon with text
+            <>
+              <ImageIcon className="h-8 w-8 mb-2" />
+              <p className="text-sm">
+                {isDragging ? 'Drop image here' : 'Drop or click to upload'}
+              </p>
               <p className="text-xs text-muted-foreground mt-1">
                 Max size: {Math.round(maxSize / 1024 / 1024)}MB
               </p>
-            )}
-          </>
+            </>
+          )
         )}
       </button>
     </div>

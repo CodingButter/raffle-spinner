@@ -13,6 +13,7 @@ This document provides a comprehensive specification of the requirements for the
 ### **1.2 Scope**
 
 This document covers the complete feature set of the production extension, including:
+
 - Enhanced UI with theming and branding capabilities
 - Advanced CSV handling with saved mappings
 - Slot machine-style spinner with performance optimizations
@@ -39,7 +40,7 @@ The Raffle Winner Spinner is a professional-grade Chrome extension designed for 
 
 The system implements a modern, scalable architecture:
 
-1. **Presentation Layer:** 
+1. **Presentation Layer:**
    - React 18 components with TypeScript
    - Tailwind CSS v4 with custom theme support
    - shadcn/ui component library
@@ -91,7 +92,7 @@ The system implements a modern, scalable architecture:
 
 - **Description:** Advanced CSV handling with multiple quality-of-life features
 - **Implementation:**
-  1. **Smart Column Detection:** 
+  1. **Smart Column Detection:**
      - AI-like pattern matching for common header variations
      - Support for single "Name" column with automatic splitting
      - Handles various delimiters (comma, semicolon, tab)
@@ -214,7 +215,7 @@ The system implements a modern, scalable architecture:
 #### FR-3.1: Contextual Help
 
 - **Implementation:**
-  1. **Info Tooltips:** 
+  1. **Info Tooltips:**
      - Non-intrusive (?) icons throughout interface
      - Rich tooltip content with examples
      - Links to detailed documentation
@@ -371,6 +372,7 @@ The system implements a modern, scalable architecture:
 ---
 
 **Document History:**
+
 - v1.0 - Initial MVP specification
 - v2.0 - Added performance requirements
 - v3.0 - Refined for development

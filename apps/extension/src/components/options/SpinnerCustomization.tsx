@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import {
   Select,
   SelectContent,
@@ -226,6 +227,152 @@ export function SpinnerCustomization() {
             </div>
 
             <div className="space-y-3">
+              {/* Slot Machine Canvas Background */}
+              <div className="pb-3 border-b">
+                <div className="flex items-center gap-2">
+                  <Label className="min-w-[120px]">Canvas Background</Label>
+                  <Popover
+                    open={activeColorPicker === 'canvasBackground'}
+                    onOpenChange={(open) => setActiveColorPicker(open ? 'canvasBackground' : null)}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start gap-2">
+                        <div
+                          className="h-4 w-4 rounded border border-border"
+                          style={{ backgroundColor: theme.spinnerStyle.canvasBackground || '#09090b' }}
+                        />
+                        <span className="font-mono text-xs">{theme.spinnerStyle.canvasBackground || '#09090b'}</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-3">
+                      <HexColorPicker
+                        color={theme.spinnerStyle.canvasBackground || '#09090b'}
+                        onChange={(newColor) => updateSpinnerStyle({ canvasBackground: newColor })}
+                      />
+                      <Input
+                        value={theme.spinnerStyle.canvasBackground || '#09090b'}
+                        onChange={(e) => updateSpinnerStyle({ canvasBackground: e.target.value })}
+                        className="mt-2"
+                        placeholder="#000000"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1 ml-[128px]">
+                  Slot machine canvas background color
+                </p>
+              </div>
+
+              {/* Shadow Controls */}
+              <div className="pb-3 border-b space-y-4">
+                <Label className="text-sm font-medium">Shadow Effects</Label>
+                
+                {/* Top Shadow Opacity */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs">Top Shadow</Label>
+                    <span className="text-xs font-mono">
+                      {Math.round((theme.spinnerStyle.topShadowOpacity || 0.3) * 100)}%
+                    </span>
+                  </div>
+                  <Slider
+                    value={[(theme.spinnerStyle.topShadowOpacity || 0.3) * 100]}
+                    onValueChange={([value]) => updateSpinnerStyle({ topShadowOpacity: value / 100 })}
+                    min={0}
+                    max={100}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+                
+                {/* Bottom Shadow Opacity */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs">Bottom Shadow</Label>
+                    <span className="text-xs font-mono">
+                      {Math.round((theme.spinnerStyle.bottomShadowOpacity || 0.3) * 100)}%
+                    </span>
+                  </div>
+                  <Slider
+                    value={[(theme.spinnerStyle.bottomShadowOpacity || 0.3) * 100]}
+                    onValueChange={([value]) => updateSpinnerStyle({ bottomShadowOpacity: value / 100 })}
+                    min={0}
+                    max={100}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+                
+                {/* Shadow Size */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs">Shadow Size</Label>
+                    <span className="text-xs font-mono">
+                      {theme.spinnerStyle.shadowSize || 30}%
+                    </span>
+                  </div>
+                  <Slider
+                    value={[theme.spinnerStyle.shadowSize || 30]}
+                    onValueChange={([value]) => updateSpinnerStyle({ shadowSize: value })}
+                    min={10}
+                    max={50}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+                
+                {/* Shadow Color */}
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs min-w-[80px]">Shadow Color</Label>
+                  <Popover
+                    open={activeColorPicker === 'shadowColor'}
+                    onOpenChange={(open) => setActiveColorPicker(open ? 'shadowColor' : null)}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="sm" className="flex-1 justify-start gap-2">
+                        <div
+                          className="h-3 w-3 rounded border border-border"
+                          style={{ backgroundColor: theme.spinnerStyle.shadowColor || theme.spinnerStyle.backgroundColor || '#1a1a1a' }}
+                        />
+                        <span className="font-mono text-xs">
+                          {theme.spinnerStyle.shadowColor || 'Auto'}
+                        </span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-3">
+                      <HexColorPicker
+                        color={theme.spinnerStyle.shadowColor || theme.spinnerStyle.backgroundColor || '#1a1a1a'}
+                        onChange={(newColor) => updateSpinnerStyle({ shadowColor: newColor })}
+                      />
+                      <Input
+                        value={theme.spinnerStyle.shadowColor || ''}
+                        onChange={(e) => updateSpinnerStyle({ shadowColor: e.target.value || undefined })}
+                        className="mt-2"
+                        placeholder="Auto (uses panel color)"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full mt-2"
+                        onClick={() => updateSpinnerStyle({ shadowColor: undefined })}
+                      >
+                        Reset to Auto
+                      </Button>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                
+                <p className="text-xs text-muted-foreground">
+                  Creates a fade effect at the top and bottom of the slot machine
+                </p>
+              </div>
+
+              {/* Panel and Text Colors */}
+              <ColorButton
+                label="Panel Color"
+                color={theme.spinnerStyle.backgroundColor}
+                field="backgroundColor"
+              />
               <ColorButton
                 label="Name Color"
                 color={theme.spinnerStyle.nameColor}
@@ -235,11 +382,6 @@ export function SpinnerCustomization() {
                 label="Ticket Color"
                 color={theme.spinnerStyle.ticketColor}
                 field="ticketColor"
-              />
-              <ColorButton
-                label="Background"
-                color={theme.spinnerStyle.backgroundColor}
-                field="backgroundColor"
               />
               <ColorButton
                 label="Border"

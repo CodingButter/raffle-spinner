@@ -38,7 +38,6 @@
   --color-popover: var(--theme-card, #ffffff);
   --color-popover-foreground: var(--theme-card-foreground, #343a40);
 
-  
   /* Spinner-specific colors for the extension */
   --color-spinner-bg-start: #1a1a2e;
   --color-spinner-bg-mid: #0f0f23;
@@ -65,7 +64,7 @@
     --color-primary: var(--theme-primary, #0066dd);
     --color-secondary: var(--theme-secondary, #ff69b4);
     --color-accent: var(--theme-accent, var(--color-brand-gold));
-    
+
     /* Spinner colors for dark mode */
     --color-spinner-segment-even: #0066dd;
     --color-spinner-segment-odd: #003d82;
@@ -112,7 +111,6 @@
   background: var(--color-muted);
 }
 
-
 /**
  * Extension-specific utility classes
  */
@@ -126,19 +124,19 @@
       var(--color-spinner-bg-end)
     );
   }
-  
+
   .spinner-segment-even {
     background-color: var(--color-spinner-segment-even);
   }
-  
+
   .spinner-segment-odd {
     background-color: var(--color-spinner-segment-odd);
   }
-  
+
   .spinner-highlight {
     background-color: var(--color-spinner-highlight);
   }
-  
+
   .spinner-arrow {
     color: var(--color-spinner-arrow);
   }
