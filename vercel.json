@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter @raffle-spinner/website build",
+  "buildCommand": "pnpm build",
   "outputDirectory": "apps/website/.next",
   "env": {
     "ENABLE_EXPERIMENTAL_COREPACK": "1",
