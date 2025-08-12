@@ -1,6 +1,8 @@
 {
-  "installCommand": "npx --yes pnpm@9.6.0 install --frozen-lockfile",
-  "buildCommand": "npx --yes pnpm@9.6.0 --filter @raffle-spinner/website build",
+  "buildCommand": "pnpm --filter @raffle-spinner/website build",
   "outputDirectory": "apps/website/.next",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "env": {
+    "ENABLE_EXPERIMENTAL_COREPACK": "1"
+  }
 }

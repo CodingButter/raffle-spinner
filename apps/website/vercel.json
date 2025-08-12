@@ -1,6 +1,0 @@
-{
-  "buildCommand": "cd ../.. && npx --yes pnpm@9.6.0 --filter @raffle-spinner/website build",
-  "installCommand": "npx --yes pnpm@9.6.0 install --frozen-lockfile",
-  "framework": "nextjs",
-  "outputDirectory": ".next"
-}
