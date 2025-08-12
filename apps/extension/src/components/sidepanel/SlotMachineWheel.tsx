@@ -1,7 +1,7 @@
 /**
- * Slot Machine Wheel Component - Version 2 (Complete Rewrite)
+ * Slot Machine Wheel Component
  *
- * A cleaner implementation of the slot machine wheel visualization.
+ * Main slot machine wheel visualization with subset swapping for performance.
  */
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
@@ -34,7 +34,7 @@ const CANVAS_HEIGHT = 500;
 const SUBSET_SIZE = 25; // Number of entries to show in the wheel
 const SUBSET_PADDING = Math.floor(SUBSET_SIZE / 2); // Entries before/after winner
 
-export function SlotMachineWheelV2({
+export function SlotMachineWheel({
   participants,
   targetTicketNumber,
   settings,
@@ -192,8 +192,7 @@ export function SlotMachineWheelV2({
     );
 
     if (winnerIndex === -1) {
-      console.error('Winner not found in sorted list:', targetTicketNumber);
-      // This shouldn't happen as validation happens in SidePanel
+      // Winner not found in sorted list - shouldn't happen as validation is in SidePanel
       return sortedParticipants.slice(0, SUBSET_SIZE); // Fallback to first subset
     }
 
@@ -220,7 +219,7 @@ export function SlotMachineWheelV2({
     if (!hasSwappedRef.current) {
       hasSwappedRef.current = true;
       const winnerSubset = createWinnerSubset();
-      console.log('🔄 Swapping to winner subset at max velocity');
+      // Swap to winner subset at max velocity
 
       // Find winner's new index in the subset
       const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
