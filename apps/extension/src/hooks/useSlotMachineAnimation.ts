@@ -135,7 +135,9 @@ export function useSlotMachineAnimation({
     //   }
     // });
 
-    if (testCenterIndex !== targetIndex) {
+    // Pre-flight check - only log in development
+    // @ts-expect-error - import.meta.env is available in Vite
+    if (testCenterIndex !== targetIndex && import.meta.env?.DEV) {
       console.error('⚠️ PRE-FLIGHT CHECK FAILED - Calculation will be wrong!');
       console.error('Expected to show:', winner.ticketNumber);
       console.error('Will actually show:', currentParticipants[testCenterIndex]?.ticketNumber);
@@ -234,7 +236,9 @@ export function useSlotMachineAnimation({
         const centerIndex = (topIndex + 2) % participants.length;
 
         // Only log if there's an error
-        if (centerIndex !== targetIndex) {
+        // Only log errors in development
+        // @ts-expect-error - import.meta.env is available in Vite
+        if (centerIndex !== targetIndex && import.meta.env?.DEV) {
           console.error('=== SPIN ERROR ===');
           console.error(`Target winner: ${winner.ticketNumber} (index ${targetIndex})`);
           console.error(
@@ -243,9 +247,12 @@ export function useSlotMachineAnimation({
         }
 
         if (centerIndex !== targetIndex) {
-          console.error('🚨 CRITICAL ERROR: Wrong ticket displayed!');
-          console.error(`Should show: ${winner.ticketNumber}`);
-          console.error(`Actually showing: ${participants[centerIndex].ticketNumber}`);
+          // @ts-expect-error - import.meta.env is available in Vite
+          if (import.meta.env?.DEV) {
+            console.error('🚨 CRITICAL ERROR: Wrong ticket displayed!');
+            console.error(`Should show: ${winner.ticketNumber}`);
+            console.error(`Actually showing: ${participants[centerIndex].ticketNumber}`);
+          }
 
           // FORCE CORRECTION - Adjust position to show correct winner
           let correctTopIndex = targetIndex - 2;
@@ -254,18 +261,8 @@ export function useSlotMachineAnimation({
           }
           const correctPosition = correctTopIndex * itemHeight;
 
-          console.warn('Applying position correction:', correctPosition);
           setCurrentPosition(correctPosition);
           drawWheel(correctPosition);
-
-          // Verify correction worked
-          const correctedTopIndex = Math.floor(correctPosition / itemHeight);
-          const correctedCenterIndex = (correctedTopIndex + 2) % participants.length;
-          console.log('After correction:', {
-            correctedCenterIndex,
-            correctedTicket: participants[correctedCenterIndex]?.ticketNumber,
-            isNowCorrect: correctedCenterIndex === targetIndex,
-          });
         }
 
         animationRef.current = undefined;

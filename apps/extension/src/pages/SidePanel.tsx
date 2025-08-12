@@ -13,7 +13,7 @@ import { useState, useRef } from 'react';
 import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
-import { SlotMachineWheelV2 } from '@/components/sidepanel/SlotMachineWheelV2';
+import { SlotMachineWheel } from '@/components/sidepanel/SlotMachineWheel';
 import { SessionWinners, Winner } from '@/components/sidepanel/SessionWinners';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -176,7 +176,7 @@ function SidePanelContent() {
         {/* Main Spinner Area */}
         {selectedCompetition && (
           <>
-            <SlotMachineWheelV2
+            <SlotMachineWheel
               participants={selectedCompetition.participants}
               targetTicketNumber={ticketNumber}
               settings={settings}
