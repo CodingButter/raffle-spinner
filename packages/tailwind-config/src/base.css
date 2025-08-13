@@ -63,7 +63,7 @@
   --color-warning-foreground: var(--color-rich-black);
 
   /* =========================
-   * UI Colors
+   * UI Colors - Light Mode Defaults
    * ========================= */
 
   /* Background and foreground */
@@ -80,7 +80,7 @@
 
   /* Muted elements */
   --color-muted: #f4f4f5; /* Light gray background */
-  --color-muted-foreground: #71717a; /* Medium gray text for better contrast */
+  --color-muted-foreground: #71717a; /* Medium gray text */
 
   /* Accent elements */
   --color-accent: var(--color-drawday-gold);
@@ -90,8 +90,8 @@
    * Form & Interactive Elements
    * ========================= */
 
-  --color-border: #e4e4e7; /* Lighter border for better visibility */
-  --color-input: var(--color-white);
+  --color-border: #e4e4e7; /* Light gray border */
+  --color-input: var(--color-white); /* White input background */
   --color-ring: var(--color-drawday-gold);
 
   /* =========================
@@ -122,29 +122,23 @@
  * ========================= */
 @media (prefers-color-scheme: dark) {
   @theme {
-    /* Background colors */
+    /* Background and foreground */
     --color-background: var(--color-night);
     --color-foreground: var(--color-white);
 
-    /* Card colors */
+    /* Card components */
     --color-card: var(--color-rich-black);
     --color-card-foreground: var(--color-white);
 
-    /* Popover colors */
+    /* Popover components */
     --color-popover: var(--color-rich-black);
     --color-popover-foreground: var(--color-white);
 
-    /* Adjusted brand colors for dark mode */
-    --color-primary: var(--color-drawday-navy);
-    --color-primary-foreground: var(--color-white);
-    --color-secondary: var(--color-drawday-gold);
-    --color-secondary-foreground: var(--color-rich-black);
-
-    /* Muted colors */
+    /* Muted elements */
     --color-muted: var(--color-raisin-black);
-    --color-muted-foreground: #9ca3af; /* Lighter gray for better contrast on dark */
+    --color-muted-foreground: #9ca3af;
 
-    /* Accent colors */
+    /* Accent elements */
     --color-accent: var(--color-drawday-gold);
     --color-accent-foreground: var(--color-rich-black);
 

@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: drawday-database
+    restart: unless-stopped
+    volumes:
+      - ./database/pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    networks:
+      - directus
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cache:
+    image: redis:7-alpine
+    container_name: drawday-cache
+    restart: unless-stopped
+    networks:
+      - directus
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  directus:
+    image: directus/directus:10.10
+    container_name: drawday-directus
+    restart: unless-stopped
+    ports:
+      - "${DIRECTUS_PORT}:8055"
+    volumes:
+      - ./uploads:/directus/uploads
+      - ./extensions:/directus/extensions
+    depends_on:
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    environment:
+      KEY: ${DIRECTUS_KEY}
+      SECRET: ${DIRECTUS_SECRET}
+
+      DB_CLIENT: 'pg'
+      DB_HOST: 'database'
+      DB_PORT: '5432'
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      CACHE_ENABLED: 'true'
+      CACHE_STORE: 'redis'
+      REDIS: 'redis://cache:6379'
+
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+
+      # File storage
+      STORAGE_LOCATIONS: 'local'
+      STORAGE_LOCAL_DRIVER: 'local'
+      STORAGE_LOCAL_ROOT: './uploads'
+
+      # Security
+      AUTH_PROVIDERS: ''
+      REFRESH_TOKEN_TTL: '7d'
+      ACCESS_TOKEN_TTL: '15m'
+      
+      # CORS
+      CORS_ENABLED: 'true'
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      CORS_CREDENTIALS: 'true'
+      
+      # Public URL
+      PUBLIC_URL: ${PUBLIC_URL}
+
+      # Email (optional, configure when ready)
+      # EMAIL_FROM: ${EMAIL_FROM}
+      # EMAIL_TRANSPORT: ${EMAIL_TRANSPORT}
+      # EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST}
+      # EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT}
+      # EMAIL_SMTP_USER: ${EMAIL_SMTP_USER}
+      # EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD}
+
+      # Extensions
+      EXTENSIONS_AUTO_RELOAD: 'true'
+
+      # Telemetry
+      TELEMETRY: 'false'
+
+    networks:
+      - directus
+
+networks:
+  directus:
+    name: drawday-network

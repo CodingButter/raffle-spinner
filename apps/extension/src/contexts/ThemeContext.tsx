@@ -13,35 +13,51 @@ import type {
   BrandingSettings,
 } from '@raffle-spinner/storage';
 
-// Default theme configuration
-const DEFAULT_COLORS: ThemeColors = {
-  primary: '#0b1e3a', // DrawDay Navy - Primary brand color
-  secondary: '#e6b540', // DrawDay Gold - Brand accent
-  accent: '#e6b540', // DrawDay Gold - Highlight
-  background: '#fdfeff', // White - Light mode background
-  foreground: '#161b21', // Rich Black - Text on light
-  card: '#fdfeff', // White - Card backgrounds
-  cardForeground: '#161b21', // Rich Black - Card text
-  winner: '#e6b540', // DrawDay Gold for winner highlight
-  winnerGlow: '#e6b540', // DrawDay Gold glow
+// Get system color scheme preference
+const getSystemColorScheme = () => {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return 'light';
 };
 
-const DEFAULT_SPINNER_STYLE: SpinnerStyle = {
-  type: 'slotMachine',
-  nameSize: 'large',
-  ticketSize: 'extra-large',
-  nameColor: '#fdfeff', // White - Names on dark background
-  ticketColor: '#e6b540', // DrawDay Gold - Ticket numbers
-  backgroundColor: '#1e1f23', // Raisin black - Panel background
-  canvasBackground: '#0c0e11', // Night - Slot machine canvas background
-  topShadowOpacity: 0.3, // Top shadow opacity
-  bottomShadowOpacity: 0.3, // Bottom shadow opacity
-  shadowSize: 30, // Shadow size as percentage
-  shadowColor: undefined, // Use panel background by default
-  borderColor: '#e6b540', // DrawDay Gold - Borders
-  highlightColor: '#e6b540', // DrawDay Gold - Highlights
-  fontFamily: 'system-ui',
-};
+// Default theme configuration - Adapts to system preference
+const DEFAULT_COLORS: ThemeColors = (() => {
+  const isDark = getSystemColorScheme() === 'dark';
+  
+  return {
+    primary: '#0b1e3a', // DrawDay Navy - Primary brand color
+    secondary: '#e6b540', // DrawDay Gold - Brand accent
+    accent: '#e6b540', // DrawDay Gold - Highlight
+    background: isDark ? '#0c0e11' : '#fdfeff', // Night for dark, White for light
+    foreground: isDark ? '#fdfeff' : '#161b21', // White text on dark, Rich Black on light
+    card: isDark ? '#161b21' : '#fdfeff', // Rich Black for dark, White for light
+    cardForeground: isDark ? '#fdfeff' : '#161b21', // White on dark, Rich Black on light
+    winner: '#e6b540', // DrawDay Gold for winner highlight
+    winnerGlow: '#e6b540', // DrawDay Gold glow
+  };
+})();
+
+const DEFAULT_SPINNER_STYLE: SpinnerStyle = (() => {
+  const isDark = getSystemColorScheme() === 'dark';
+  
+  return {
+    type: 'slotMachine',
+    nameSize: 'large',
+    ticketSize: 'extra-large',
+    nameColor: isDark ? '#fdfeff' : '#161b21', // White on dark, Rich Black on light
+    ticketColor: '#e6b540', // DrawDay Gold - Ticket numbers
+    backgroundColor: isDark ? '#161b21' : '#fdfeff', // Rich Black for dark, White for light
+    canvasBackground: isDark ? '#0c0e11' : '#f4f4f5', // Night for dark, Light gray for light
+    topShadowOpacity: 0.3, // Top shadow opacity
+    bottomShadowOpacity: 0.3, // Bottom shadow opacity
+    shadowSize: 30, // Shadow size as percentage
+    shadowColor: undefined, // Use panel background by default
+    borderColor: '#e6b540', // DrawDay Gold - Borders
+    highlightColor: '#e6b540', // DrawDay Gold - Highlights
+    fontFamily: 'system-ui',
+  };
+})();
 
 const DEFAULT_BRANDING: BrandingSettings = {
   logoPosition: 'center',
@@ -81,10 +97,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    // Listen for system color scheme changes
+    const handleColorSchemeChange = () => {
+      // If no custom theme is saved, update defaults based on system preference
+      chrome.storage.local.get('data').then((result) => {
+        if (!result.data?.theme) {
+          // Reset to new defaults when system theme changes
+          window.location.reload(); // Simple reload to apply new defaults
+        }
+      });
+    };
+
     chrome.storage.onChanged.addListener(handleStorageChange);
+    
+    const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    colorSchemeQuery.addEventListener('change', handleColorSchemeChange);
 
     return () => {
       chrome.storage.onChanged.removeListener(handleStorageChange);
+      colorSchemeQuery.removeEventListener('change', handleColorSchemeChange);
     };
   }, []);
 

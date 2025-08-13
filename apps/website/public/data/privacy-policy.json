@@ -1,0 +1,72 @@
+{
+  "title": "Privacy Policy",
+  "effectiveDate": "2025-01-13",
+  "lastUpdated": "2025-01-13",
+  "sections": [
+    {
+      "id": "introduction",
+      "title": "1. Introduction",
+      "content": "DrawDay Solutions (\"we\", \"us\", \"our\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use DrawDay Spinner and related services.\n\nWe comply with UK GDPR and data protection laws to ensure your personal information is handled responsibly and transparently."
+    },
+    {
+      "id": "information-collection",
+      "title": "2. Information We Collect",
+      "content": "We collect different types of information depending on how you interact with our services:\n\n**Personal Information**\n• Name and email address (when you contact us)\n• Company information (for business accounts)\n• Payment information (processed securely via third-party providers)\n\n**Usage Information**\n• Browser type and version\n• Device information\n• IP address (anonymized)\n• Service usage patterns\n\n**Competition Data**\n• All competition and participant data remains local in your browser\n• We do NOT have access to your competition participant data\n• Winner selections are processed entirely on your device"
+    },
+    {
+      "id": "how-we-use",
+      "title": "3. How We Use Your Information",
+      "content": "We use collected information for:\n\n• Providing and maintaining our services\n• Processing transactions and sending related information\n• Responding to customer service requests\n• Sending administrative information and updates\n• Improving our services and developing new features\n• Complying with legal obligations\n• Protecting against fraudulent or illegal activity\n\nWe will never:\n• Sell your personal information\n• Share your data with third parties for marketing\n• Access your competition participant data"
+    },
+    {
+      "id": "data-storage",
+      "title": "4. Data Storage and Security",
+      "content": "**Local Storage**\nDrawDay Spinner operates primarily as a browser extension where:\n• All competition data is stored locally in your browser\n• No participant information is transmitted to our servers\n• You maintain full control over your data\n\n**Our Systems**\nFor account and support data:\n• Data is encrypted in transit and at rest\n• Servers are located in secure UK data centers\n• Access is restricted to authorized personnel only\n• Regular security audits are conducted"
+    },
+    {
+      "id": "cookies",
+      "title": "5. Cookies and Tracking",
+      "content": "We use essential cookies to:\n• Maintain your session when logged in\n• Remember your preferences\n• Ensure security features function properly\n\nWe use analytics cookies (with your consent) to:\n• Understand how visitors use our website\n• Improve user experience\n• Measure marketing effectiveness\n\nYou can control cookies through your browser settings. Disabling cookies may limit some features."
+    },
+    {
+      "id": "third-parties",
+      "title": "6. Third-Party Services",
+      "content": "We may use third-party services for:\n\n**Payment Processing**\n• Stripe for secure payment handling\n• We don't store credit card details\n\n**Analytics**\n• Google Analytics (anonymized data only)\n• Performance monitoring tools\n\n**Support**\n• Email service providers for customer communication\n\nThese services have their own privacy policies and data practices."
+    },
+    {
+      "id": "your-rights",
+      "title": "7. Your Rights Under GDPR",
+      "content": "You have the right to:\n\n• **Access** - Request copies of your personal data\n• **Rectification** - Request correction of inaccurate data\n• **Erasure** - Request deletion of your data\n• **Restriction** - Request limited processing of your data\n• **Portability** - Receive your data in a portable format\n• **Object** - Object to certain processing activities\n• **Withdraw Consent** - Withdraw consent at any time\n\nTo exercise these rights, contact us at privacy@drawday.app"
+    },
+    {
+      "id": "data-retention",
+      "title": "8. Data Retention",
+      "content": "We retain personal data for:\n\n• Active accounts: As long as the account is active\n• Support inquiries: 2 years from last contact\n• Financial records: 7 years (legal requirement)\n• Marketing consent: Until withdrawn\n\nCompetition data in your browser:\n• Remains until you delete it\n• We cannot access or delete this data"
+    },
+    {
+      "id": "children",
+      "title": "9. Children's Privacy",
+      "content": "Our services are not intended for children under 16. We do not knowingly collect personal information from children. If you believe we have collected information from a child, please contact us immediately at privacy@drawday.app"
+    },
+    {
+      "id": "international",
+      "title": "10. International Data Transfers",
+      "content": "Your information may be transferred to and processed in countries other than the UK. We ensure appropriate safeguards are in place, including:\n\n• Standard contractual clauses\n• Adequacy decisions by the UK government\n• Your explicit consent where required"
+    },
+    {
+      "id": "breaches",
+      "title": "11. Data Breach Procedures",
+      "content": "In the event of a data breach:\n\n• We will notify affected users within 72 hours\n• We will notify the ICO as required by law\n• We will provide information about the breach and steps to protect yourself\n• We maintain incident response procedures to minimize impact"
+    },
+    {
+      "id": "changes",
+      "title": "12. Changes to This Policy",
+      "content": "We may update this Privacy Policy periodically. We will notify you of material changes by:\n\n• Posting the new policy on our website\n• Sending an email to registered users\n• Displaying a notice in the extension\n\nContinued use after changes constitutes acceptance."
+    },
+    {
+      "id": "contact",
+      "title": "13. Contact Information",
+      "content": "For privacy-related questions or to exercise your rights:\n\n**Data Protection Officer**\nDrawDay Solutions\nEmail: privacy@drawday.app\nPhone: +44 20 1234 5678\n\n**Supervisory Authority**\nInformation Commissioner's Office (ICO)\nWebsite: ico.org.uk\nPhone: 0303 123 1113"
+    }
+  ]
+}

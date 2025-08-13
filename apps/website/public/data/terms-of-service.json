@@ -1,0 +1,72 @@
+{
+  "title": "Terms of Service",
+  "effectiveDate": "2025-01-13",
+  "lastUpdated": "2025-01-13",
+  "sections": [
+    {
+      "id": "acceptance",
+      "title": "1. Acceptance of Terms",
+      "content": "By accessing and using DrawDay Spinner and related services (\"Services\"), you agree to be bound by these Terms of Service (\"Terms\"). If you do not agree to these Terms, please do not use our Services."
+    },
+    {
+      "id": "description",
+      "title": "2. Description of Services",
+      "content": "DrawDay Solutions provides live draw management software for UK competition companies. Our Services include:\n\n• DrawDay Spinner Chrome Extension for conducting live draws\n• Live streaming production services\n• Custom website development for competition companies\n• Technical support and consultation\n\nAll Services are designed to ensure fair, transparent, and legally compliant competition draws."
+    },
+    {
+      "id": "usage",
+      "title": "3. Acceptable Use",
+      "content": "You agree to use our Services only for lawful purposes and in accordance with these Terms. You agree not to:\n\n• Use the Services for any illegal or unauthorized purpose\n• Violate any UK gambling and competition laws\n• Attempt to manipulate or interfere with draw results\n• Reverse engineer or attempt to extract source code\n• Use the Services to harm, threaten, or harass others\n• Impersonate any person or entity"
+    },
+    {
+      "id": "account",
+      "title": "4. User Accounts",
+      "content": "To access certain features, you may need to create an account. You are responsible for:\n\n• Maintaining the confidentiality of your account credentials\n• All activities that occur under your account\n• Notifying us immediately of any unauthorized use\n• Providing accurate and complete information\n\nWe reserve the right to suspend or terminate accounts that violate these Terms."
+    },
+    {
+      "id": "privacy",
+      "title": "5. Privacy and Data Protection",
+      "content": "Your use of our Services is also governed by our Privacy Policy. We are committed to protecting your data in accordance with UK GDPR requirements. We collect and process data only as necessary to provide our Services and improve user experience."
+    },
+    {
+      "id": "intellectual",
+      "title": "6. Intellectual Property",
+      "content": "All content, features, and functionality of our Services are owned by DrawDay Solutions and are protected by UK and international copyright, trademark, and other intellectual property laws. You may not:\n\n• Copy, modify, or distribute our software without permission\n• Use our trademarks without written consent\n• Remove any proprietary notices from our materials"
+    },
+    {
+      "id": "competitions",
+      "title": "7. Competition Compliance",
+      "content": "When using our Services for competitions, you must:\n\n• Comply with all UK Gambling Commission regulations\n• Ensure draws are conducted fairly and transparently\n• Maintain accurate records of all participants and winners\n• Provide clear terms and conditions to your participants\n• Not use our Services for illegal lotteries or gambling activities"
+    },
+    {
+      "id": "liability",
+      "title": "8. Limitation of Liability",
+      "content": "TO THE MAXIMUM EXTENT PERMITTED BY LAW:\n\n• Our Services are provided \"as is\" without warranties of any kind\n• We are not liable for any indirect, incidental, or consequential damages\n• Our total liability shall not exceed the amount paid for the Services in the past 12 months\n• We are not responsible for draw outcomes or prize fulfillment"
+    },
+    {
+      "id": "indemnification",
+      "title": "9. Indemnification",
+      "content": "You agree to indemnify and hold DrawDay Solutions harmless from any claims, damages, losses, or expenses arising from:\n\n• Your use of the Services\n• Your violation of these Terms\n• Your violation of any rights of another party\n• Your competition operations and prize fulfillment"
+    },
+    {
+      "id": "termination",
+      "title": "10. Termination",
+      "content": "We may terminate or suspend your access to our Services immediately, without prior notice, for:\n\n• Breach of these Terms\n• Illegal or fraudulent activity\n• Non-payment of fees\n• Request by law enforcement\n\nUpon termination, your right to use the Services will cease immediately."
+    },
+    {
+      "id": "changes",
+      "title": "11. Changes to Terms",
+      "content": "We reserve the right to modify these Terms at any time. We will notify users of material changes via email or through the Services. Continued use after changes constitutes acceptance of the new Terms."
+    },
+    {
+      "id": "governing",
+      "title": "12. Governing Law",
+      "content": "These Terms are governed by the laws of England and Wales. Any disputes shall be resolved in the courts of England and Wales. If any provision is found unenforceable, the remaining provisions shall continue in effect."
+    },
+    {
+      "id": "contact",
+      "title": "13. Contact Information",
+      "content": "For questions about these Terms of Service, please contact us at:\n\nDrawDay Solutions\nEmail: legal@drawday.app\nPhone: +44 20 1234 5678\nAddress: London, United Kingdom"
+    }
+  ]
+}

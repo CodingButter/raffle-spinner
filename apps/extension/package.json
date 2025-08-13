@@ -39,6 +39,7 @@
     "@raffle-spinner/hooks": "workspace:*",
     "@raffle-spinner/contexts": "workspace:*",
     "@raffle-spinner/spinners": "workspace:*",
+    "@raffle-spinner/auth": "workspace:*",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

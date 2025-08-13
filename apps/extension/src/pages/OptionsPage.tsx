@@ -13,6 +13,8 @@ import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionCont
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { CollapsibleStateProvider, useCollapsibleState } from '@/contexts/CollapsibleStateContext';
+import { AuthGuard } from '@/components/auth/AuthGuard';
+import { useAuth } from '@raffle-spinner/auth/client';
 import { useCSVImport } from '@/hooks/useCSVImport';
 import { CompetitionManagementContent } from '@/components/options/CompetitionManagementContent';
 import { CSVUploadModal } from '@/components/options/CSVUploadModal';
@@ -36,6 +38,10 @@ function OptionsContent() {
     useCompetitions();
   const { settings, columnMapping, updateSettings, updateColumnMapping } = useSettings();
   const { collapsedSections, toggleSection } = useCollapsibleState();
+  const { user, logout } = useAuth();
+  
+  // Check if user has pro subscription for customization features
+  const isPro = user?.role === 'pro' || user?.role === 'admin';
 
   const [competitionToDelete, setCompetitionToDelete] = useState<Competition | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -92,14 +98,37 @@ function OptionsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold">Raffle Spinner Configuration</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage competitions and customize spinner settings
-          </p>
+    <div className="min-h-screen bg-background">
+      {/* User Info Bar */}
+      <div className="border-b border-border bg-card/50 px-8 py-3">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground">Logged in as:</span>
+            <span className="font-medium">{user?.email}</span>
+            {isPro ? (
+              <span className="px-2 py-0.5 bg-brand-gold/20 text-brand-gold text-xs font-semibold rounded">
+                PRO
+              </span>
+            ) : (
+              <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-semibold rounded">
+                FREE
+              </span>
+            )}
+          </div>
+          <Button variant="ghost" size="sm" onClick={logout}>
+            Logout
+          </Button>
         </div>
+      </div>
+
+      <div className="p-8">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold">Raffle Spinner Configuration</h1>
+            <p className="text-muted-foreground mt-2">
+              Manage competitions and customize spinner settings
+            </p>
+          </div>
 
         {importSummary && (
           <Alert variant={importSummary.success ? 'default' : 'destructive'}>
@@ -168,23 +197,40 @@ function OptionsContent() {
           )}
         </Card>
 
-        <Card>
-          <CardHeader className="cursor-pointer select-none" onClick={() => toggleSection('theme')}>
+        {/* Spinner Appearance - Pro only */}
+        <Card className={!isPro ? 'opacity-60' : ''}>
+          <CardHeader 
+            className="cursor-pointer select-none" 
+            onClick={() => isPro && toggleSection('theme')}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Spinner Appearance</CardTitle>
-                <CardDescription>Customize the look of your spinner</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  Spinner Appearance
+                  {!isPro && (
+                    <span className="text-xs px-2 py-0.5 bg-brand-gold/20 text-brand-gold rounded font-normal">
+                      PRO
+                    </span>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  {isPro
+                    ? 'Customize the look of your spinner'
+                    : 'Upgrade to Pro to customize appearance'}
+                </CardDescription>
               </div>
-              <Button variant="ghost" size="icon">
-                {collapsedSections.theme ? (
-                  <ChevronRight className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </Button>
+              {isPro && (
+                <Button variant="ghost" size="icon">
+                  {collapsedSections.theme ? (
+                    <ChevronRight className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
             </div>
           </CardHeader>
-          {!collapsedSections.theme && (
+          {isPro && !collapsedSections.theme && (
             <CardContent>
               <SpinnerCustomization />
               <div className="mt-6">
@@ -194,26 +240,40 @@ function OptionsContent() {
           )}
         </Card>
 
-        <Card>
+        {/* Branding - Pro only */}
+        <Card className={!isPro ? 'opacity-60' : ''}>
           <CardHeader
             className="cursor-pointer select-none"
-            onClick={() => toggleSection('branding')}
+            onClick={() => isPro && toggleSection('branding')}
           >
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Branding</CardTitle>
-                <CardDescription>Add your logo and company information</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  Branding
+                  {!isPro && (
+                    <span className="text-xs px-2 py-0.5 bg-brand-gold/20 text-brand-gold rounded font-normal">
+                      PRO
+                    </span>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  {isPro
+                    ? 'Add your logo and company information'
+                    : 'Upgrade to Pro to add custom branding'}
+                </CardDescription>
               </div>
-              <Button variant="ghost" size="icon">
-                {collapsedSections.branding ? (
-                  <ChevronRight className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </Button>
+              {isPro && (
+                <Button variant="ghost" size="icon">
+                  {collapsedSections.branding ? (
+                    <ChevronRight className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
             </div>
           </CardHeader>
-          {!collapsedSections.branding && (
+          {isPro && !collapsedSections.branding && (
             <CardContent>
               <BrandingSettings />
             </CardContent>
@@ -282,6 +342,7 @@ function OptionsContent() {
           onCancel={handleDeleteCancel}
         />
       </div>
+      </div>
     </div>
   );
 }
@@ -289,13 +350,15 @@ function OptionsContent() {
 export function OptionsPage() {
   return (
     <ThemeProvider>
-      <CompetitionProvider>
-        <SettingsProvider>
-          <CollapsibleStateProvider>
-            <OptionsContent />
-          </CollapsibleStateProvider>
-        </SettingsProvider>
-      </CompetitionProvider>
+      <AuthGuard>
+        <CompetitionProvider>
+          <SettingsProvider>
+            <CollapsibleStateProvider>
+              <OptionsContent />
+            </CollapsibleStateProvider>
+          </SettingsProvider>
+        </CompetitionProvider>
+      </AuthGuard>
     </ThemeProvider>
   );
 }

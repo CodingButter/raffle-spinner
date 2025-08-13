@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Navigation } from '@/components/navigation';
-import { Footer } from '@/components/footer';
+import FooterServer from '@/components/FooterServer';
+import { Providers } from './providers';
 import './globals.css';
 
 const inter = Inter({
@@ -45,11 +46,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} font-sans antialiased bg-night text-white`}>
-        <div className="min-h-screen flex flex-col">
-          <Navigation />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
+        <Providers>
+          <div className="min-h-screen flex flex-col">
+            <Navigation />
+            <main className="flex-1">{children}</main>
+            <FooterServer />
+          </div>
+        </Providers>
       </body>
     </html>
   );

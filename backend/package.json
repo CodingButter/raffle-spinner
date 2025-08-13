@@ -1,0 +1,23 @@
+{
+  "name": "drawday-backend",
+  "version": "1.0.0",
+  "description": "DrawDay Backend with Directus",
+  "scripts": {
+    "setup": "node setup-collections.js",
+    "setup:singletons": "node setup-singletons.js",
+    "setup:webhooks": "node setup-webhooks.js",
+    "seed": "node seed-data.js",
+    "populate": "node populate-content.js",
+    "permissions": "node setup-permissions.js",
+    "permissions:singletons": "node setup-singleton-permissions.js",
+    "init": "npm run setup && npm run setup:singletons && npm run permissions && npm run permissions:singletons && npm run seed",
+    "init:all": "npm run init && npm run populate && npm run setup:webhooks",
+    "start": "docker compose up -d",
+    "stop": "docker compose down",
+    "logs": "docker compose logs -f",
+    "restart": "docker compose restart"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@raffle-spinner/auth": "workspace:*",
     "@raffle-spinner/hooks": "workspace:*",
     "@raffle-spinner/spinners": "workspace:*",
     "@raffle-spinner/storage": "workspace:*",

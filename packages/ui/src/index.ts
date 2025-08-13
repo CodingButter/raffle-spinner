@@ -14,9 +14,13 @@ export * from "./components/card";
 // Form components
 export * from "./components/input";
 export * from "./components/label";
+export * from "./components/select";
 
 // Dialog components
 export * from "./components/dialog";
+
+// Feedback components
+export * from "./components/alert";
 
 // Utility functions
 export { cn } from "./lib/utils";

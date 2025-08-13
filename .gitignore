@@ -59,3 +59,15 @@ apps/extension/RaffleSpinner/
 # Wiki (separate repository)
 wiki/
 .vercel
+
+# Backend / Directus
+backend/database/*
+!backend/database/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/extensions/*
+!backend/extensions/.gitkeep
+backend/.env
+backend/*.backup
+backend/*.sql
+backend/*.dump
