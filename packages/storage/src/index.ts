@@ -9,11 +9,11 @@
  * - Package Architecture: Storage layer exports
  */
 
-export * from "./types";
-export * from "./storage-adapter";
-export * from "./chrome-storage-adapter";
+export * from './types';
+export * from './storage-adapter';
+export * from './chrome-storage-adapter';
 
-import { ChromeStorageAdapter } from "./chrome-storage-adapter";
+import { ChromeStorageAdapter } from './chrome-storage-adapter';
 
 // Default export for convenience
 export const storage = new ChromeStorageAdapter();

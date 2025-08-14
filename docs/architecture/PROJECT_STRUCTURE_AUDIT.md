@@ -40,7 +40,7 @@ raffle-spinner/
 - Competition types defined in multiple places
 - Participant types duplicated
 - Settings interfaces repeated
-- **Solution**: Consolidate all types in a single `@raffle-spinner/types` package
+- **Solution**: Consolidate all types in a single `@drawday/types` package
 
 ### 🟡 Moderate Issues (Naming & Organization)
 
@@ -81,7 +81,7 @@ raffle-spinner/
 
 ### Phase 1: Create Missing Shared Packages
 
-#### 1. Create `@raffle-spinner/types` package
+#### 1. Create `@drawday/types` package
 
 ```typescript
 // packages/types/src/index.ts
@@ -92,7 +92,7 @@ export * from "./theme";
 export * from "./spinner";
 ```
 
-#### 2. Split `@raffle-spinner/utils` into focused packages
+#### 2. Split `@drawday/utils` into focused packages
 
 - `@raffle-spinner/tailwind-utils` - cn function and Tailwind utilities
 - `@raffle-spinner/ticket-utils` - ticket number functions
@@ -140,7 +140,7 @@ packages/spinners/src/
 #### 1. Image Upload Pattern
 
 - Used in multiple places for logos/banners
-- Should be extracted to `@raffle-spinner/ui/ImageUpload`
+- Should be extracted to `@drawday/ui/ImageUpload`
 
 #### 2. CSV Processing Pattern
 
@@ -156,7 +156,7 @@ packages/spinners/src/
 
 ### Phase 1: Type Consolidation (COMPLETED)
 
-- ✅ Created `@raffle-spinner/types` package with all shared type definitions
+- ✅ Created `@drawday/types` package with all shared type definitions
 - ✅ Updated `@raffle-spinner/storage` to re-export from types package
 - ✅ Centralized all type definitions in one location
 

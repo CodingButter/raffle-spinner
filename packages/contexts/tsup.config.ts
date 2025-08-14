@@ -1,17 +1,17 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ["src/index.ts"],
-  format: ["cjs", "esm"],
+  entry: ['src/index.ts'],
+  format: ['cjs', 'esm'],
   dts: {
     resolve: true,
     compilerOptions: {
-      jsx: "react-jsx",
-      moduleResolution: "bundler",
+      jsx: 'react-jsx',
+      moduleResolution: 'bundler',
     },
   },
   clean: true,
-  external: ["react", "@raffle-spinner/utils", "@raffle-spinner/hooks"],
+  external: ['react', '@drawday/utils', '@drawday/hooks'],
   sourcemap: true,
   minify: false,
   splitting: false,

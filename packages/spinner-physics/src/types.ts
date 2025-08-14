@@ -14,7 +14,7 @@ export interface SpinConfig {
   targetIndex: number;
   totalItems: number;
   minDuration: number; // seconds
-  decelerationRate: "slow" | "medium" | "fast";
+  decelerationRate: 'slow' | 'medium' | 'fast';
 }
 
 export interface SpinAnimation {

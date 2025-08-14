@@ -8,7 +8,7 @@
  * - FR-2.2: Winner Selection and Animation (visual representation)
  */
 
-import { Participant, ThemeSettings } from "@raffle-spinner/storage";
+import { Participant, ThemeSettings } from '@raffle-spinner/storage';
 
 // Convert hex color to rgba
 const hexToRgba = (hex: string, alpha: number) => {
@@ -45,17 +45,13 @@ export function drawSlotMachineSegment({
 }: WheelSegmentProps) {
   const centerY = viewportHeight / 2 + 40;
   const distanceFromCenter = Math.abs(yPos + itemHeight / 2 - centerY);
-  const perspectiveFactor =
-    1 - (distanceFromCenter / (viewportHeight / 2)) * perspectiveScale;
+  const perspectiveFactor = 1 - (distanceFromCenter / (viewportHeight / 2)) * perspectiveScale;
 
   // Skip items that are completely outside viewport
   if (yPos > viewportHeight + 80 || yPos < -itemHeight) return;
 
   // Calculate opacity based on distance from center
-  const opacity = Math.max(
-    0.3,
-    1 - (distanceFromCenter / (viewportHeight / 2)) * 0.7,
-  );
+  const opacity = Math.max(0.3, 1 - (distanceFromCenter / (viewportHeight / 2)) * 0.7);
 
   // Draw the segment with 3D effect
   ctx.save();
@@ -65,12 +61,7 @@ export function drawSlotMachineSegment({
   const xOffset = (canvasWidth - scaledWidth) / 2;
 
   // Draw segment background with gradient for 3D effect
-  const segmentGradient = ctx.createLinearGradient(
-    xOffset,
-    yPos,
-    xOffset + scaledWidth,
-    yPos,
-  );
+  const segmentGradient = ctx.createLinearGradient(xOffset, yPos, xOffset + scaledWidth, yPos);
 
   // Parse the background color from theme
   const bgColor = theme.spinnerStyle.backgroundColor;
@@ -110,25 +101,25 @@ export function drawSlotMachineSegment({
     small: 14,
     medium: 16,
     large: 20,
-    "extra-large": 24,
+    'extra-large': 24,
   };
   const ticketSizes = {
     small: 18,
     medium: 24,
     large: 32,
-    "extra-large": 40,
+    'extra-large': 40,
   };
 
   const nameSize = nameSizes[theme.spinnerStyle.nameSize];
   const ticketSize = ticketSizes[theme.spinnerStyle.ticketSize];
-  const fontFamily = theme.spinnerStyle.fontFamily || "sans-serif";
+  const fontFamily = theme.spinnerStyle.fontFamily || 'sans-serif';
 
   // Draw name with theme color and size
   const nameColor = theme.spinnerStyle.nameColor;
   ctx.fillStyle = hexToRgba(nameColor, opacity);
   ctx.font = `bold ${nameSize * perspectiveFactor}px ${fontFamily}`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
 
   const name = `${participant.firstName} ${participant.lastName}`;
   ctx.fillText(name, canvasWidth / 2, yPos + itemHeight / 2 - 15);

@@ -10,6 +10,6 @@
  * - Package Architecture: Physics layer exports
  */
 
-export * from "./types";
-export * from "./easing";
-export * from "./spinner-physics";
+export * from './types';
+export * from './easing';
+export * from './spinner-physics';

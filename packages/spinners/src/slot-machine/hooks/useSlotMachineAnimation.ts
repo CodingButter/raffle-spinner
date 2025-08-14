@@ -5,9 +5,9 @@
  * including physics calculations and subset swapping.
  */
 
-import { useCallback, useRef } from "react";
-import { Participant, SpinnerSettings } from "@raffle-spinner/storage";
-import { normalizeTicketNumber, logger } from "@raffle-spinner/utils";
+import { useCallback, useRef } from 'react';
+import { Participant, SpinnerSettings } from '@raffle-spinner/storage';
+import { normalizeTicketNumber, logger } from '@drawday/utils';
 
 interface AnimationOptions {
   participants: Participant[];
@@ -51,10 +51,10 @@ export function useSlotMachineAnimation({
     (searchParticipants: Participant[]): Participant | undefined => {
       const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
       return searchParticipants.find(
-        (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget,
+        (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
       );
     },
-    [targetTicketNumber],
+    [targetTicketNumber]
   );
 
   /**
@@ -78,12 +78,10 @@ export function useSlotMachineAnimation({
     }
 
     // Get current participants
-    const currentParticipants = getParticipants
-      ? getParticipants()
-      : initialParticipants;
+    const currentParticipants = getParticipants ? getParticipants() : initialParticipants;
 
     if (currentParticipants.length === 0) {
-      onError?.("No participants available");
+      onError?.('No participants available');
       return;
     }
 
@@ -103,22 +101,17 @@ export function useSlotMachineAnimation({
       winner = currentParticipants[middleIndex];
 
       // Don't error here - the subset will be swapped during animation
-      logger.debug(
-        `Ticket ${targetTicket} not in initial subset, will swap at max velocity`,
-        {
-          component: "useSlotMachineAnimation",
-          metadata: { targetTicket },
-        },
-      );
+      logger.debug(`Ticket ${targetTicket} not in initial subset, will swap at max velocity`, {
+        component: 'useSlotMachineAnimation',
+        metadata: { targetTicket },
+      });
     } else {
       winner = foundWinner;
     }
 
     // Calculate winner's position in the current subset
     let winnerIndex = currentParticipants.findIndex(
-      (p) =>
-        normalizeTicketNumber(p.ticketNumber) ===
-        normalizeTicketNumber(targetTicketNumber),
+      (p) => normalizeTicketNumber(p.ticketNumber) === normalizeTicketNumber(targetTicketNumber)
     );
 
     // If winner not in current subset, spin to middle (will be corrected after swap)
@@ -128,14 +121,16 @@ export function useSlotMachineAnimation({
 
     // Calculate physics for the spin
     const wheelCircumference = currentParticipants.length * itemHeight;
-    const targetPosition = winnerIndex * itemHeight;
+    // The center position is at index 2 (VISIBLE_ITEMS / 2), so we need to adjust
+    // to put the winner at the center position, not at the top
+    const CENTER_INDEX = 2; // The visual center of the slot machine
+    const targetPosition = (winnerIndex - CENTER_INDEX) * itemHeight;
 
     // Calculate spin duration and distance
     const duration = settings.minSpinDuration * 1000; // Convert to ms
     const minRotations = 5;
     const maxRotations = 8;
-    const rotations =
-      minRotations + Math.random() * (maxRotations - minRotations);
+    const rotations = minRotations + Math.random() * (maxRotations - minRotations);
     const totalDistance = rotations * wheelCircumference + targetPosition;
 
     const physics = {
@@ -159,28 +154,21 @@ export function useSlotMachineAnimation({
       const elapsed = currentTime - startTimeRef.current;
       const progress = Math.min(elapsed / recalculatedPhysics.duration, 1);
 
-      // Trigger onMaxVelocity callback at 20% progress
-      if (
-        !hasTriggeredMaxVelocity &&
-        progress >= 0.2 &&
-        progress < 0.4 &&
-        onMaxVelocity
-      ) {
+      // Trigger onMaxVelocity callback at 15% progress (early enough to be seamless)
+      if (!hasTriggeredMaxVelocity && progress >= 0.15 && progress < 0.35 && onMaxVelocity) {
         hasTriggeredMaxVelocity = true;
+        
+        // Store the current position before the swap for continuity
+        const currentPosition = recalculatedPhysics.startPosition + recalculatedPhysics.totalDistance * (1 - Math.pow(1 - progress, 3));
+        
         const newWinnerIndex = onMaxVelocity();
 
         // If subset changed and we got a new winner index, recalculate physics
-        if (
-          typeof newWinnerIndex === "number" &&
-          newWinnerIndex >= 0 &&
-          !recalculatedTarget
-        ) {
+        if (typeof newWinnerIndex === 'number' && newWinnerIndex >= 0 && !recalculatedTarget) {
           recalculatedTarget = true;
 
           // Get updated participants after subset swap
-          const updatedParticipants = getParticipants
-            ? getParticipants()
-            : currentParticipants;
+          const updatedParticipants = getParticipants ? getParticipants() : currentParticipants;
 
           // Update the winner reference to the actual winner in the new subset
           const actualWinner = findWinner(updatedParticipants);
@@ -190,21 +178,30 @@ export function useSlotMachineAnimation({
 
           // Recalculate physics for new winner position
           const updatedCircumference = updatedParticipants.length * itemHeight;
-          const newTargetPosition = newWinnerIndex * itemHeight;
-          const remainingDuration = physics.duration * 0.8; // Slightly shorter for second part
-          const remainingRotations = 3 + Math.random() * 2;
-          const remainingDistance =
-            remainingRotations * updatedCircumference + newTargetPosition;
+          // Adjust target position to center the winner (index 2 is the visual center)
+          const CENTER_INDEX = 2;
+          const newTargetPosition = (newWinnerIndex - CENTER_INDEX) * itemHeight;
+          const remainingDuration = physics.duration * 0.6; // Shorter for remaining spin
+          const remainingRotations = 2 + Math.random() * 2; // Fewer rotations after swap
+          
+          // Calculate remaining distance from current position
+          // Normalize current position to the new wheel circumference
+          const normalizedCurrentPos = currentPosition % updatedCircumference;
+          const distanceToTarget = newTargetPosition > normalizedCurrentPos 
+            ? newTargetPosition - normalizedCurrentPos 
+            : updatedCircumference - normalizedCurrentPos + newTargetPosition;
+          
+          const remainingDistance = remainingRotations * updatedCircumference + distanceToTarget;
 
           recalculatedPhysics = {
             duration: remainingDuration,
             totalDistance: remainingDistance,
-            startPosition: 0,
+            startPosition: normalizedCurrentPos,
             finalPosition: newTargetPosition,
           };
 
-          // Adjust the start time to account for progress already made
-          startTimeRef.current = currentTime - elapsed * 0.2; // Keep 20% of progress
+          // Reset start time for the new animation segment
+          startTimeRef.current = currentTime;
         }
       }
 
@@ -214,8 +211,7 @@ export function useSlotMachineAnimation({
         // Use cubic ease-out for smooth deceleration
         const easeOutCubic = 1 - Math.pow(1 - progress, 3);
         position =
-          recalculatedPhysics.startPosition +
-          recalculatedPhysics.totalDistance * easeOutCubic;
+          recalculatedPhysics.startPosition + recalculatedPhysics.totalDistance * easeOutCubic;
       } else {
         // Snap to final position
         position = recalculatedPhysics.finalPosition;

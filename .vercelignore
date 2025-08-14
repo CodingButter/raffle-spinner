@@ -1,12 +1,29 @@
-# Vercel ignore file for monorepo
-apps/extension
-packages/*/tsconfig.json
-*.test.ts
-*.test.tsx
-*.spec.ts
-*.spec.tsx
-**/__tests__
-**/*.md
-.turbo
-.git
-.gitignore
+# Backend - not needed for website deployment
+backend/
+
+# Documentation
+docs/
+wiki/
+*.md
+
+# Development files
+scripts/
+samples/
+
+# Extension - separate deployment
+apps/extension/
+
+# Git
+.git/
+.github/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

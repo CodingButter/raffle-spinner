@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from '@raffle-spinner/ui';
+import { Button } from '@drawday/ui';
 import { Menu, X, ChevronDown, Monitor, Tv, Code, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -47,9 +47,9 @@ export function Navigation() {
                 Services
                 <ChevronDown className="w-4 h-4" />
               </button>
-              
+
               {servicesOpen && (
-                <div 
+                <div
                   className="absolute top-full left-0 mt-2 w-72 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl overflow-hidden"
                   onMouseEnter={() => setServicesOpen(true)}
                   onMouseLeave={() => setServicesOpen(false)}
@@ -67,7 +67,7 @@ export function Navigation() {
                     </div>
                     <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
                   </Link>
-                  
+
                   <Link
                     href="/streaming"
                     className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
@@ -81,7 +81,7 @@ export function Navigation() {
                     </div>
                     <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
                   </Link>
-                  
+
                   <Link
                     href="/websites"
                     className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
@@ -99,32 +99,21 @@ export function Navigation() {
               )}
             </div>
 
-            <Link
-              href="/portfolio"
-              className="text-gray-300 hover:text-white transition-colors"
-            >
+            <Link href="/portfolio" className="text-gray-300 hover:text-white transition-colors">
               Portfolio
             </Link>
-            <Link
-              href="/about"
-              className="text-gray-300 hover:text-white transition-colors"
-            >
+            <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
               About
             </Link>
-            <Link
-              href="/contact"
-              className="text-gray-300 hover:text-white transition-colors"
-            >
+            <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
               Contact
             </Link>
-            
-            <Button 
+
+            <Button
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
               asChild
             >
-              <Link href="/contact">
-                Get Started
-              </Link>
+              <Link href="/contact">Get Started</Link>
             </Button>
           </div>
 
@@ -166,7 +155,7 @@ export function Navigation() {
               >
                 Custom Websites
               </Link>
-              
+
               <div className="border-t border-gray-800 pt-4 mt-2">
                 <Link
                   href="/portfolio"
@@ -190,11 +179,9 @@ export function Navigation() {
                   Contact
                 </Link>
               </div>
-              
+
               <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600" asChild>
-                <Link href="/contact">
-                  Get Started
-                </Link>
+                <Link href="/contact">Get Started</Link>
               </Button>
             </div>
           </div>

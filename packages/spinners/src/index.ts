@@ -6,7 +6,7 @@
  */
 
 // Export types
-export * from "./types";
+export * from './types';
 
 // Export slot machine spinner
-export * from "./slot-machine";
+export * from './slot-machine';

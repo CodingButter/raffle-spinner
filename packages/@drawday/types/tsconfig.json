@@ -1,0 +1,12 @@
+{
+  "extends": "@drawday/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+    "lib": ["ES2015", "DOM"],
+    "target": "ES2015"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

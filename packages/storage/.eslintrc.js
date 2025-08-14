@@ -1,7 +1,7 @@
 module.exports = {
-  extends: ["@raffle-spinner/eslint-config"],
+  extends: ['@drawday/eslint-config'],
   parserOptions: {
-    project: "./tsconfig.json",
+    project: './tsconfig.json',
     tsconfigRootDir: __dirname,
   },
 };

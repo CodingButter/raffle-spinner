@@ -27,8 +27,8 @@ pnpm add @raffle-spinner/spinner-physics
 ## Usage
 
 ```typescript
-import { SpinnerPhysics } from "@raffle-spinner/spinner-physics";
-import type { SpinConfig, SpinResult } from "@raffle-spinner/spinner-physics";
+import { SpinnerPhysics } from '@raffle-spinner/spinner-physics';
+import type { SpinConfig, SpinResult } from '@raffle-spinner/spinner-physics';
 
 // Initialize physics engine
 const physics = new SpinnerPhysics({
@@ -46,7 +46,7 @@ const config: SpinConfig = {
 };
 
 const result = await physics.spin(config);
-console.log("Winner index:", result.winnerIndex);
+console.log('Winner index:', result.winnerIndex);
 ```
 
 ## API Reference
@@ -154,8 +154,8 @@ The winner is determined by:
 ### Canvas Setup
 
 ```typescript
-const canvas = document.getElementById("wheel") as HTMLCanvasElement;
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('wheel') as HTMLCanvasElement;
+const ctx = canvas.getContext('2d');
 
 const physics = new SpinnerPhysics({
   wheelRadius: canvas.width / 2,
@@ -179,7 +179,7 @@ function animate() {
 
 // Start spin
 physics.spin({ initialVelocity: 0.8 }).then((result) => {
-  console.log("Winner:", participants[result.winnerIndex]);
+  console.log('Winner:', participants[result.winnerIndex]);
 });
 
 animate();

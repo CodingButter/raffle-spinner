@@ -10,8 +10,8 @@
  * - FR-2.2: Performance optimization (visible segment calculation for large datasets)
  */
 
-import { SpinConfig, SpinAnimation, WheelSegment } from "./types";
-import { easingFunctions } from "./easing";
+import { SpinConfig, SpinAnimation, WheelSegment } from './types';
+import { easingFunctions } from './easing';
 
 export class SpinnerPhysics {
   calculateSpinAnimation(config: SpinConfig): SpinAnimation {
@@ -26,8 +26,7 @@ export class SpinnerPhysics {
     // Add multiple full rotations for visual effect
     const minRotations = 3;
     const maxRotations = 5;
-    const rotations =
-      minRotations + Math.random() * (maxRotations - minRotations);
+    const rotations = minRotations + Math.random() * (maxRotations - minRotations);
 
     // Calculate total rotation
     const totalRotation = rotations * 2 * Math.PI + targetAngle;
@@ -46,7 +45,7 @@ export class SpinnerPhysics {
   calculateVisibleSegments(
     currentAngle: number,
     totalItems: number,
-    visibleCount: number = 100,
+    visibleCount: number = 100
   ): number[] {
     const segmentAngle = (2 * Math.PI) / totalItems;
     const normalizedAngle = currentAngle % (2 * Math.PI);

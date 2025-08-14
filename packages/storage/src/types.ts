@@ -39,4 +39,4 @@ export type {
   ArrayElement,
   RequireKeys,
   OptionalKeys,
-} from "@raffle-spinner/types";
+} from '@drawday/types';

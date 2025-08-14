@@ -1,5 +1,5 @@
 {
-  "name": "@raffle-spinner/website",
+  "name": "@drawday/website",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -9,13 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@raffle-spinner/auth": "workspace:*",
-    "@raffle-spinner/hooks": "workspace:*",
+    "@drawday/auth": "workspace:*",
+    "@drawday/hooks": "workspace:*",
     "@raffle-spinner/spinners": "workspace:*",
     "@raffle-spinner/storage": "workspace:*",
-    "@raffle-spinner/tailwind-config": "workspace:*",
-    "@raffle-spinner/ui": "workspace:*",
-    "@raffle-spinner/utils": "workspace:*",
+    "@drawday/tailwind-config": "workspace:*",
+    "@drawday/ui": "workspace:*",
+    "@drawday/utils": "workspace:*",
     "@types/canvas-confetti": "^1.6.4",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.0",
@@ -28,9 +28,9 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@raffle-spinner/eslint-config": "workspace:*",
-    "@raffle-spinner/prettier-config": "workspace:*",
-    "@raffle-spinner/typescript-config": "workspace:*",
+    "@drawday/eslint-config": "workspace:*",
+    "@drawday/prettier-config": "workspace:*",
+    "@drawday/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^18.3.16",
@@ -40,5 +40,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "prettier": "@raffle-spinner/prettier-config"
+  "prettier": "@drawday/prettier-config"
 }

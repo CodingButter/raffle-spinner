@@ -15,17 +15,13 @@
  * @category Components
  */
 
-import React, { useRef, useEffect, useState, useCallback } from "react";
-import { Participant } from "@raffle-spinner/storage";
-import { normalizeTicketNumber } from "@raffle-spinner/utils";
-import { useSlotMachineAnimation } from "./hooks/useSlotMachineAnimation";
-import { drawSlotMachineSegment } from "./components/SlotMachineSegment";
-import { drawSlotMachineFrame } from "./components/SlotMachineFrame";
-import {
-  BaseSpinnerProps,
-  DEFAULT_SPINNER_THEME,
-  SpinnerTheme,
-} from "../types";
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { Participant } from '@raffle-spinner/storage';
+import { normalizeTicketNumber } from '@drawday/utils';
+import { useSlotMachineAnimation } from './hooks/useSlotMachineAnimation';
+import { drawSlotMachineSegment } from './components/SlotMachineSegment';
+import { drawSlotMachineFrame } from './components/SlotMachineFrame';
+import { BaseSpinnerProps, DEFAULT_SPINNER_THEME, SpinnerTheme } from '../types';
 
 // Visual constants
 const ITEM_HEIGHT = 80;
@@ -48,12 +44,12 @@ const SUBSET_HALF = 50; // Half of the subset size
  */
 function adjustBrightness(color: string, percent: number): string {
   // Handle hex colors
-  if (color.startsWith("#")) {
-    const num = parseInt(color.replace("#", ""), 16);
+  if (color.startsWith('#')) {
+    const num = parseInt(color.replace('#', ''), 16);
     const r = Math.max(0, Math.min(255, ((num >> 16) & 255) + percent));
     const g = Math.max(0, Math.min(255, ((num >> 8) & 255) + percent));
     const b = Math.max(0, Math.min(255, (num & 255) + percent));
-    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
   }
   // For non-hex colors, return with opacity adjustment
   return color;
@@ -79,34 +75,34 @@ export interface SlotMachineWheelProps extends BaseSpinnerProps {
 function convertTheme(theme: SpinnerTheme) {
   return {
     colors: {
-      primary: "#007BFF",
-      secondary: "#FF1493",
-      accent: "#FFD700",
-      background: theme.canvasBackground || "#09090b",
-      foreground: "#fafafa",
-      card: "#09090b",
-      cardForeground: "#fafafa",
-      winner: theme.highlightColor || "#FFD700",
-      winnerGlow: theme.highlightColor || "#FFD700",
+      primary: '#007BFF',
+      secondary: '#FF1493',
+      accent: '#FFD700',
+      background: theme.canvasBackground || '#09090b',
+      foreground: '#fafafa',
+      card: '#09090b',
+      cardForeground: '#fafafa',
+      winner: theme.highlightColor || '#FFD700',
+      winnerGlow: theme.highlightColor || '#FFD700',
     },
     spinnerStyle: {
-      type: "slotMachine" as const,
-      backgroundColor: theme.backgroundColor || "#1a1a1a",
-      canvasBackground: theme.canvasBackground || "#09090b",
-      borderColor: theme.borderColor || "#FFD700",
-      highlightColor: theme.highlightColor || "#FF1493",
-      nameColor: theme.nameColor || "#fafafa",
-      ticketColor: theme.ticketColor || "#FFD700",
-      fontFamily: theme.fontFamily || "system-ui",
-      nameSize: theme.nameSize || "large",
-      ticketSize: theme.ticketSize || "extra-large",
+      type: 'slotMachine' as const,
+      backgroundColor: theme.backgroundColor || '#1a1a1a',
+      canvasBackground: theme.canvasBackground || '#09090b',
+      borderColor: theme.borderColor || '#FFD700',
+      highlightColor: theme.highlightColor || '#FF1493',
+      nameColor: theme.nameColor || '#fafafa',
+      ticketColor: theme.ticketColor || '#FFD700',
+      fontFamily: theme.fontFamily || 'system-ui',
+      nameSize: theme.nameSize || 'large',
+      ticketSize: theme.ticketSize || 'extra-large',
       topShadowOpacity: theme.topShadowOpacity ?? 0.3,
       bottomShadowOpacity: theme.bottomShadowOpacity ?? 0.3,
       shadowSize: theme.shadowSize ?? 30,
       shadowColor: theme.shadowColor,
     },
     branding: {
-      logoPosition: "center" as const,
+      logoPosition: 'center' as const,
       showCompanyName: false,
     },
   };
@@ -145,7 +141,7 @@ function convertTheme(theme: SpinnerTheme) {
  */
 export function SlotMachineWheel({
   participants,
-  targetTicketNumber = "",
+  targetTicketNumber = '',
   settings,
   isSpinning,
   onSpinComplete,
@@ -168,8 +164,8 @@ export function SlotMachineWheel({
   // Sort participants by ticket number to get consistent ordering - MEMOIZED
   const sortedParticipants = React.useMemo(() => {
     return [...participants].sort((a, b) => {
-      const aNum = parseInt(a.ticketNumber.replace(/\D/g, "")) || 0;
-      const bNum = parseInt(b.ticketNumber.replace(/\D/g, "")) || 0;
+      const aNum = parseInt(a.ticketNumber.replace(/\D/g, '')) || 0;
+      const bNum = parseInt(b.ticketNumber.replace(/\D/g, '')) || 0;
       return aNum - bNum;
     });
   }, [participants]);
@@ -193,11 +189,8 @@ export function SlotMachineWheel({
             repeated.push(
               ...sortedParticipants.slice(
                 0,
-                Math.min(
-                  sortedParticipants.length,
-                  SUBSET_SIZE - repeated.length,
-                ),
-              ),
+                Math.min(sortedParticipants.length, SUBSET_SIZE - repeated.length)
+              )
             );
           }
           initialSubset = repeated;
@@ -231,7 +224,7 @@ export function SlotMachineWheel({
       const canvas = canvasRef.current;
       if (!canvas || subset.length === 0) return;
 
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
       // Clear canvas
@@ -239,8 +232,7 @@ export function SlotMachineWheel({
 
       // Draw background using theme colors
       // Use the dedicated canvas background color, not the app background
-      const canvasBgColor =
-        internalTheme?.spinnerStyle?.canvasBackground || "#09090b";
+      const canvasBgColor = internalTheme?.spinnerStyle?.canvasBackground || '#09090b';
       const bgGradient = ctx.createLinearGradient(0, 0, 0, canvasHeight);
 
       // Create gradient based on the theme background color
@@ -253,8 +245,7 @@ export function SlotMachineWheel({
       // Calculate wheel position (based on subset, not all participants)
       const wheelCircumference = subset.length * ITEM_HEIGHT;
       const normalizedPos =
-        ((currentPosition % wheelCircumference) + wheelCircumference) %
-        wheelCircumference;
+        ((currentPosition % wheelCircumference) + wheelCircumference) % wheelCircumference;
 
       // Determine which participant is at the top of the viewport
       const topParticipantIndex = Math.floor(normalizedPos / ITEM_HEIGHT);
@@ -292,17 +283,13 @@ export function SlotMachineWheel({
         // Add debug text showing position indices (only in dev builds)
         if (showDebug) {
           ctx.save();
-          ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-          ctx.font = "10px monospace";
-          ctx.textAlign = "left";
-          ctx.fillText(
-            `i=${i}, idx=${participantIndex}`,
-            10,
-            yPosition + ITEM_HEIGHT / 2,
-          );
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.font = '10px monospace';
+          ctx.textAlign = 'left';
+          ctx.fillText(`i=${i}, idx=${participantIndex}`, 10, yPosition + ITEM_HEIGHT / 2);
           if (isCenter) {
-            ctx.fillStyle = "rgba(255, 0, 0, 0.8)";
-            ctx.fillText("← CENTER", 60, yPosition + ITEM_HEIGHT / 2);
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+            ctx.fillText('← CENTER', 60, yPosition + ITEM_HEIGHT / 2);
           }
           ctx.restore();
         }
@@ -317,15 +304,13 @@ export function SlotMachineWheel({
       });
 
       // Draw top and bottom shadow overlays
-      const topShadowOpacity =
-        internalTheme?.spinnerStyle?.topShadowOpacity ?? 0.3;
-      const bottomShadowOpacity =
-        internalTheme?.spinnerStyle?.bottomShadowOpacity ?? 0.3;
+      const topShadowOpacity = internalTheme?.spinnerStyle?.topShadowOpacity ?? 0.3;
+      const bottomShadowOpacity = internalTheme?.spinnerStyle?.bottomShadowOpacity ?? 0.3;
       const shadowSize = (internalTheme?.spinnerStyle?.shadowSize ?? 30) / 100; // Convert percentage to decimal
       const shadowColor =
         internalTheme?.spinnerStyle?.shadowColor ||
         internalTheme?.spinnerStyle?.backgroundColor ||
-        "#1a1a1a";
+        '#1a1a1a';
 
       // Parse hex color to RGB
       const hexToRgb = (hex: string) => {
@@ -345,10 +330,7 @@ export function SlotMachineWheel({
       if (topShadowOpacity > 0) {
         const topShadowHeight = canvasHeight * shadowSize;
         const topGradient = ctx.createLinearGradient(0, 0, 0, topShadowHeight);
-        topGradient.addColorStop(
-          0,
-          `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${topShadowOpacity})`,
-        );
+        topGradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${topShadowOpacity})`);
         topGradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
         ctx.fillStyle = topGradient;
         ctx.fillRect(0, 0, canvasWidth, topShadowHeight);
@@ -358,22 +340,17 @@ export function SlotMachineWheel({
       if (bottomShadowOpacity > 0) {
         const bottomShadowHeight = canvasHeight * shadowSize;
         const bottomStart = canvasHeight - bottomShadowHeight;
-        const bottomGradient = ctx.createLinearGradient(
-          0,
-          bottomStart,
-          0,
-          canvasHeight,
-        );
+        const bottomGradient = ctx.createLinearGradient(0, bottomStart, 0, canvasHeight);
         bottomGradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
         bottomGradient.addColorStop(
           1,
-          `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${bottomShadowOpacity})`,
+          `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${bottomShadowOpacity})`
         );
         ctx.fillStyle = bottomGradient;
         ctx.fillRect(0, bottomStart, canvasWidth, bottomShadowHeight);
       }
     },
-    [internalTheme, canvasWidth, canvasHeight, showDebug],
+    [internalTheme, canvasWidth, canvasHeight, showDebug]
   );
 
   /**
@@ -384,9 +361,7 @@ export function SlotMachineWheel({
    */
   const findWinnerInFullList = useCallback(() => {
     const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
-    return participants.find(
-      (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget,
-    );
+    return participants.find((p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget);
   }, [participants, targetTicketNumber]);
 
   /**
@@ -400,7 +375,7 @@ export function SlotMachineWheel({
     // Find the winner in sorted participants
     const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
     const winnerIndex = sortedParticipants.findIndex(
-      (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget,
+      (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
     );
 
     if (winnerIndex === -1) {
@@ -434,16 +409,11 @@ export function SlotMachineWheel({
     } else if (startIdx + SUBSET_SIZE > sortedParticipants.length) {
       // Winner is in the last half, need to wrap around
       const fromMiddle = sortedParticipants.slice(startIdx);
-      const fromBeginning = sortedParticipants.slice(
-        0,
-        SUBSET_SIZE - fromMiddle.length,
-      );
+      const fromBeginning = sortedParticipants.slice(0, SUBSET_SIZE - fromMiddle.length);
       subset.push(...fromMiddle, ...fromBeginning);
     } else {
       // Winner is in the middle, can take a continuous slice
-      subset.push(
-        ...sortedParticipants.slice(startIdx, startIdx + SUBSET_SIZE),
-      );
+      subset.push(...sortedParticipants.slice(startIdx, startIdx + SUBSET_SIZE));
     }
 
     return subset;
@@ -464,7 +434,7 @@ export function SlotMachineWheel({
       // Find winner's new index in the subset
       const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
       const newWinnerIndex = winnerSubset.findIndex(
-        (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget,
+        (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
       );
 
       setDisplaySubset(winnerSubset);
@@ -536,14 +506,14 @@ export function SlotMachineWheel({
 
   return (
     <div
-      className={`relative w-full flex items-center justify-center rounded-lg p-4 ${className || ""}`}
+      className={`relative w-full flex items-center justify-center rounded-lg p-4 ${className || ''}`}
     >
       <canvas
         ref={canvasRef}
         width={canvasWidth}
         height={canvasHeight}
         className="max-w-full h-auto rounded-lg shadow-2xl"
-        style={{ imageRendering: "crisp-edges" }}
+        style={{ imageRendering: 'crisp-edges' }}
       />
     </div>
   );

@@ -48,13 +48,19 @@ export default async function FooterServer() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-gray-400" />
-                  <a href={`tel:${companyInfo.phone}`} className="hover:text-white transition-colors">
+                  <a
+                    href={`tel:${companyInfo.phone}`}
+                    className="hover:text-white transition-colors"
+                  >
                     {companyInfo.phone}
                   </a>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-gray-400" />
-                  <a href={`mailto:${companyInfo.email}`} className="hover:text-white transition-colors">
+                  <a
+                    href={`mailto:${companyInfo.email}`}
+                    className="hover:text-white transition-colors"
+                  >
                     {companyInfo.email}
                   </a>
                 </div>
@@ -100,7 +106,8 @@ export default async function FooterServer() {
               </li>
               <li>
                 <Link href="/careers" className="hover:text-white transition-colors">
-                  Careers {careers.length > 0 && (
+                  Careers{' '}
+                  {careers.length > 0 && (
                     <span className="ml-1 px-2 py-0.5 bg-purple-600 text-white text-xs rounded-full">
                       {careers.length}
                     </span>
@@ -153,11 +160,11 @@ export default async function FooterServer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-4">
               {socialMedia
-                .filter(profile => profile.display_in_footer)
+                .filter((profile) => profile.display_in_footer)
                 .map((profile) => {
                   const Icon = socialIcons[profile.platform] || null;
                   if (!Icon) return null;
-                  
+
                   return (
                     <a
                       key={profile.id}
@@ -172,14 +179,16 @@ export default async function FooterServer() {
                   );
                 })}
             </div>
-            
+
             <div className="text-sm text-center md:text-right">
               <p>
-                © {currentYear} {companyInfo?.company_name || 'DrawDay Solutions Ltd'}. All rights reserved.
+                © {currentYear} {companyInfo?.company_name || 'DrawDay Solutions Ltd'}. All rights
+                reserved.
               </p>
               {companyInfo?.registration_number && (
                 <p className="text-xs text-gray-500 mt-1">
-                  Company Registration: {companyInfo.registration_number} | VAT: {companyInfo.vat_number}
+                  Company Registration: {companyInfo.registration_number} | VAT:{' '}
+                  {companyInfo.vat_number}
                 </p>
               )}
             </div>

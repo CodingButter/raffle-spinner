@@ -1,5 +1,5 @@
 {
-  "extends": "@raffle-spinner/typescript-config/react-library.json",
+  "extends": "@drawday/typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "dist",
     "types": []

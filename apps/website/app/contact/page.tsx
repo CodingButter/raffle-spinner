@@ -1,14 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@raffle-spinner/ui';
-import { Button } from '@raffle-spinner/ui';
-import { Input } from '@raffle-spinner/ui';
-import { Label } from '@raffle-spinner/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@raffle-spinner/ui';
-import { Alert, AlertDescription } from '@raffle-spinner/ui';
-import { apiClient } from '@/lib/api/client';
-import { ContactFormData } from '@/lib/api/types';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@drawday/ui';
+import { Button } from '@drawday/ui';
+import { Input } from '@drawday/ui';
+import { Label } from '@drawday/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@drawday/ui';
+import { Alert, AlertDescription } from '@drawday/ui';
+// Contact form types
+interface ContactFormData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  category?: string;
+}
 import { Mail, MessageSquare, User, Tag, Send, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function ContactPage() {
@@ -27,17 +33,15 @@ export default function ContactPage() {
     ticketId?: string;
   }>({ type: null, message: '' });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCategoryChange = (value: string) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      category: value as ContactFormData['category'] 
+    setFormData((prev) => ({
+      ...prev,
+      category: value as ContactFormData['category'],
     }));
   };
 
@@ -47,13 +51,30 @@ export default function ContactPage() {
     setSubmitStatus({ type: null, message: '' });
 
     try {
-      const response = await apiClient.submitContactForm(formData);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_DIRECTUS_URL}/items/contact_submissions`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+            category: formData.category,
+            status: 'new',
+          }),
+        }
+      );
 
-      if (response.success) {
+      if (response.ok) {
+        const data = await response.json();
         setSubmitStatus({
           type: 'success',
-          message: response.message,
-          ticketId: response.ticketId,
+          message: "Thank you for contacting us! We'll get back to you soon.",
+          ticketId: data.data.id,
         });
         // Reset form
         setFormData({
@@ -66,7 +87,7 @@ export default function ContactPage() {
       } else {
         setSubmitStatus({
           type: 'error',
-          message: response.message || 'Failed to submit form. Please try again.',
+          message: 'Failed to submit form. Please try again.',
         });
       }
     } catch (error) {
@@ -98,9 +119,11 @@ export default function ContactPage() {
           </CardHeader>
           <CardContent>
             {submitStatus.type && (
-              <Alert className={`mb-6 ${
-                submitStatus.type === 'success' ? 'border-green-500' : 'border-red-500'
-              }`}>
+              <Alert
+                className={`mb-6 ${
+                  submitStatus.type === 'success' ? 'border-green-500' : 'border-red-500'
+                }`}
+              >
                 {submitStatus.type === 'success' ? (
                   <CheckCircle className="h-4 w-4 text-green-600" />
                 ) : (
@@ -210,11 +233,7 @@ export default function ContactPage() {
                 />
               </div>
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isSubmitting}
-              >
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />

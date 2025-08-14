@@ -157,7 +157,7 @@ component-folder/
 import React, { useState } from "react";
 
 // 2. Third-party libraries
-import { Button } from "@raffle-spinner/ui";
+import { Button } from "@drawday/ui";
 
 // 3. Local imports
 import { localFunction } from "./utils";

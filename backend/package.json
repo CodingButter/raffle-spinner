@@ -3,19 +3,22 @@
   "version": "1.0.0",
   "description": "DrawDay Backend with Directus",
   "scripts": {
-    "setup": "node setup-collections.js",
-    "setup:singletons": "node setup-singletons.js",
-    "setup:webhooks": "node setup-webhooks.js",
-    "seed": "node seed-data.js",
-    "populate": "node populate-content.js",
-    "permissions": "node setup-permissions.js",
-    "permissions:singletons": "node setup-singleton-permissions.js",
-    "init": "npm run setup && npm run setup:singletons && npm run permissions && npm run permissions:singletons && npm run seed",
-    "init:all": "npm run init && npm run populate && npm run setup:webhooks",
+    "setup": "node setup-all.js",
+    "setup:collections": "node scripts/setup/setup-collections.js",
+    "setup:permissions": "node scripts/setup/setup-permissions.js && node scripts/setup/setup-singleton-permissions.js && node scripts/setup/setup-website-permissions.js",
+    "data:populate": "node scripts/data/populate-content.js && node scripts/data/populate-website-info.js",
+    "data:seed": "node scripts/data/seed-data.js",
+    "fix:permissions": "node scripts/utils/fix-public-permissions.js",
+    "fix:content": "node scripts/utils/fix-singleton-content.js",
+    "backup": "./scripts/backup/backup-database.sh",
+    "backup:quick": "./scripts/backup/quick-backup.sh",
     "start": "docker compose up -d",
     "stop": "docker compose down",
     "logs": "docker compose logs -f",
-    "restart": "docker compose restart"
+    "restart": "docker compose restart",
+    "prod:start": "docker compose -f docker-compose.production.yml up -d",
+    "prod:stop": "docker compose -f docker-compose.production.yml down",
+    "prod:logs": "docker compose -f docker-compose.production.yml logs -f"
   },
   "dependencies": {
     "axios": "^1.6.0"

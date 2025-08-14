@@ -1,11 +1,7 @@
 'use client';
 
-import { AuthProvider } from '@raffle-spinner/auth';
+import { AuthProvider } from '@drawday/auth';
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <AuthProvider config={{ mockMode: true }}>
-      {children}
-    </AuthProvider>
-  );
+  return <AuthProvider>{children}</AuthProvider>;
 }

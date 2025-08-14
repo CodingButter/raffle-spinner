@@ -4,14 +4,14 @@
  * Displays all features of the DrawDay Spinner extension
  */
 
-import { 
-  Shuffle, 
-  Trophy, 
-  Users, 
-  FileSpreadsheet, 
-  Palette, 
-  Shield, 
-  Clock, 
+import {
+  Shuffle,
+  Trophy,
+  Users,
+  FileSpreadsheet,
+  Palette,
+  Shield,
+  Clock,
   Zap,
   Download,
   CheckCircle,
@@ -23,9 +23,9 @@ import {
   Lock,
   RefreshCw,
   Eye,
-  Heart
+  Heart,
 } from 'lucide-react';
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@raffle-spinner/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@drawday/ui';
 import Link from 'next/link';
 
 const features = [
@@ -37,8 +37,8 @@ const features = [
       'Smooth 60fps animations',
       'Customizable spin duration',
       'Winner celebration effects',
-      'Pre-calculated fair results'
-    ]
+      'Pre-calculated fair results',
+    ],
   },
   {
     icon: FileSpreadsheet,
@@ -48,8 +48,8 @@ const features = [
       'Auto-detects column headers',
       'Handles duplicate checking',
       'Supports 5000+ entries',
-      'Flexible data formats'
-    ]
+      'Flexible data formats',
+    ],
   },
   {
     icon: Users,
@@ -59,19 +59,14 @@ const features = [
       'Unlimited competitions',
       'Session winner history',
       'Export winner reports',
-      'Quick competition switching'
-    ]
+      'Quick competition switching',
+    ],
   },
   {
     icon: Palette,
     title: 'Custom Branding',
     description: 'Match your business identity with full customization options',
-    highlights: [
-      'Upload your logo',
-      'Custom color schemes',
-      'Font selection',
-      'Position controls'
-    ]
+    highlights: ['Upload your logo', 'Custom color schemes', 'Font selection', 'Position controls'],
   },
   {
     icon: Shield,
@@ -81,8 +76,8 @@ const features = [
       'Local data processing',
       'No cloud storage',
       'GDPR compliant',
-      'Zero data collection'
-    ]
+      'Zero data collection',
+    ],
   },
   {
     icon: Zap,
@@ -92,9 +87,9 @@ const features = [
       'Subset swapping algorithm',
       'Handles large datasets',
       'Instant load times',
-      'Minimal resource usage'
-    ]
-  }
+      'Minimal resource usage',
+    ],
+  },
 ];
 
 const comparisonData = [
@@ -121,12 +116,16 @@ export default function FeaturesPage() {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            DrawDay Spinner combines powerful features with simplicity. 
-            Run professional live draws that build trust and excitement.
+            DrawDay Spinner combines powerful features with simplicity. Run professional live draws
+            that build trust and excitement.
           </p>
           <div className="flex justify-center gap-4">
             <Button size="lg" className="gap-2" asChild>
-              <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://chrome.google.com/webstore"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Download className="w-5 h-5" />
                 Install Extension
               </a>
@@ -223,9 +222,7 @@ export default function FeaturesPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose DrawDay?</h2>
-            <p className="text-xl text-muted-foreground">
-              See how we compare to other methods
-            </p>
+            <p className="text-xl text-muted-foreground">See how we compare to other methods</p>
           </div>
 
           <Card>
@@ -292,12 +289,21 @@ export default function FeaturesPage() {
           </p>
           <div className="flex justify-center gap-4">
             <Button size="lg" variant="secondary" className="gap-2" asChild>
-              <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://chrome.google.com/webstore"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Download className="w-5 h-5" />
                 Install Now - It's Free
               </a>
             </Button>
-            <Button size="lg" variant="outline" className="gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20" asChild>
+            <Button
+              size="lg"
+              variant="outline"
+              className="gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20"
+              asChild
+            >
               <Link href="/demo">
                 Watch Demo
                 <ArrowRight className="w-5 h-5" />

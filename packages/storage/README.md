@@ -117,7 +117,7 @@ interface Settings {
   soundEnabled: boolean;
   autoRemoveWinners: boolean;
   showTicketNumbers: boolean;
-  theme: "light" | "dark" | "system";
+  theme: 'light' | 'dark' | 'system';
 }
 ```
 

@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: drawday-database
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    networks:
+      - directus
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cache:
+    image: redis:7-alpine
+    container_name: drawday-cache
+    restart: always
+    networks:
+      - directus
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  directus:
+    image: directus/directus:10.10
+    container_name: drawday-directus
+    restart: always
+    ports:
+      - "8055:8055"
+    volumes:
+      - ./uploads:/directus/uploads
+      - ./extensions:/directus/extensions
+    depends_on:
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    environment:
+      KEY: ${DIRECTUS_KEY}
+      SECRET: ${DIRECTUS_SECRET}
+      
+      DB_CLIENT: 'pg'
+      DB_HOST: 'database'
+      DB_PORT: '5432'
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      
+      CACHE_ENABLED: 'true'
+      CACHE_STORE: 'redis'
+      REDIS: 'redis://cache:6379'
+      
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      
+      PUBLIC_URL: ${PUBLIC_URL}
+      
+      # CORS
+      CORS_ENABLED: 'true'
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      CORS_CREDENTIALS: 'true'
+      
+      # Security
+      RATE_LIMITER_ENABLED: 'true'
+      RATE_LIMITER_STORE: 'redis'
+      RATE_LIMITER_POINTS: '100'
+      RATE_LIMITER_DURATION: '60'
+      
+      # File Upload Limits
+      MAX_PAYLOAD_SIZE: '100mb'
+      
+      # Email Configuration
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@drawday.app}
+      EMAIL_TRANSPORT: ${EMAIL_TRANSPORT:-smtp}
+      EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST}
+      EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-587}
+      EMAIL_SMTP_USER: ${EMAIL_SMTP_USER}
+      EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD}
+      
+      # Telemetry
+      TELEMETRY: 'false'
+      
+      # Logs
+      LOG_LEVEL: 'info'
+      LOG_STYLE: 'pretty'
+      
+      # Extensions
+      EXTENSIONS_AUTO_RELOAD: 'false'
+      
+    networks:
+      - directus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.directus.rule=Host(`admin.drawday.app`)"
+      - "traefik.http.routers.directus.entrypoints=websecure"
+      - "traefik.http.routers.directus.tls.certresolver=letsencrypt"
+      - "traefik.http.services.directus.loadbalancer.server.port=8055"
+
+networks:
+  directus:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

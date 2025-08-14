@@ -11,23 +11,17 @@
  * - FR-1.4: Column Mapping Interface (persistent column mappings)
  */
 
-import { StorageAdapter } from "./storage-adapter";
-import {
-  Competition,
-  SpinnerSettings,
-  ColumnMapping,
-  SavedMapping,
-  StorageData,
-} from "./types";
+import { StorageAdapter } from './storage-adapter';
+import { Competition, SpinnerSettings, ColumnMapping, SavedMapping, StorageData } from './types';
 
 const DEFAULT_SETTINGS: SpinnerSettings = {
   minSpinDuration: 3,
-  decelerationRate: "medium",
+  decelerationRate: 'medium',
 };
 
 export class ChromeStorageAdapter implements StorageAdapter {
   private async getData(): Promise<StorageData> {
-    const result = await chrome.storage.local.get("data");
+    const result = await chrome.storage.local.get('data');
     return (
       result.data || {
         competitions: [],

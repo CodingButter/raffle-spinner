@@ -1,0 +1,140 @@
+/**
+ * Extension Global Styles
+ * 
+ * Imports shared Tailwind configuration and applies
+ * extension-specific customizations.
+ */
+
+/* Import Tailwind CSS v4 */
+@import 'tailwindcss';
+
+/* Import shared Tailwind base configuration */
+@import '@drawday/tailwind-config/base';
+
+/* Import shared animations */
+@import '@drawday/tailwind-config/animations';
+
+/* Import shared utilities */
+@import '@drawday/tailwind-config/utilities';
+
+/**
+ * Extension-specific theme overrides
+ * 
+ * These override the base theme values for the extension
+ * to support dynamic theming via JavaScript
+ */
+@theme {
+  /* Override colors to support dynamic theming - Light mode defaults */
+  --color-primary: var(--theme-primary, var(--color-drawday-navy));
+  --color-primary-foreground: var(--theme-primary-foreground, var(--color-white));
+  --color-secondary: var(--theme-secondary, var(--color-drawday-gold));
+  --color-secondary-foreground: var(--theme-secondary-foreground, var(--color-rich-black));
+  --color-accent: var(--theme-accent, var(--color-drawday-gold));
+  --color-warning: var(--theme-winner, var(--color-amber));
+  --color-background: var(--theme-background, var(--color-white));
+  --color-foreground: var(--theme-foreground, var(--color-rich-black));
+  --color-card: var(--theme-card, var(--color-white));
+  --color-card-foreground: var(--theme-card-foreground, var(--color-rich-black));
+  --color-popover: var(--theme-card, var(--color-white));
+  --color-popover-foreground: var(--theme-card-foreground, var(--color-rich-black));
+
+  /* Spinner-specific colors for the extension - Dark mode defaults */
+  --color-spinner-bg-start: var(--color-raisin-black);
+  --color-spinner-bg-mid: var(--color-night);
+  --color-spinner-bg-end: var(--color-raisin-black);
+  --color-spinner-segment-even: var(--color-drawday-navy);
+  --color-spinner-segment-odd: var(--color-raisin-black);
+  --color-spinner-highlight: var(--color-drawday-gold);
+  --color-spinner-arrow: var(--color-drawday-gold);
+  --color-winner-glow: var(--color-drawday-gold);
+}
+
+/**
+ * Dark mode overrides for extension
+ */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    /* Override with dark mode colors */
+    --color-background: var(--theme-background, var(--color-night));
+    --color-foreground: var(--theme-foreground, var(--color-white));
+    --color-card: var(--theme-card, var(--color-rich-black));
+    --color-card-foreground: var(--theme-card-foreground, var(--color-white));
+    --color-popover: var(--theme-card, var(--color-rich-black));
+    --color-popover-foreground: var(--theme-card-foreground, var(--color-white));
+
+    /* Spinner colors for dark mode */
+    --color-spinner-segment-even: var(--color-drawday-navy);
+    --color-spinner-segment-odd: var(--color-raisin-black);
+  }
+}
+
+/**
+ * Extension-specific animations
+ * 
+ * Additional animations used only in the extension
+ */
+
+/**
+ * Custom scrollbar styles for extension
+ * 
+ * Themed scrollbars for better visual consistency
+ */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-muted);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--color-muted);
+  border-radius: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 5px;
+  border: 2px solid var(--color-muted);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: var(--color-muted);
+}
+
+/**
+ * Extension-specific utility classes
+ */
+@layer utilities {
+  /* Spinner-specific utilities */
+  .spinner-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-spinner-bg-start),
+      var(--color-spinner-bg-mid),
+      var(--color-spinner-bg-end)
+    );
+  }
+
+  .spinner-segment-even {
+    background-color: var(--color-spinner-segment-even);
+  }
+
+  .spinner-segment-odd {
+    background-color: var(--color-spinner-segment-odd);
+  }
+
+  .spinner-highlight {
+    background-color: var(--color-spinner-highlight);
+  }
+
+  .spinner-arrow {
+    color: var(--color-spinner-arrow);
+  }
+}

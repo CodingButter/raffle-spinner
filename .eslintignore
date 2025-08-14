@@ -38,3 +38,6 @@ pnpm-debug.log*
 # Generated files
 *.generated.ts
 *.generated.js
+
+# Backend - exclude entire folder
+backend/

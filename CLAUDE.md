@@ -4,22 +4,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Chrome Extension project called "DrawDay Spinner" - a client-side browser extension for conducting live draws in UK competitions. The extension operates entirely locally without external network calls.
+DrawDay is a professional platform for UK raffle companies, featuring multiple applications with the spinner being one of the core apps. The project uses a monorepo structure with shared packages across applications.
 
 ## Architecture
 
 ### Monorepo Structure
 
-- **apps/extension**: Chrome extension application
-- **packages/**:
-  - `storage`: Chrome storage abstraction layer
-  - `csv-parser`: CSV parsing with intelligent column mapping
-  - `spinner-physics`: Animation physics calculations
+- **apps/**:
+  - `spinner-extension`: Chrome extension for live draws (previously apps/extension)
+  - `website`: Next.js marketing website and demo platform
+  
+- **packages/@drawday/** (Platform-wide packages):
+  - `auth`: Authentication system with modular hooks and providers
+  - `ui`: Shared UI components library
+  - `utils`: Common utility functions
+  - `types`: TypeScript type definitions
+  - `hooks`: Reusable React hooks
   - `eslint-config`: Shared ESLint configuration
   - `prettier-config`: Shared Prettier configuration
   - `typescript-config`: Shared TypeScript configurations
+  - `tailwind-config`: Shared Tailwind CSS configuration
 
-### Core Components
+- **packages/** (Spinner-specific packages):
+  - `@raffle-spinner/storage`: Chrome storage abstraction layer
+  - `@raffle-spinner/csv-parser`: CSV parsing with intelligent column mapping
+  - `@raffle-spinner/spinner-physics`: Animation physics calculations
+  - `@raffle-spinner/spinners`: Spinner components (SlotMachine, etc.)
+  - `@raffle-spinner/contexts`: Spinner-specific React contexts
+
+- **backend/**: Directus CMS for content management (Docker-based)
+
+### Package Naming Convention
+
+- `@drawday/*`: Platform-wide packages used across multiple apps
+- `@raffle-spinner/*`: Spinner-specific packages
+
+### Core Components (Spinner Extension)
 
 - **Side Panel**: Primary UI for live draws, displays spinner wheel and winner reveal
 - **Options Page**: Configuration interface for managing competitions and settings
@@ -35,6 +55,7 @@ This is a Chrome Extension project called "DrawDay Spinner" - a client-side brow
 - Dynamic rendering for large participant lists (>100 entries)
 - Local storage using chrome.storage.local
 - Session-based winner tracking
+- Modular authentication system ready for multiple apps
 
 ## Development Commands
 
@@ -42,14 +63,27 @@ This is a Chrome Extension project called "DrawDay Spinner" - a client-side brow
 # Install dependencies
 pnpm install
 
-# Run development server for extension
-pnpm dev
+# Run development server for spinner extension
+pnpm --filter @drawday/spinner-extension dev
 
-# Build all packages and extension
+# Run website in development
+pnpm --filter @drawday/website dev
+
+# Build all packages and apps
 pnpm build
 
-# Run specific package in dev mode
-pnpm --filter @raffle-spinner/extension dev
+# Build specific app
+pnpm --filter @drawday/spinner-extension build
+pnpm --filter @drawday/website build
+
+# Linting and formatting
+pnpm lint
+pnpm format
+pnpm typecheck
+
+# Backend (Directus CMS)
+cd backend
+docker-compose up -d
 ```
 
 ## Technical Stack
@@ -60,6 +94,7 @@ pnpm --filter @raffle-spinner/extension dev
 - **Build System**: Vite with @tailwindcss/vite plugin
 - **Package Manager**: pnpm with workspaces
 - **Storage**: chrome.storage.local API with abstraction layer
+- **Backend**: Directus CMS (headless CMS)
 - **Performance**: Must maintain 60fps animations, <2 second load times
 
 ## Data Structure
@@ -84,3 +119,5 @@ pnpm --filter @raffle-spinner/extension dev
 3. **Performance Optimization**: Only render visible segments for large participant lists
 4. **Winner Calculation**: Pre-calculate final position before animation starts
 5. **Data Abstraction**: Keep storage layer abstracted for future backend migration
+6. **Package Organization**: DrawDay general components go in @drawday packages, spinner-specific in @raffle-spinner
+7. **Backend Exclusion**: The backend/ folder is excluded from linting and prettier

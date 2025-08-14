@@ -1,0 +1,10 @@
+{
+  "extends": "@drawday/typescript-config/react-library.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "jsx": "react-jsx"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

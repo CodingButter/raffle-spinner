@@ -20,7 +20,7 @@
 ### 1. Console Statements (RESOLVED)
 
 - Replaced all console statements with proper logger service
-- Created structured logging utility in `@raffle-spinner/utils`
+- Created structured logging utility in `@drawday/utils`
 - Converted test files to TypeScript with proper logging
 
 ### 2. TypeScript `any` Types (RESOLVED)
@@ -54,7 +54,7 @@
 
 ### New Features Added
 
-- **Structured Logging**: `@raffle-spinner/utils/logger` with levels and context
+- **Structured Logging**: `@drawday/utils/logger` with levels and context
 - **Type-safe Test Utilities**: Converted test files to TypeScript
 - **Improved Developer Experience**: Clean linting and build output
 

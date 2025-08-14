@@ -4,10 +4,10 @@
  * Exports all components and hooks related to the slot machine spinner
  */
 
-export { SlotMachineWheel } from "./SlotMachineWheel";
-export type { SlotMachineWheelProps } from "./SlotMachineWheel";
+export { SlotMachineWheel } from './SlotMachineWheel';
+export type { SlotMachineWheelProps } from './SlotMachineWheel';
 
-export { useSlotMachineAnimation } from "./hooks/useSlotMachineAnimation";
+export { useSlotMachineAnimation } from './hooks/useSlotMachineAnimation';
 
-export { drawSlotMachineSegment } from "./components/SlotMachineSegment";
-export { drawSlotMachineFrame } from "./components/SlotMachineFrame";
+export { drawSlotMachineSegment } from './components/SlotMachineSegment';
+export { drawSlotMachineFrame } from './components/SlotMachineFrame';

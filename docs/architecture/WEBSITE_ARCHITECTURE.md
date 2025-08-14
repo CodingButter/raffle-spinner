@@ -225,7 +225,7 @@ Leverage monorepo packages:
 
 ```typescript
 // Import from shared packages
-import { Button, Card } from "@raffle-spinner/ui";
+import { Button, Card } from "@drawday/ui";
 import { SlotMachineWheel } from "@raffle-spinner/spinners";
 ```
 

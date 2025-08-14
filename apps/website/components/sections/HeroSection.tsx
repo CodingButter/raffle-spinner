@@ -12,7 +12,7 @@
 
 'use client';
 
-import { Button } from '@raffle-spinner/ui';
+import { Button } from '@drawday/ui';
 import { Download, ArrowRight, Shield, Lock, Award } from 'lucide-react';
 import Link from 'next/link';
 import confetti from 'canvas-confetti';

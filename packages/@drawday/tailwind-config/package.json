@@ -1,0 +1,14 @@
+{
+  "name": "@drawday/tailwind-config",
+  "version": "1.0.0",
+  "description": "Shared Tailwind CSS v4 configuration for Raffle Spinner",
+  "main": "src/base.css",
+  "exports": {
+    "./base": "./src/base.css",
+    "./utilities": "./src/utilities.css",
+    "./animations": "./src/animations.css"
+  },
+  "files": [
+    "src"
+  ]
+}

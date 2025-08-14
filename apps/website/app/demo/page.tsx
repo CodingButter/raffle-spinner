@@ -9,8 +9,8 @@
 import { useState, useEffect } from 'react';
 import { SlotMachineWheel } from '@raffle-spinner/spinners';
 import type { Participant, SpinnerSettings } from '@raffle-spinner/storage';
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@raffle-spinner/ui';
-import { Input, Label } from '@raffle-spinner/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@drawday/ui';
+import { Input, Label } from '@drawday/ui';
 import confetti from 'canvas-confetti';
 import { Play, RotateCcw, Shuffle } from 'lucide-react';
 
@@ -254,18 +254,19 @@ export default function DemoPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1 max-h-48 overflow-y-auto">
-                  {mounted && participants.slice(0, 10).map((p) => (
-                    <div
-                      key={p.ticketNumber}
-                      className="flex justify-between text-xs p-1 hover:bg-muted rounded cursor-pointer"
-                      onClick={() => setTicketNumber(p.ticketNumber)}
-                    >
-                      <span>
-                        {p.firstName} {p.lastName}
-                      </span>
-                      <span className="font-mono text-muted-foreground">#{p.ticketNumber}</span>
-                    </div>
-                  ))}
+                  {mounted &&
+                    participants.slice(0, 10).map((p) => (
+                      <div
+                        key={p.ticketNumber}
+                        className="flex justify-between text-xs p-1 hover:bg-muted rounded cursor-pointer"
+                        onClick={() => setTicketNumber(p.ticketNumber)}
+                      >
+                        <span>
+                          {p.firstName} {p.lastName}
+                        </span>
+                        <span className="font-mono text-muted-foreground">#{p.ticketNumber}</span>
+                      </div>
+                    ))}
                   {participants.length > 10 && (
                     <p className="text-xs text-muted-foreground pt-2">
                       ... and {participants.length - 10} more

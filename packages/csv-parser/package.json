@@ -26,8 +26,8 @@
     "papaparse": "^5.4.1"
   },
   "devDependencies": {
-    "@raffle-spinner/eslint-config": "workspace:*",
-    "@raffle-spinner/typescript-config": "workspace:*",
+    "@drawday/eslint-config": "workspace:*",
+    "@drawday/typescript-config": "workspace:*",
     "@types/papaparse": "^5.3.14",
     "tsup": "^8.2.4",
     "typescript": "^5.5.4"

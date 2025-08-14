@@ -23,30 +23,31 @@ export function Footer() {
               </div>
             </Link>
             <p className="text-gray-400 mb-4 max-w-sm">
-              Complete technology solutions for UK raffle companies. From live draws to streaming production and custom websites.
+              Complete technology solutions for UK raffle companies. From live draws to streaming
+              production and custom websites.
             </p>
             <div className="flex gap-4">
-              <a 
-                href="https://github.com/CodingButter/raffle-spinner" 
-                target="_blank" 
+              <a
+                href="https://github.com/CodingButter/raffle-spinner"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
                 aria-label="GitHub"
               >
                 <Github className="w-5 h-5" />
               </a>
-              <a 
-                href="https://twitter.com/drawdaysolutions" 
-                target="_blank" 
+              <a
+                href="https://twitter.com/drawdaysolutions"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
                 aria-label="Twitter"
               >
                 <Twitter className="w-5 h-5" />
               </a>
-              <a 
-                href="https://linkedin.com/company/drawday-solutions" 
-                target="_blank" 
+              <a
+                href="https://linkedin.com/company/drawday-solutions"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
                 aria-label="LinkedIn"
@@ -61,19 +62,28 @@ export function Footer() {
             <h3 className="font-semibold text-white mb-4">Services</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/spinner" className="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                <Link
+                  href="/spinner"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                >
                   <Monitor className="w-4 h-4" />
                   Spinner Software
                 </Link>
               </li>
               <li>
-                <Link href="/streaming" className="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                <Link
+                  href="/streaming"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                >
                   <Tv className="w-4 h-4" />
                   Streaming Production
                 </Link>
               </li>
               <li>
-                <Link href="/websites" className="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                <Link
+                  href="/websites"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                >
                   <Code className="w-4 h-4" />
                   Custom Websites
                 </Link>
@@ -91,7 +101,10 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/portfolio" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/portfolio"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Portfolio
                 </Link>
               </li>
@@ -113,13 +126,19 @@ export function Footer() {
             <h3 className="font-semibold text-white mb-4">Contact</h3>
             <ul className="space-y-2">
               <li>
-                <a href="mailto:hello@drawday.app" className="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                <a
+                  href="mailto:hello@drawday.app"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                >
                   <Mail className="w-4 h-4" />
                   hello@drawday.app
                 </a>
               </li>
               <li>
-                <a href="tel:+44-20-1234-5678" className="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                <a
+                  href="tel:+44-20-1234-5678"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                >
                   <Phone className="w-4 h-4" />
                   +44 20 1234 5678
                 </a>
@@ -127,7 +146,8 @@ export function Footer() {
               <li className="text-gray-400 flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5" />
                 <span>
-                  London, UK<br />
+                  London, UK
+                  <br />
                   United Kingdom
                 </span>
               </li>

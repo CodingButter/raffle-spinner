@@ -26,8 +26,8 @@ pnpm add @raffle-spinner/csv-parser
 ## Usage
 
 ```typescript
-import { CSVParser } from "@raffle-spinner/csv-parser";
-import type { ColumnMapping, ParseResult } from "@raffle-spinner/csv-parser";
+import { CSVParser } from '@raffle-spinner/csv-parser';
+import type { ColumnMapping, ParseResult } from '@raffle-spinner/csv-parser';
 
 const parser = new CSVParser();
 
@@ -36,9 +36,9 @@ const result = await parser.parse(file);
 
 // Parse with manual column mapping
 const mapping: ColumnMapping = {
-  name: "Full Name",
-  ticketNumber: "Ticket",
-  email: "Email Address", // optional
+  name: 'Full Name',
+  ticketNumber: 'Ticket',
+  email: 'Email Address', // optional
 };
 
 const resultWithMapping = await parser.parse(file, mapping);
@@ -163,14 +163,14 @@ The parser performs the following validations:
 
 ```typescript
 const parser = new CSVParser();
-const fileInput = document.getElementById("csvFile") as HTMLInputElement;
+const fileInput = document.getElementById('csvFile') as HTMLInputElement;
 const file = fileInput.files[0];
 
 try {
   const result = await parser.parse(file);
-  console.log("Participants:", result.participants);
+  console.log('Participants:', result.participants);
 } catch (error) {
-  console.error("Parse error:", error);
+  console.error('Parse error:', error);
 }
 ```
 
@@ -178,9 +178,9 @@ try {
 
 ```typescript
 const mapping: ColumnMapping = {
-  name: "Customer Name",
-  ticketNumber: "Entry Code",
-  email: "Contact Email",
+  name: 'Customer Name',
+  ticketNumber: 'Entry Code',
+  email: 'Contact Email',
 };
 
 const result = await parser.parse(file, mapping);
@@ -237,7 +237,7 @@ try {
   }
 } catch (error) {
   // File read error or parse failure
-  console.error("Failed to parse CSV:", error);
+  console.error('Failed to parse CSV:', error);
 }
 ```
 

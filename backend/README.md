@@ -41,24 +41,38 @@ This is the backend for DrawDay Spinner, built with Directus CMS.
 
 ## Access
 
+### Local Development
 - **Directus Admin Panel:** http://localhost:8055
 - **API Endpoint:** http://localhost:8055/items
 - **GraphQL Playground:** http://localhost:8055/graphql
 
+### Production
+- **Directus Admin Panel:** https://admin.drawday.app
+- **API Endpoint:** https://admin.drawday.app/items
+- **GraphQL Playground:** https://admin.drawday.app/graphql
+
 Default admin credentials (from .env):
 - Email: admin@drawday.app
-- Password: drawday
+- Password: drawday (change in production!)
 
 ## Directory Structure
 
 ```
 backend/
-├── database/       # PostgreSQL data (gitignored)
-├── uploads/        # File uploads (gitignored)
-├── extensions/     # Directus extensions
-├── docker-compose.yml
-├── .env           # Environment variables (gitignored)
-└── .env.example   # Example environment file
+├── database/              # PostgreSQL data (gitignored)
+├── uploads/               # File uploads (gitignored)
+├── extensions/            # Directus extensions (gitignored)
+├── scripts/               # All management scripts
+│   ├── setup/            # Initial setup scripts
+│   ├── data/             # Data population scripts
+│   ├── utils/            # Utility and fix scripts
+│   └── backup/           # Backup scripts
+├── docker-compose.yml     # Development Docker config
+├── docker-compose.production.yml  # Production Docker config
+├── setup-all.js          # Master setup script
+├── .env                  # Environment variables (gitignored)
+├── .env.example          # Example environment file
+└── .env.production       # Production environment template
 ```
 
 ## API Endpoints
@@ -167,7 +181,7 @@ curl http://localhost:8055/items/site_settings
 ```javascript
 // Static generation - fetches at build time
 export async function getStaticProps() {
-  const res = await fetch('http://localhost:8055/items/homepage');
+  const res = await fetch(process.env.NEXT_PUBLIC_DIRECTUS_URL + '/items/homepage');
   const data = await res.json();
   return {
     props: {
@@ -178,9 +192,15 @@ export async function getStaticProps() {
 ```
 
 ### Environment Variables for Frontend
-Add to your frontend `.env`:
+
+#### Local Development (.env.local)
 ```
 NEXT_PUBLIC_DIRECTUS_URL=http://localhost:8055
+```
+
+#### Production (.env.production)
+```
+NEXT_PUBLIC_DIRECTUS_URL=https://admin.drawday.app
 ```
 
 ## Maintenance

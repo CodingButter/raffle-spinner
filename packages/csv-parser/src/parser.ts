@@ -10,9 +10,9 @@
  * - FR-1.5: Data Validation and Error Handling (participant validation, duplicate handling)
  */
 
-import Papa from "papaparse";
-import { Participant, ColumnMapping } from "@raffle-spinner/storage";
-import { ParseResult } from "./types";
+import Papa from 'papaparse';
+import { Participant, ColumnMapping } from '@raffle-spinner/storage';
+import { ParseResult } from './types';
 
 export class CSVParser {
   parse(file: File, mapping: ColumnMapping): Promise<ParseResult> {
@@ -21,10 +21,7 @@ export class CSVParser {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          const processed = this.processData(
-            results.data as Record<string, string>[],
-            mapping,
-          );
+          const processed = this.processData(results.data as Record<string, string>[], mapping);
           resolve(processed);
         },
         error: (error) => {
@@ -34,13 +31,10 @@ export class CSVParser {
     });
   }
 
-  private processData(
-    rows: Record<string, string>[],
-    mapping: ColumnMapping,
-  ): ParseResult {
+  private processData(rows: Record<string, string>[], mapping: ColumnMapping): ParseResult {
     const participants: Participant[] = [];
     const ticketMap = new Map<string, string[]>();
-    const ticketConversions: ParseResult["ticketConversions"] = [];
+    const ticketConversions: ParseResult['ticketConversions'] = [];
     let skippedRows = 0;
 
     for (const row of rows) {
@@ -57,7 +51,7 @@ export class CSVParser {
 
       if (!isNumeric) {
         // Extract numeric portion
-        const numericTicket = originalTicket.replace(/\D/g, "");
+        const numericTicket = originalTicket.replace(/\D/g, '');
 
         if (numericTicket.length === 0) {
           // No numeric portion, skip this entry
@@ -103,14 +97,13 @@ export class CSVParser {
       duplicates,
       skippedRows,
       totalRows: rows.length,
-      ticketConversions:
-        ticketConversions.length > 0 ? ticketConversions : undefined,
+      ticketConversions: ticketConversions.length > 0 ? ticketConversions : undefined,
     };
   }
 
   private extractParticipant(
     row: Record<string, string>,
-    mapping: ColumnMapping,
+    mapping: ColumnMapping
   ): Participant | null {
     let firstName: string | undefined;
     let lastName: string | undefined;
@@ -126,8 +119,8 @@ export class CSVParser {
       lastName = nameParts.lastName;
     } else {
       // Use separate first and last name columns
-      firstName = row[mapping.firstName || ""]?.trim();
-      lastName = row[mapping.lastName || ""]?.trim();
+      firstName = row[mapping.firstName || '']?.trim();
+      lastName = row[mapping.lastName || '']?.trim();
     }
 
     const ticketNumber = row[mapping.ticketNumber]?.trim();
@@ -152,8 +145,8 @@ export class CSVParser {
 
     // Handle various name formats
     // Format: "Last, First" or "Last,First"
-    if (trimmed.includes(",")) {
-      const parts = trimmed.split(",").map((p) => p.trim());
+    if (trimmed.includes(',')) {
+      const parts = trimmed.split(',').map((p) => p.trim());
       if (parts.length >= 2) {
         return {
           firstName: parts[1],
@@ -182,7 +175,7 @@ export class CSVParser {
       // This handles "First Middle Last" -> "First" "Middle Last"
       return {
         firstName: parts[0],
-        lastName: parts.slice(1).join(" "),
+        lastName: parts.slice(1).join(' '),
       };
     }
   }

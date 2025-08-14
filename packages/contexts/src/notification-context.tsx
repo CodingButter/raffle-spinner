@@ -17,18 +17,12 @@
  * ```
  */
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 
 /**
  * Notification types
  */
-export type NotificationType = "success" | "error" | "warning" | "info";
+export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
 /**
  * Notification object interface
@@ -55,7 +49,7 @@ interface NotificationContextValue {
   showNotification: (
     message: string,
     type?: NotificationType,
-    options?: Partial<Omit<Notification, "id" | "message" | "type">>,
+    options?: Partial<Omit<Notification, 'id' | 'message' | 'type'>>
   ) => void;
   /** Show success notification */
   showSuccess: (message: string, title?: string) => void;
@@ -79,9 +73,7 @@ const DEFAULT_DURATION = 5000;
 /**
  * Notification Context
  */
-const NotificationContext = createContext<NotificationContextValue | undefined>(
-  undefined,
-);
+const NotificationContext = createContext<NotificationContextValue | undefined>(undefined);
 
 /**
  * Notification Provider Props
@@ -142,7 +134,7 @@ export function NotificationProvider({
         }, notification.duration || defaultDuration);
       }
     },
-    [maxNotifications, defaultDuration, dismissNotification],
+    [maxNotifications, defaultDuration, dismissNotification]
   );
 
   /**
@@ -151,8 +143,8 @@ export function NotificationProvider({
   const showNotification = useCallback(
     (
       message: string,
-      type: NotificationType = "info",
-      options?: Partial<Omit<Notification, "id" | "message" | "type">>,
+      type: NotificationType = 'info',
+      options?: Partial<Omit<Notification, 'id' | 'message' | 'type'>>
     ) => {
       const notification: Notification = {
         id: generateId(),
@@ -162,7 +154,7 @@ export function NotificationProvider({
       };
       addNotification(notification);
     },
-    [addNotification],
+    [addNotification]
   );
 
   /**
@@ -170,33 +162,33 @@ export function NotificationProvider({
    */
   const showSuccess = useCallback(
     (message: string, title?: string) => {
-      showNotification(message, "success", { title: title || "Success" });
+      showNotification(message, 'success', { title: title || 'Success' });
     },
-    [showNotification],
+    [showNotification]
   );
 
   const showError = useCallback(
     (message: string, title?: string) => {
-      showNotification(message, "error", {
-        title: title || "Error",
+      showNotification(message, 'error', {
+        title: title || 'Error',
         duration: 0, // Errors don't auto-dismiss by default
       });
     },
-    [showNotification],
+    [showNotification]
   );
 
   const showWarning = useCallback(
     (message: string, title?: string) => {
-      showNotification(message, "warning", { title: title || "Warning" });
+      showNotification(message, 'warning', { title: title || 'Warning' });
     },
-    [showNotification],
+    [showNotification]
   );
 
   const showInfo = useCallback(
     (message: string, title?: string) => {
-      showNotification(message, "info", { title: title || "Info" });
+      showNotification(message, 'info', { title: title || 'Info' });
     },
-    [showNotification],
+    [showNotification]
   );
 
   /**
@@ -217,11 +209,7 @@ export function NotificationProvider({
     clearNotifications,
   };
 
-  return (
-    <NotificationContext.Provider value={value}>
-      {children}
-    </NotificationContext.Provider>
-  );
+  return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 }
 
 /**
@@ -234,9 +222,7 @@ export function useNotifications() {
   const context = useContext(NotificationContext);
 
   if (!context) {
-    throw new Error(
-      "useNotifications must be used within a NotificationProvider",
-    );
+    throw new Error('useNotifications must be used within a NotificationProvider');
   }
 
   return context;

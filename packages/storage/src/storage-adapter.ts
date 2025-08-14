@@ -11,12 +11,7 @@
  * - FR-1.4: Column Mapping Interface (mapping persistence)
  */
 
-import {
-  Competition,
-  SpinnerSettings,
-  ColumnMapping,
-  SavedMapping,
-} from "./types";
+import { Competition, SpinnerSettings, ColumnMapping, SavedMapping } from './types';
 
 export interface StorageAdapter {
   getCompetitions(): Promise<Competition[]>;

@@ -22,11 +22,11 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\""
   },
   "dependencies": {
-    "@raffle-spinner/types": "workspace:*"
+    "@drawday/types": "workspace:*"
   },
   "devDependencies": {
-    "@raffle-spinner/eslint-config": "workspace:*",
-    "@raffle-spinner/typescript-config": "workspace:*",
+    "@drawday/eslint-config": "workspace:*",
+    "@drawday/typescript-config": "workspace:*",
     "@types/chrome": "^0.0.270",
     "tsup": "^8.2.4",
     "typescript": "^5.5.4"

@@ -16,19 +16,13 @@
  * ```
  */
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
-import { useLocalStorage } from "@raffle-spinner/hooks";
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useLocalStorage } from '@drawday/hooks';
 
 /**
  * Available theme modes
  */
-export type ThemeMode = "light" | "dark" | "system";
+export type ThemeMode = 'light' | 'dark' | 'system';
 
 /**
  * Custom theme colors configuration
@@ -64,14 +58,14 @@ interface ThemeContextValue {
   /** Reset theme to defaults */
   resetTheme: () => void;
   /** Current resolved theme (accounting for system preference) */
-  resolvedTheme: "light" | "dark";
+  resolvedTheme: 'light' | 'dark';
 }
 
 /**
  * Default theme configuration
  */
 const DEFAULT_THEME: Theme = {
-  mode: "system",
+  mode: 'system',
   colors: undefined,
 };
 
@@ -100,44 +94,44 @@ interface ThemeProviderProps {
 export function ThemeProvider({
   children,
   defaultTheme = DEFAULT_THEME,
-  storageKey = "raffle-spinner-theme",
+  storageKey = 'raffle-spinner-theme',
 }: ThemeProviderProps) {
   // Use localStorage hook for persistence
   const [theme, setTheme] = useLocalStorage<Theme>(storageKey, defaultTheme);
 
   // Track system theme preference
-  const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
+  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
 
   // Determine resolved theme based on mode
-  const resolvedTheme = theme.mode === "system" ? systemTheme : theme.mode;
+  const resolvedTheme = theme.mode === 'system' ? systemTheme : theme.mode;
 
   // Listen for system theme changes
   useEffect(() => {
     // Check if window is available (client-side)
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
 
     // Get initial system theme
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setSystemTheme(mediaQuery.matches ? "dark" : "light");
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
 
     // Listen for changes
     const handleChange = (e: MediaQueryListEvent) => {
-      setSystemTheme(e.matches ? "dark" : "light");
+      setSystemTheme(e.matches ? 'dark' : 'light');
     };
 
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
   // Apply theme to document root
   useEffect(() => {
     // Check if document is available
-    if (typeof document === "undefined") return;
+    if (typeof document === 'undefined') return;
 
     const root = document.documentElement;
 
     // Apply theme mode class
-    root.classList.remove("light", "dark");
+    root.classList.remove('light', 'dark');
     root.classList.add(resolvedTheme);
 
     // Apply custom colors as CSS variables
@@ -161,16 +155,16 @@ export function ThemeProvider({
     setTheme(DEFAULT_THEME);
 
     // Remove custom CSS variables
-    if (typeof document !== "undefined") {
+    if (typeof document !== 'undefined') {
       const root = document.documentElement;
       [
-        "primary",
-        "secondary",
-        "accent",
-        "background",
-        "foreground",
-        "card",
-        "cardForeground",
+        'primary',
+        'secondary',
+        'accent',
+        'background',
+        'foreground',
+        'card',
+        'cardForeground',
       ].forEach((key) => {
         root.style.removeProperty(`--theme-${key}`);
       });
@@ -185,9 +179,7 @@ export function ThemeProvider({
     resolvedTheme,
   };
 
-  return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 /**
@@ -200,7 +192,7 @@ export function useTheme() {
   const context = useContext(ThemeContext);
 
   if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    throw new Error('useTheme must be used within a ThemeProvider');
   }
 
   return context;

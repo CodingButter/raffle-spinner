@@ -42,8 +42,8 @@
 
 ### 🔄 Consolidation
 
-- All utility functions now imported from `@raffle-spinner/utils`
-- All types imported from `@raffle-spinner/types`
+- All utility functions now imported from `@drawday/utils`
+- All types imported from `@drawday/types`
 - Components use shared packages, no duplication
 
 ### 📦 Package Structure

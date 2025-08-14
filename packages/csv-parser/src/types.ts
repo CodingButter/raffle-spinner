@@ -10,7 +10,7 @@
  * - FR-1.5: Data Validation and Error Handling (ValidationError interface)
  */
 
-import { Participant } from "@raffle-spinner/storage";
+import { Participant } from '@raffle-spinner/storage';
 
 export interface ParseResult {
   participants: Participant[];
