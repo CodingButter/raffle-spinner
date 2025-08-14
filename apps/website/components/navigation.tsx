@@ -40,74 +40,77 @@ export function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {/* Services Dropdown */}
-            <div className="relative group">
-              <button
-                className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors py-2"
-                onMouseEnter={() => setServicesOpen(true)}
-                onMouseLeave={() => setServicesOpen(false)}
-              >
+            <div
+              className="relative"
+              onMouseEnter={() => setServicesOpen(true)}
+              onMouseLeave={() => setServicesOpen(false)}
+            >
+              <button className="flex items-center gap-1 text-gray-300 hover:text-white transition-colors py-4">
                 Services
                 <ChevronDown className="w-4 h-4" />
               </button>
 
               {servicesOpen && (
-                <div
-                  className="absolute top-full left-0 mt-2 w-72 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl overflow-hidden"
-                  onMouseEnter={() => setServicesOpen(true)}
-                  onMouseLeave={() => setServicesOpen(false)}
-                >
-                  <Link
-                    href="/spinner"
-                    className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
-                  >
-                    <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Monitor className="w-5 h-5 text-purple-400" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-white mb-1">DrawDay Spinner</div>
-                      <div className="text-sm text-gray-400">Professional live draw software</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
-                  </Link>
+                <div className="absolute top-full left-0 pt-2 w-72">
+                  <div className="bg-gray-900 border border-gray-800 rounded-xl shadow-2xl overflow-hidden">
+                    <Link
+                      href="/spinner"
+                      className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
+                    >
+                      <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Monitor className="w-5 h-5 text-purple-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-white mb-1">DrawDay Spinner</div>
+                        <div className="text-sm text-gray-400">Professional live draw software</div>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
+                    </Link>
 
-                  <Link
-                    href="/streaming"
-                    className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
-                  >
-                    <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Tv className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-white mb-1">Streaming Production</div>
-                      <div className="text-sm text-gray-400">Professional overlays & graphics</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
-                  </Link>
+                    <Link
+                      href="/streaming"
+                      className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
+                    >
+                      <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Tv className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-white mb-1">Streaming Production</div>
+                        <div className="text-sm text-gray-400">
+                          Professional overlays & graphics
+                        </div>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
+                    </Link>
 
-                  <Link
-                    href="/websites"
-                    className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
-                  >
-                    <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Code className="w-5 h-5 text-green-400" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-white mb-1">Custom Websites</div>
-                      <div className="text-sm text-gray-400">Bespoke competition platforms</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
-                  </Link>
+                    <Link
+                      href="/websites"
+                      className="flex items-start gap-4 p-4 hover:bg-gray-800/50 transition-colors group/item"
+                    >
+                      <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Code className="w-5 h-5 text-green-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-white mb-1">Custom Websites</div>
+                        <div className="text-sm text-gray-400">Bespoke competition platforms</div>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-gray-600 group-hover/item:text-white mt-3" />
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
 
-            <Link href="/portfolio" className="text-gray-300 hover:text-white transition-colors">
+            <Link
+              href="/portfolio"
+              className="text-gray-300 hover:text-white transition-colors py-4"
+            >
               Portfolio
             </Link>
-            <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
+            <Link href="/about" className="text-gray-300 hover:text-white transition-colors py-4">
               About
             </Link>
-            <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
+            <Link href="/contact" className="text-gray-300 hover:text-white transition-colors py-4">
               Contact
             </Link>
 
