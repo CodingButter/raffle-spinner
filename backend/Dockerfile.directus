@@ -1,0 +1,10 @@
+FROM directus/directus:10.10
+
+# Install Stripe SDK for webhook handling
+RUN npm install stripe
+
+# Copy custom extensions (if we had compiled ones)
+# COPY ./extensions /directus/extensions
+
+# The extensions would need to be built with @directus/extensions-sdk
+# For now, we're using Flows which is the recommended approach

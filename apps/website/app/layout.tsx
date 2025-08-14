@@ -38,6 +38,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { LayoutWrapper } from './layout-wrapper';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -48,9 +50,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased bg-night text-white`}>
         <Providers>
           <div className="min-h-screen flex flex-col">
-            <Navigation />
-            <main className="flex-1">{children}</main>
-            <FooterServer />
+            <LayoutWrapper>{children}</LayoutWrapper>
           </div>
         </Providers>
       </body>

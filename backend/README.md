@@ -241,3 +241,26 @@ If you encounter permission issues:
 
 ### Port Already in Use
 Change `DIRECTUS_PORT` in .env to another port (e.g., 8056)
+
+## Utility Scripts
+
+The following utility scripts are available in this directory:
+
+### Setup Scripts
+- **`setup-all.js`** - Complete setup script that initializes everything
+- **`setup-directus-fields.js`** - Sets up user fields for subscription management  
+- **`create-products-collection.js`** - Creates and populates the products collection
+- **`set-products-permissions.js`** - Configures permissions for the products collection
+
+### Data Management
+- **`sync-directus.js`** - Syncs data between production and local Directus
+- **`migrate-production-to-local.js`** - Migrates production data to local development
+- **`sync-products-with-stripe.js`** - Syncs products between Directus and Stripe
+
+### Usage
+```bash
+cd backend
+node script-name.js
+```
+
+Most scripts require environment variables to be configured in `.env`

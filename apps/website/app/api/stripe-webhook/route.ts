@@ -85,33 +85,110 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription;
 
         console.log('Subscription updated:', subscription.id);
+        console.log('Subscription metadata:', subscription.metadata);
 
-        // Get customer details
-        const customer = (await stripe.customers.retrieve(
-          subscription.customer as string
-        )) as Stripe.Customer;
+        // First try to use directus_user_id from subscription metadata
+        const directusUserId = subscription.metadata?.directus_user_id;
 
-        if (customer.email) {
-          const priceId = subscription.items.data[0]?.price.id;
-          const tier = getTierFromPriceId(priceId);
+        if (directusUserId) {
+          console.log('Found directus_user_id in metadata:', directusUserId);
+
+          // Use product key from metadata
+          const productKey = subscription.metadata?.product_key || 'spinner_starter';
+          console.log(`Using product key from metadata: ${productKey}`);
 
           try {
-            await directusAdmin.updateUserSubscription(customer.email, {
-              stripe_customer_id: customer.id,
+            // Create or update subscription record
+            const subscriptionData: any = {
+              user_id: directusUserId,
+              product_key: productKey,
               stripe_subscription_id: subscription.id,
-              subscription_status: subscription.status,
-              subscription_tier: tier,
-              subscription_current_period_end: new Date(
+              stripe_customer_id: subscription.customer as string,
+              status: subscription.status,
+              cancel_at_period_end: subscription.cancel_at_period_end,
+            };
+
+            // Only add period end if it's a valid timestamp
+            if (subscription.current_period_end && subscription.current_period_end > 0) {
+              subscriptionData.current_period_end = new Date(
                 subscription.current_period_end * 1000
-              ).toISOString(),
-              subscription_cancel_at_period_end: subscription.cancel_at_period_end,
-            });
+              ).toISOString();
+            }
+
+            await directusAdmin.createOrUpdateSubscription(subscriptionData);
 
             console.log(
-              `Updated subscription status for ${customer.email}: ${subscription.status}`
+              `Created/updated subscription for user ${directusUserId} with product ${productKey}`
             );
           } catch (error) {
-            console.error('Failed to update subscription in Directus:', error);
+            console.error('Failed to update subscription by ID in Directus:', error);
+
+            // Fallback to customer email method
+            const customer = (await stripe.customers.retrieve(
+              subscription.customer as string
+            )) as Stripe.Customer;
+
+            if (customer.email) {
+              try {
+                // Use product key from metadata for fallback too
+                const fallbackTier = subscription.metadata?.product_key || 'free';
+
+                // Prepare fallback update data with proper date handling
+                const fallbackUpdateData: any = {
+                  stripe_customer_id: customer.id,
+                  stripe_subscription_id: subscription.id,
+                  subscription_status: subscription.status,
+                  subscription_tier: fallbackTier,
+                  subscription_cancel_at_period_end: subscription.cancel_at_period_end,
+                };
+
+                // Only add period end if it's a valid timestamp
+                if (subscription.current_period_end && subscription.current_period_end > 0) {
+                  fallbackUpdateData.subscription_current_period_end = new Date(
+                    subscription.current_period_end * 1000
+                  ).toISOString();
+                }
+
+                await directusAdmin.updateUserSubscription(customer.email, fallbackUpdateData);
+
+                console.log(
+                  `Fallback: Updated subscription for ${customer.email} to ${fallbackTier} tier`
+                );
+              } catch (fallbackError) {
+                console.error('Fallback also failed:', fallbackError);
+              }
+            }
+          }
+        } else {
+          // Fallback to original method using customer email
+          console.log('No directus_user_id in metadata, using customer email');
+
+          const customer = (await stripe.customers.retrieve(
+            subscription.customer as string
+          )) as Stripe.Customer;
+
+          if (customer.email) {
+            // Use product key from metadata instead of price ID lookup
+            const tier = subscription.metadata?.product_key || 'free';
+
+            try {
+              await directusAdmin.updateUserSubscription(customer.email, {
+                stripe_customer_id: customer.id,
+                stripe_subscription_id: subscription.id,
+                subscription_status: subscription.status,
+                subscription_tier: tier,
+                subscription_current_period_end: new Date(
+                  subscription.current_period_end * 1000
+                ).toISOString(),
+                subscription_cancel_at_period_end: subscription.cancel_at_period_end,
+              });
+
+              console.log(
+                `Updated subscription status for ${customer.email}: ${subscription.status}`
+              );
+            } catch (error) {
+              console.error('Failed to update subscription in Directus:', error);
+            }
           }
         }
 
@@ -123,29 +200,13 @@ export async function POST(request: NextRequest) {
 
         console.log('Subscription cancelled:', subscription.id);
 
-        // Get customer details
-        const customer = (await stripe.customers.retrieve(
-          subscription.customer as string
-        )) as Stripe.Customer;
+        try {
+          // Cancel the subscription in Directus
+          await directusAdmin.cancelSubscription(subscription.id);
 
-        if (customer.email) {
-          try {
-            // Update user to free tier
-            await directusAdmin.updateUserSubscription(customer.email, {
-              stripe_customer_id: customer.id,
-              stripe_subscription_id: '',
-              subscription_status: 'canceled',
-              subscription_tier: 'free',
-              subscription_current_period_end: new Date(
-                subscription.current_period_end * 1000
-              ).toISOString(),
-              subscription_cancel_at_period_end: false,
-            });
-
-            console.log(`Cancelled subscription for ${customer.email}, reverted to free tier`);
-          } catch (error) {
-            console.error('Failed to cancel subscription in Directus:', error);
-          }
+          console.log(`Cancelled subscription ${subscription.id} in Directus`);
+        } catch (error) {
+          console.error('Failed to cancel subscription in Directus:', error);
         }
 
         break;

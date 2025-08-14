@@ -73,10 +73,17 @@ services:
       REFRESH_TOKEN_TTL: '7d'
       ACCESS_TOKEN_TTL: '15m'
       
-      # CORS
+      # Extensions
+      EXTENSIONS_AUTO_RELOAD: 'true'
+      
+      # CORS - Allow all origins for Chrome extension access
       CORS_ENABLED: 'true'
-      CORS_ORIGIN: ${CORS_ORIGIN}
+      CORS_ORIGIN: 'true'
       CORS_CREDENTIALS: 'true'
+      CORS_METHODS: 'GET,POST,PATCH,DELETE,OPTIONS'
+      CORS_ALLOWED_HEADERS: 'Content-Type,Authorization,X-Requested-With'
+      CORS_EXPOSED_HEADERS: 'Content-Range,X-Content-Range'
+      CORS_MAX_AGE: '86400'
       
       # Public URL
       PUBLIC_URL: ${PUBLIC_URL}
@@ -88,9 +95,6 @@ services:
       # EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT}
       # EMAIL_SMTP_USER: ${EMAIL_SMTP_USER}
       # EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD}
-
-      # Extensions
-      EXTENSIONS_AUTO_RELOAD: 'true'
 
       # Telemetry
       TELEMETRY: 'false'

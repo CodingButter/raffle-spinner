@@ -16,6 +16,7 @@ import {
   Play,
 } from 'lucide-react';
 import Link from 'next/link';
+import { SpinnerPricing } from '@/components/spinner-pricing';
 
 export const metadata = {
   title: 'DrawDay Spinner - Professional Live Draw Software',
@@ -47,49 +48,37 @@ const features = [
   },
 ];
 
-const pricing = [
-  {
-    name: 'Starter',
-    price: '£29',
-    period: '/month',
-    description: 'Perfect for small raffles',
-    features: ['Up to 1,000 participants', 'Basic themes', 'CSV import', 'Email support'],
-    cta: 'Start Free Trial',
-    popular: false,
-  },
-  {
-    name: 'Professional',
-    price: '£79',
-    period: '/month',
-    description: 'For growing competitions',
-    features: [
-      'Up to 10,000 participants',
-      'Custom branding',
-      'Priority support',
-      'Advanced animations',
-      'API access',
-    ],
-    cta: 'Start Free Trial',
-    popular: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    description: 'For large organizations',
-    features: [
-      'Unlimited participants',
-      'White-label solution',
-      'Dedicated support',
-      'Custom features',
-      'SLA guarantee',
-    ],
-    cta: 'Contact Sales',
-    popular: false,
-  },
-];
+async function getSpinnerProducts() {
+  const directusUrl = process.env.NEXT_PUBLIC_DIRECTUS_URL || 'http://localhost:8055';
 
-export default function SpinnerPage() {
+  try {
+    // Get all products and filter for spinner category in code
+    const response = await fetch(
+      `${directusUrl}/items/products?fields=*,category.*,tier.*&sort=price`,
+      {
+        next: { revalidate: 60 }, // Cache for 60 seconds
+      }
+    );
+
+    if (!response.ok) {
+      console.error('Failed to fetch products');
+      return [];
+    }
+
+    const { data } = await response.json();
+    // Filter for spinner products only
+    const spinnerProducts = (data || []).filter(
+      (product: any) => product.category?.key === 'spinner'
+    );
+    return spinnerProducts;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+}
+
+export default async function SpinnerPage() {
+  const products = await getSpinnerProducts();
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
@@ -211,57 +200,7 @@ export default function SpinnerPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {pricing.map((plan, index) => (
-              <div
-                key={index}
-                className={`relative rounded-2xl p-8 ${
-                  plan.popular
-                    ? 'bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-2 border-purple-500/40'
-                    : 'bg-gray-900/50 border border-gray-800'
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm px-4 py-1 rounded-full">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-
-                <div className="mb-8">
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-gray-400 mb-4">{plan.description}</p>
-                  <div className="flex items-baseline">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-gray-400 ml-2">{plan.period}</span>
-                  </div>
-                </div>
-
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center">
-                      <CheckCircle2 className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                      <span className="text-gray-300">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link href="/register">
-                  <Button
-                    className={`w-full ${
-                      plan.popular
-                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
-                        : ''
-                    }`}
-                    variant={plan.popular ? 'default' : 'outline'}
-                  >
-                    {plan.cta}
-                  </Button>
-                </Link>
-              </div>
-            ))}
-          </div>
+          <SpinnerPricing products={products} />
         </div>
       </section>
 

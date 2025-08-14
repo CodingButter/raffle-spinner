@@ -23,31 +23,21 @@ import {
   Sparkles,
   Calendar,
   Activity,
+  Dices,
+  Globe,
+  Radio,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth, useRequireAuth } from '@drawday/auth';
+import { PricingCard } from '@/components/pricing-card';
 
-const subscriptionPlans = [
-  {
-    name: 'Starter',
-    price: 29,
-    current: false,
-    features: ['1,000 participants', 'Basic themes', 'Email support'],
-  },
-  {
-    name: 'Professional',
-    price: 79,
-    current: true,
-    features: ['10,000 participants', 'Custom branding', 'Priority support', 'API access'],
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    current: false,
-    features: ['Unlimited participants', 'White-label', 'Dedicated support', 'Custom features'],
-  },
-];
+// Icon mapping for category icons
+const categoryIcons: Record<string, React.ReactNode> = {
+  spinner: <Dices className="w-5 h-5" />,
+  website: <Globe className="w-5 h-5" />,
+  streaming: <Radio className="w-5 h-5" />,
+};
 
 export default function DashboardPage() {
   // Protect route - redirect to login if not authenticated
@@ -58,6 +48,59 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [showUpgradeConfirm, setShowUpgradeConfirm] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('spinner');
+  const [userSubscriptions, setUserSubscriptions] = useState<any>({
+    spinner: [],
+    website: [],
+    streaming: [],
+  });
+  const [subscriptionsLoading, setSubscriptionsLoading] = useState(true);
+
+  // Fetch products from Directus
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/api/products');
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data.products || []);
+        } else {
+          console.error('Failed to fetch products');
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setProductsLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, []);
+
+  // Fetch user subscriptions
+  useEffect(() => {
+    async function fetchUserSubscriptions() {
+      if (!user?.id) return;
+
+      try {
+        const response = await fetch(`/api/user-subscriptions?userId=${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setUserSubscriptions(data.subscriptions || { spinner: [], website: [], streaming: [] });
+        } else {
+          console.error('Failed to fetch user subscriptions');
+        }
+      } catch (error) {
+        console.error('Error fetching user subscriptions:', error);
+      } finally {
+        setSubscriptionsLoading(false);
+      }
+    }
+
+    fetchUserSubscriptions();
+  }, [user?.id]);
 
   // Loading state while checking auth
   if (isLoading) {
@@ -76,13 +119,60 @@ export default function DashboardPage() {
     return null;
   }
 
+  // Check if user has any active subscriptions
+  const hasActiveSubscriptions = Object.values(userSubscriptions).some((subs: any[]) =>
+    subs.some((s) => s.status === 'active' || s.status === 'trialing')
+  );
+
+  // Get user's active spinner subscription (for backward compatibility)
+  const activeSpinnerSub = userSubscriptions.spinner?.find(
+    (s: any) => s.status === 'active' || s.status === 'trialing'
+  );
+  const userTier = activeSpinnerSub?.product?.tier?.key || 'free';
+
+  // Group products by category
+  const productsByCategory = products.reduce((acc: any, product) => {
+    const categoryKey = product.category?.key || 'spinner';
+    if (!acc[categoryKey]) {
+      acc[categoryKey] = {
+        category: product.category,
+        products: [],
+      };
+    }
+
+    // Check if user has this specific product
+    const userHasThisProduct = userSubscriptions[categoryKey]?.some(
+      (sub: any) =>
+        sub.product?.key === product.key && (sub.status === 'active' || sub.status === 'trialing')
+    );
+
+    acc[categoryKey].products.push({
+      ...product,
+      current: userHasThisProduct,
+    });
+
+    return acc;
+  }, {});
+
+  // Sort products within each category by tier order
+  Object.values(productsByCategory).forEach((cat: any) => {
+    cat.products.sort((a: any, b: any) => {
+      const tierOrder = { starter: 1, professional: 2, enterprise: 3 };
+      const aOrder = tierOrder[a.tier?.key] || 999;
+      const bOrder = tierOrder[b.tier?.key] || 999;
+      return aOrder - bOrder;
+    });
+  });
+
   // Extract user data
   const userData = {
     name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User',
     email: user.email,
     company: 'Your Company', // TODO: Add company field to User type or get from separate API
-    plan: 'Free Trial', // TODO: Get from subscription
-    trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    plan: userTier === 'free' ? 'Free Trial' : userTier.charAt(0).toUpperCase() + userTier.slice(1),
+    trialEndsAt: user.subscription_current_period_end
+      ? new Date(user.subscription_current_period_end).toISOString().split('T')[0]
+      : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     usage: {
       draws: 0,
       participants: 0,
@@ -100,14 +190,53 @@ export default function DashboardPage() {
     window.open('https://chrome.google.com/webstore', '_blank');
   };
 
-  const handleUpgrade = (planName: string) => {
-    setSelectedPlan(planName);
-    setShowUpgradeConfirm(true);
+  const handleUpgrade = async (productKey: string) => {
+    // Find the product
+    const product = products.find((p) => p.key === productKey);
+    if (!product) {
+      alert('Product not found');
+      return;
+    }
+
+    // For enterprise tier, redirect to contact page
+    if (product.tier?.key === 'enterprise') {
+      router.push('/contact');
+      return;
+    }
+
+    // Create checkout session for the selected plan
+    try {
+      // Create checkout session using Directus products
+      const response = await fetch('/api/create-checkout-session-directus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productKey: productKey,
+          email: user?.email,
+          userId: user?.id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.sessionUrl) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.sessionUrl;
+      } else {
+        alert('Unable to create checkout session. Please try again.');
+        console.error('Checkout error:', data.error);
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
   const confirmUpgrade = () => {
-    // TODO: Implement actual upgrade logic
-    alert(`Upgrading to ${selectedPlan} plan...`);
+    // This function is no longer needed since we're using direct checkout
+    if (selectedPlan) {
+      handleUpgrade(selectedPlan);
+    }
     setShowUpgradeConfirm(false);
     setSelectedPlan(null);
   };
@@ -178,27 +307,32 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Trial Banner */}
-        <Card className="mb-8 bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Sparkles className="w-8 h-8 text-purple-400" />
-                <div>
-                  <h3 className="font-bold text-lg">Free Trial Active</h3>
-                  <p className="text-sm text-gray-400">
-                    Your trial ends on {new Date(userData.trialEndsAt).toLocaleDateString()}.
-                    Upgrade now to keep all your features.
-                  </p>
+        {/* Trial Banner - Only show for free tier users */}
+        {userTier === 'free' && (
+          <Card className="mb-8 bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Sparkles className="w-8 h-8 text-purple-400" />
+                  <div>
+                    <h3 className="font-bold text-lg">Free Trial Active</h3>
+                    <p className="text-sm text-gray-400">
+                      Your trial ends on {new Date(userData.trialEndsAt).toLocaleDateString()}.
+                      Upgrade now to unlock all features.
+                    </p>
+                  </div>
                 </div>
+                <Button
+                  onClick={() => setActiveTab('subscription')}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                >
+                  Upgrade Now
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
               </div>
-              <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                Upgrade Now
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {activeTab === 'overview' && (
           <div className="space-y-8">
@@ -254,7 +388,11 @@ export default function DashboardPage() {
                     <CreditCard className="w-5 h-5 text-green-400" />
                     Current Plan
                   </CardTitle>
-                  <CardDescription>{userData.plan} - Trial</CardDescription>
+                  <CardDescription>
+                    {userData.plan}
+                    {userTier === 'free' && user.subscription_status === 'trialing' && ' - Trial'}
+                    {user.subscription_status === 'active' && userTier !== 'free' && ' - Active'}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Button
@@ -270,6 +408,154 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Active Subscriptions */}
+            <Card className="bg-gray-900/50 border-gray-800">
+              <CardHeader>
+                <CardTitle>Your Active Subscriptions</CardTitle>
+                <CardDescription>
+                  Products and services you're currently subscribed to
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {subscriptionsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Spinner Subscriptions */}
+                    {userSubscriptions.spinner?.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-purple-400 mb-2">
+                          Spinner Services
+                        </h4>
+                        {userSubscriptions.spinner.map((sub: any) => (
+                          <div
+                            key={sub.id}
+                            className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg mb-2"
+                          >
+                            <div>
+                              <p className="font-medium">{sub.product.name}</p>
+                              <p className="text-xs text-gray-400">
+                                Status:{' '}
+                                <span
+                                  className={
+                                    sub.status === 'active' ? 'text-green-400' : 'text-yellow-400'
+                                  }
+                                >
+                                  {sub.status}
+                                </span>
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm">£{sub.product.price}/mo</p>
+                              {sub.current_period_end && (
+                                <p className="text-xs text-gray-400">
+                                  Renews: {new Date(sub.current_period_end).toLocaleDateString()}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Website Subscriptions */}
+                    {userSubscriptions.website?.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-blue-400 mb-2">
+                          Website Services
+                        </h4>
+                        {userSubscriptions.website.map((sub: any) => (
+                          <div
+                            key={sub.id}
+                            className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg mb-2"
+                          >
+                            <div>
+                              <p className="font-medium">{sub.product.name}</p>
+                              <p className="text-xs text-gray-400">
+                                Status:{' '}
+                                <span
+                                  className={
+                                    sub.status === 'active' ? 'text-green-400' : 'text-yellow-400'
+                                  }
+                                >
+                                  {sub.status}
+                                </span>
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm">£{sub.product.price}/mo</p>
+                              {sub.current_period_end && (
+                                <p className="text-xs text-gray-400">
+                                  Renews: {new Date(sub.current_period_end).toLocaleDateString()}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Streaming Subscriptions */}
+                    {userSubscriptions.streaming?.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-green-400 mb-2">
+                          Streaming Services
+                        </h4>
+                        {userSubscriptions.streaming.map((sub: any) => (
+                          <div
+                            key={sub.id}
+                            className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg mb-2"
+                          >
+                            <div>
+                              <p className="font-medium">{sub.product.name}</p>
+                              <p className="text-xs text-gray-400">
+                                Status:{' '}
+                                <span
+                                  className={
+                                    sub.status === 'active' ? 'text-green-400' : 'text-yellow-400'
+                                  }
+                                >
+                                  {sub.status}
+                                </span>
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm">£{sub.product.price}/mo</p>
+                              {sub.current_period_end && (
+                                <p className="text-xs text-gray-400">
+                                  Renews: {new Date(sub.current_period_end).toLocaleDateString()}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* No Subscriptions */}
+                    {!userSubscriptions.spinner?.length &&
+                      !userSubscriptions.website?.length &&
+                      !userSubscriptions.streaming?.length && (
+                        <div className="text-center py-8 text-gray-500">
+                          <CreditCard className="w-16 h-16 mx-auto mb-4 opacity-20" />
+                          <p>No active subscriptions</p>
+                          <Button
+                            onClick={() => setActiveTab('subscription')}
+                            variant="outline"
+                            size="sm"
+                            className="mt-4 border-gray-700"
+                          >
+                            Browse Plans
+                          </Button>
+                        </div>
+                      )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Usage Stats */}
             <Card className="bg-gray-900/50 border-gray-800">
@@ -289,99 +575,172 @@ export default function DashboardPage() {
 
         {activeTab === 'subscription' && (
           <div className="space-y-8">
+            {/* Category Selector */}
+            <div className="flex flex-col gap-4">
+              <h2 className="text-2xl font-bold">Choose Your Products</h2>
+              <div className="flex gap-4 flex-wrap">
+                {Object.entries(productsByCategory).map(([key, data]: [string, any]) => (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedCategory(key)}
+                    className={`px-6 py-3 rounded-lg border transition-all ${
+                      selectedCategory === key
+                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 border-transparent text-white'
+                        : 'bg-gray-900/50 border-gray-700 hover:border-gray-600'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {categoryIcons[key] || <Sparkles className="w-5 h-5" />}
+                      <span className="font-semibold">{data.category?.name || key}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <Card className="bg-gray-900/50 border-gray-800">
               <CardHeader>
-                <CardTitle>Subscription Plans</CardTitle>
-                <CardDescription>Choose the plan that fits your needs</CardDescription>
+                <CardTitle>
+                  {productsByCategory[selectedCategory]?.category?.name || selectedCategory} Plans
+                </CardTitle>
+                <CardDescription>
+                  {productsByCategory[selectedCategory]?.category?.description ||
+                    'Choose the perfect plan for your needs'}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-3 gap-6">
-                  {subscriptionPlans.map((plan) => (
-                    <div
-                      key={plan.name}
-                      className={`relative rounded-xl p-6 ${
-                        plan.current
-                          ? 'bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-2 border-purple-500/40'
-                          : 'bg-gray-800/50 border border-gray-700'
-                      }`}
-                    >
-                      {plan.current && (
-                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                          <span className="bg-purple-600 text-white text-xs px-3 py-1 rounded-full">
-                            Current Plan
-                          </span>
-                        </div>
-                      )}
-
-                      <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                      <div className="mb-4">
-                        <span className="text-3xl font-bold">
-                          {typeof plan.price === 'number' ? `£${plan.price}` : plan.price}
-                        </span>
-                        {typeof plan.price === 'number' && (
-                          <span className="text-gray-400 ml-2">/month</span>
-                        )}
-                      </div>
-
-                      <ul className="space-y-2 mb-6">
-                        {plan.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-center text-sm">
-                            <CheckCircle2 className="w-4 h-4 text-green-400 mr-2 flex-shrink-0" />
-                            <span className="text-gray-300">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <Button
-                        className={`w-full ${plan.current ? 'bg-gray-700' : ''}`}
-                        variant={plan.current ? 'secondary' : 'outline'}
-                        disabled={plan.current}
-                        onClick={() => {
-                          if (!plan.current) {
-                            if (plan.name === 'Enterprise') {
-                              router.push('/contact');
-                            } else {
-                              handleUpgrade(plan.name);
-                            }
-                          }
-                        }}
-                      >
-                        {plan.current
-                          ? 'Current Plan'
-                          : plan.name === 'Enterprise'
+                  {productsByCategory[selectedCategory]?.products.map((plan: any) => (
+                    <PricingCard
+                      key={plan.key}
+                      plan={{
+                        ...plan,
+                        cta: plan.current
+                          ? user?.stripe_customer_id
+                            ? 'Manage Plan'
+                            : 'Current Plan'
+                          : plan.tier?.key === 'enterprise'
                             ? 'Contact Sales'
-                            : 'Upgrade'}
-                      </Button>
-                    </div>
+                            : 'Upgrade',
+                      }}
+                      onUpgrade={handleUpgrade}
+                      onManage={async () => {
+                        if (user?.stripe_customer_id) {
+                          try {
+                            const response = await fetch('/api/create-portal-session', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                customerId: user.stripe_customer_id,
+                                returnUrl: window.location.href,
+                              }),
+                            });
+
+                            const data = await response.json();
+                            if (data.url) {
+                              window.location.href = data.url;
+                            }
+                          } catch (error) {
+                            console.error('Error:', error);
+                            alert('Unable to open billing portal.');
+                          }
+                        }
+                      }}
+                    />
                   ))}
                 </div>
               </CardContent>
             </Card>
 
+            {user?.stripe_customer_id && (
+              <Card className="bg-blue-900/20 border-blue-500/20">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-5 h-5 mt-0.5 text-blue-400">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1 text-sm">
+                      <p className="text-blue-300 font-medium mb-1">Managing Your Subscription</p>
+                      <p className="text-gray-400">
+                        Click "Manage Plan" on your current subscription to change plans, update
+                        payment methods, or cancel your subscription. All changes are handled
+                        securely through Stripe.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="bg-gray-900/50 border-gray-800">
               <CardHeader>
-                <CardTitle>Payment Method</CardTitle>
-                <CardDescription>Manage your payment details</CardDescription>
+                <CardTitle>Payment & Billing</CardTitle>
+                <CardDescription>Manage your payment methods and billing details</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <CreditCard className="w-8 h-8 text-gray-400" />
-                        <div>
-                          <p className="font-medium">•••• •••• •••• 4242</p>
-                          <p className="text-sm text-gray-400">Expires 12/24</p>
-                        </div>
+                    <div className="flex items-center gap-3">
+                      <CreditCard className="w-8 h-8 text-gray-400" />
+                      <div className="flex-1">
+                        <p className="font-medium">Billing Portal</p>
+                        <p className="text-sm text-gray-400">
+                          Manage payment methods, download invoices, and update billing info
+                        </p>
                       </div>
-                      <Button variant="ghost" size="sm" className="text-gray-400">
-                        Update
-                      </Button>
                     </div>
                   </div>
-                  <Button variant="outline" className="w-full border-gray-700">
-                    Add Payment Method
+                  <Button
+                    variant="outline"
+                    className="w-full border-gray-700"
+                    onClick={async () => {
+                      // TODO: Get actual Stripe customer ID from user data
+                      const customerId = user?.stripe_customer_id;
+                      if (!customerId) {
+                        alert('No active subscription found. Please upgrade to a paid plan first.');
+                        return;
+                      }
+
+                      try {
+                        const response = await fetch('/api/create-portal-session', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            customerId,
+                            returnUrl: window.location.href,
+                          }),
+                        });
+
+                        const data = await response.json();
+                        if (data.url) {
+                          window.location.href = data.url;
+                        } else {
+                          alert('Unable to open billing portal. Please try again.');
+                        }
+                      } catch (error) {
+                        console.error('Error opening billing portal:', error);
+                        alert('An error occurred. Please try again.');
+                      }
+                    }}
+                  >
+                    <CreditCard className="mr-2 w-4 h-4" />
+                    Manage Billing in Stripe
                   </Button>
+                  <p className="text-xs text-gray-500 text-center">
+                    You'll be redirected to Stripe's secure customer portal
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -389,14 +748,46 @@ export default function DashboardPage() {
             <Card className="bg-gray-900/50 border-gray-800">
               <CardHeader>
                 <CardTitle>Billing History</CardTitle>
-                <CardDescription>Your payment history and invoices</CardDescription>
+                <CardDescription>View and download your invoices</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8 text-gray-500">
                   <CreditCard className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                  <p>No billing history yet</p>
-                  <p className="text-sm">
-                    Your first invoice will appear here after your trial ends
+                  <p className="mb-4">Access your complete billing history</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-700"
+                    onClick={async () => {
+                      const customerId = user?.stripe_customer_id;
+                      if (!customerId) {
+                        alert('No billing history available yet.');
+                        return;
+                      }
+
+                      try {
+                        const response = await fetch('/api/create-portal-session', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            customerId,
+                            returnUrl: window.location.href,
+                          }),
+                        });
+
+                        const data = await response.json();
+                        if (data.url) {
+                          window.location.href = data.url;
+                        }
+                      } catch (error) {
+                        console.error('Error:', error);
+                      }
+                    }}
+                  >
+                    View Invoices in Stripe
+                  </Button>
+                  <p className="text-xs mt-2">
+                    Download invoices and receipts from Stripe's portal
                   </p>
                 </div>
               </CardContent>
