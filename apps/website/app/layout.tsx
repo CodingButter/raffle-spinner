@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Navigation } from '@/components/navigation';
-import FooterServer from '@/components/FooterServer';
+import { FooterServer } from '@/components/FooterServer';
 import { Providers } from './providers';
 import './globals.css';
 

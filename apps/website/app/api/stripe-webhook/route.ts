@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
               subscription_status: subscription.status,
               subscription_tier: tier,
               subscription_current_period_end: new Date(
-                subscription.current_period_end * 1000
+                (subscription as any).current_period_end * 1000
               ).toISOString(),
               subscription_cancel_at_period_end: subscription.cancel_at_period_end,
             });
@@ -109,9 +109,12 @@ export async function POST(request: NextRequest) {
             };
 
             // Only add period end if it's a valid timestamp
-            if (subscription.current_period_end && subscription.current_period_end > 0) {
+            if (
+              (subscription as any).current_period_end &&
+              (subscription as any).current_period_end > 0
+            ) {
               subscriptionData.current_period_end = new Date(
-                subscription.current_period_end * 1000
+                (subscription as any).current_period_end * 1000
               ).toISOString();
             }
 
@@ -143,9 +146,12 @@ export async function POST(request: NextRequest) {
                 };
 
                 // Only add period end if it's a valid timestamp
-                if (subscription.current_period_end && subscription.current_period_end > 0) {
+                if (
+                  (subscription as any).current_period_end &&
+                  (subscription as any).current_period_end > 0
+                ) {
                   fallbackUpdateData.subscription_current_period_end = new Date(
-                    subscription.current_period_end * 1000
+                    (subscription as any).current_period_end * 1000
                   ).toISOString();
                 }
 
@@ -178,7 +184,7 @@ export async function POST(request: NextRequest) {
                 subscription_status: subscription.status,
                 subscription_tier: tier,
                 subscription_current_period_end: new Date(
-                  subscription.current_period_end * 1000
+                  (subscription as any).current_period_end * 1000
                 ).toISOString(),
                 subscription_cancel_at_period_end: subscription.cancel_at_period_end,
               });
@@ -218,7 +224,7 @@ export async function POST(request: NextRequest) {
         console.log('Payment succeeded for invoice:', invoice.id);
 
         // Optional: Log successful payments for audit trail
-        if (invoice.subscription && invoice.customer_email) {
+        if ((invoice as any).subscription && invoice.customer_email) {
           console.log(
             `Payment successful for ${invoice.customer_email}, amount: ${invoice.amount_paid / 100} ${invoice.currency.toUpperCase()}`
           );
@@ -233,10 +239,10 @@ export async function POST(request: NextRequest) {
         console.log('Payment failed for invoice:', invoice.id);
 
         // Update subscription status to past_due
-        if (invoice.subscription && invoice.customer_email) {
+        if ((invoice as any).subscription && invoice.customer_email) {
           try {
             const subscription = await stripe.subscriptions.retrieve(
-              invoice.subscription as string
+              (invoice as any).subscription as string
             );
 
             await directusAdmin.updateUserSubscription(invoice.customer_email, {
@@ -245,7 +251,7 @@ export async function POST(request: NextRequest) {
               subscription_status: 'past_due',
               subscription_tier: getTierFromPriceId(subscription.items.data[0]?.price.id),
               subscription_current_period_end: new Date(
-                subscription.current_period_end * 1000
+                (subscription as any).current_period_end * 1000
               ).toISOString(),
               subscription_cancel_at_period_end: subscription.cancel_at_period_end,
             });

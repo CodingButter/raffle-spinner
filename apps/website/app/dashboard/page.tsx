@@ -120,8 +120,10 @@ export default function DashboardPage() {
   }
 
   // Check if user has any active subscriptions
-  const hasActiveSubscriptions = Object.values(userSubscriptions).some((subs: any[]) =>
-    subs.some((s) => s.status === 'active' || s.status === 'trialing')
+  const hasActiveSubscriptions = Object.values(userSubscriptions).some((subs: any) =>
+    Array.isArray(subs)
+      ? subs.some((s: any) => s.status === 'active' || s.status === 'trialing')
+      : false
   );
 
   // Get user's active spinner subscription (for backward compatibility)
@@ -157,9 +159,9 @@ export default function DashboardPage() {
   // Sort products within each category by tier order
   Object.values(productsByCategory).forEach((cat: any) => {
     cat.products.sort((a: any, b: any) => {
-      const tierOrder = { starter: 1, professional: 2, enterprise: 3 };
-      const aOrder = tierOrder[a.tier?.key] || 999;
-      const bOrder = tierOrder[b.tier?.key] || 999;
+      const tierOrder: Record<string, number> = { starter: 1, professional: 2, enterprise: 3 };
+      const aOrder = tierOrder[a.tier?.key as string] || 999;
+      const bOrder = tierOrder[b.tier?.key as string] || 999;
       return aOrder - bOrder;
     });
   });
@@ -923,7 +925,7 @@ export default function DashboardPage() {
               <div className="flex justify-between">
                 <span className="text-gray-400">Monthly Price:</span>
                 <span className="font-semibold">
-                  £{subscriptionPlans.find((p) => p.name === selectedPlan)?.price}/mo
+                  £{products.find((p: any) => p.tier?.name === selectedPlan)?.price || 0}/mo
                 </span>
               </div>
             </div>

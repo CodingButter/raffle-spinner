@@ -16,7 +16,7 @@ const socialIcons: Record<string, any> = {
   instagram: Instagram,
 };
 
-export default async function FooterServer() {
+export async function FooterServer() {
   // Fetch data from Directus
   const [companyInfo, socialMedia, careers] = await Promise.all([
     directus.getCompanyInfo(),

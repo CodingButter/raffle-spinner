@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   try {
     // Fetch user's subscriptions with product details including category and tier
     const response = await fetch(
-      `${directusUrl}/items/subscriptions?filter[user][_eq]=${userId}&fields=*,product.*,product.category.*,product.tier.*`,
+      `${directusUrl}/items/user_subscriptions?filter[user][_eq]=${userId}&fields=*,product.*,product.category.*,product.tier.*`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -22,6 +22,18 @@ export async function GET(request: NextRequest) {
     );
 
     if (!response.ok) {
+      // For now, return empty subscriptions if we get a 403 (permissions issue)
+      if (response.status === 403) {
+        console.log('User subscriptions not accessible without authentication - returning empty');
+        return NextResponse.json({
+          subscriptions: {
+            spinner: [],
+            website: [],
+            streaming: [],
+          },
+          total: 0,
+        });
+      }
       throw new Error(`Failed to fetch subscriptions: ${response.status}`);
     }
 
