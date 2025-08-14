@@ -109,12 +109,17 @@ export function Navigation() {
               Contact
             </Link>
 
-            <Button
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-              asChild
-            >
-              <Link href="/contact">Get Started</Link>
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" className="text-gray-300 hover:text-white" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                asChild
+              >
+                <Link href="/register">Start Free Trial</Link>
+              </Button>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -180,9 +185,14 @@ export function Navigation() {
                 </Link>
               </div>
 
-              <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600" asChild>
-                <Link href="/contact">Get Started</Link>
-              </Button>
+              <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-800">
+                <Button variant="outline" className="w-full border-gray-700 text-gray-300" asChild>
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600" asChild>
+                  <Link href="/register">Start Free Trial</Link>
+                </Button>
+              </div>
             </div>
           </div>
         )}

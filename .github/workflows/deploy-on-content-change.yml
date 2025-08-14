@@ -1,0 +1,68 @@
+name: Deploy on Content Change
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'Deployment message'
+        required: false
+        default: 'Manual deployment from GitHub Actions'
+  
+  # Schedule to check for updates every 30 minutes
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+  
+  # Trigger via webhook (can be called from Directus)
+  repository_dispatch:
+    types: [content-update]
+
+jobs:
+  check-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Check for content updates
+        id: check
+        env:
+          DIRECTUS_ADMIN_EMAIL: ${{ secrets.DIRECTUS_ADMIN_EMAIL }}
+          DIRECTUS_ADMIN_PASSWORD: ${{ secrets.DIRECTUS_ADMIN_PASSWORD }}
+        run: |
+          node scripts/trigger-deploy.js check
+      
+      - name: Notify deployment
+        if: success()
+        run: |
+          echo "✅ Deployment check completed"
+
+  # Direct deployment job (for manual triggers)
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Vercel Deployment
+        run: |
+          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "deploymentMeta": {
+                "message": "${{ github.event.inputs.message || github.event.client_payload.message || 'Deployment from GitHub Actions' }}",
+                "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
+                "source": "github-actions",
+                "trigger": "${{ github.event_name }}"
+              }
+            }'
+      
+      - name: Deployment triggered
+        run: |
+          echo "✅ Vercel deployment triggered successfully"
+          echo "Check deployment status at: https://vercel.com/deployments"
