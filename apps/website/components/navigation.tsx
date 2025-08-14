@@ -3,14 +3,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@drawday/ui';
-import { Menu, X, ChevronDown, Monitor, Tv, Code, ArrowRight } from 'lucide-react';
+import { Menu, X, ChevronDown, Monitor, Tv, Code, ArrowRight, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@drawday/auth';
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -110,15 +112,28 @@ export function Navigation() {
             </Link>
 
             <div className="flex items-center gap-3">
-              <Button variant="ghost" className="text-gray-300 hover:text-white" asChild>
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-                asChild
-              >
-                <Link href="/register">Start Free Trial</Link>
-              </Button>
+              {isAuthenticated ? (
+                <>
+                  <Button variant="ghost" className="text-gray-300 hover:text-white" asChild>
+                    <Link href="/dashboard">
+                      <User className="w-4 h-4 mr-2" />
+                      Dashboard
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="ghost" className="text-gray-300 hover:text-white" asChild>
+                    <Link href="/login">Login</Link>
+                  </Button>
+                  <Button
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                    asChild
+                  >
+                    <Link href="/register">Start Free Trial</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 

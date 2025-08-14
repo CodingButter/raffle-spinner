@@ -1,7 +1,7 @@
 /**
  * Registration Page
  *
- * User registration with email/password
+ * User registration with email/password using Directus
  */
 
 'use client';
@@ -18,13 +18,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@drawday/ui/card';
-import { Chrome, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@drawday/ui/alert';
+import { Chrome, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@drawday/auth';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     companyName: '',
     fullName: '',
@@ -36,12 +40,42 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
-    // TODO: Implement actual registration with backend
-    setTimeout(() => {
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
       setLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Parse full name into first and last name
+      const nameParts = formData.fullName.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      await register({
+        email: formData.email,
+        password: formData.password,
+        first_name: firstName,
+        last_name: lastName,
+        // Store company name in description or custom field
+        description: `Company: ${formData.companyName}`,
+      });
+
       router.push('/dashboard');
-    }, 1500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,6 +110,13 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+              {error && (
+                <Alert className="bg-red-900/20 border-red-900/50 text-red-400">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="companyName">Company Name</Label>
                 <Input

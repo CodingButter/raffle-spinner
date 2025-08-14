@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@drawday/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@drawday/ui/card';
 import {
@@ -26,20 +26,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-// Mock data - replace with actual API calls
-const userData = {
-  name: 'John Smith',
-  email: 'john@example.com',
-  company: 'Elite Competitions',
-  plan: 'Professional',
-  trialEndsAt: '2024-02-14',
-  usage: {
-    draws: 42,
-    participants: 8234,
-    lastDraw: '2024-01-28',
-  },
-};
+import { useAuth, useRequireAuth } from '@drawday/auth';
 
 const subscriptionPlans = [
   {
@@ -63,13 +50,48 @@ const subscriptionPlans = [
 ];
 
 export default function DashboardPage() {
+  // Protect route - redirect to login if not authenticated
+  useRequireAuth();
+
   const router = useRouter();
+  const { user, logout, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [showUpgradeConfirm, setShowUpgradeConfirm] = useState(false);
 
-  const handleLogout = () => {
-    // TODO: Implement actual logout
+  // Loading state while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no user, show nothing (useRequireAuth will redirect)
+  if (!user) {
+    return null;
+  }
+
+  // Extract user data
+  const userData = {
+    name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User',
+    email: user.email,
+    company: user.description?.replace('Company: ', '') || 'Your Company',
+    plan: 'Free Trial', // TODO: Get from subscription
+    trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    usage: {
+      draws: 0,
+      participants: 0,
+      lastDraw: 'Never',
+    },
+  };
+
+  const handleLogout = async () => {
+    await logout();
     router.push('/');
   };
 

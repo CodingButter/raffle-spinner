@@ -1,7 +1,7 @@
 /**
  * Login Page
  *
- * User authentication with email/password
+ * User authentication with email/password using Directus
  */
 
 'use client';
@@ -18,13 +18,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@drawday/ui/card';
-import { ArrowRight } from 'lucide-react';
+import { Alert, AlertDescription } from '@drawday/ui/alert';
+import { ArrowRight, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@drawday/auth';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,12 +37,18 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
-    // TODO: Implement actual login with backend
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await login({
+        email: formData.email,
+        password: formData.password,
+      });
       router.push('/dashboard');
-    }, 1500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,6 +85,13 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+              {error && (
+                <Alert className="bg-red-900/20 border-red-900/50 text-red-400">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
