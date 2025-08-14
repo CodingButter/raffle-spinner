@@ -101,6 +101,9 @@ export function Navigation() {
               )}
             </div>
 
+            <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors py-4">
+              Pricing
+            </Link>
             <Link
               href="/portfolio"
               className="text-gray-300 hover:text-white transition-colors py-4"
@@ -180,6 +183,13 @@ export function Navigation() {
               </Link>
 
               <div className="border-t border-gray-800 pt-4 mt-2">
+                <Link
+                  href="/pricing"
+                  className="block text-gray-300 hover:text-white transition-colors px-2 py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Pricing
+                </Link>
                 <Link
                   href="/portfolio"
                   className="block text-gray-300 hover:text-white transition-colors px-2 py-2"
