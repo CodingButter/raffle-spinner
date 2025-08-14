@@ -8,7 +8,7 @@
 const Stripe = require('stripe');
 
 // Initialize Stripe with test key
-const stripe = new Stripe('sk_test_YOUR_STRIPE_SECRET_KEY', {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'YOUR_STRIPE_SECRET_KEY', {
   apiVersion: '2024-12-18.acacia'
 });
 
