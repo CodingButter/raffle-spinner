@@ -115,6 +115,68 @@ docker-compose up -d
 - Minimum Spin Duration (seconds)
 - Deceleration Rate (slow/medium/fast)
 
+## Code Quality Standards (MANDATORY)
+
+### File Size Limits
+
+- **MAXIMUM file size**: 200 lines (hard limit: 250 lines)
+- **Ideal file size**: 50-150 lines
+- **Files exceeding 200 lines MUST be refactored immediately**
+- **NO EXCEPTIONS** - Large files are technical debt
+
+### Component Organization Rules
+
+1. **Single Responsibility**: Each file should have ONE clear purpose
+2. **Component Extraction**: Break large components into:
+   - Parent component (orchestration, <100 lines)
+   - Sub-components (specific UI sections, <80 lines)
+   - Utility functions (separate files, <50 lines each)
+   - Custom hooks (separate files, <100 lines)
+   - Types/interfaces (separate files)
+
+3. **Folder Structure for Complex Features**:
+   ```
+   feature/
+   ├── index.tsx           (main export, <50 lines)
+   ├── FeatureName.tsx     (main component, <150 lines)
+   ├── components/         (sub-components, <100 lines each)
+   │   ├── Header.tsx
+   │   ├── Content.tsx
+   │   └── Footer.tsx
+   ├── hooks/             (custom hooks, <100 lines each)
+   │   └── useFeature.ts
+   ├── utils/             (utility functions)
+   │   └── helpers.ts
+   └── types.ts           (TypeScript types)
+   ```
+
+### DRY (Don't Repeat Yourself) Principles
+
+1. **Shared Components**: Any component used in 2+ places goes in `@drawday/ui`
+2. **Shared Hooks**: Reusable hooks go in `@drawday/hooks`
+3. **Shared Utils**: Common utilities go in `@drawday/utils`
+4. **No Duplication**: If you're copying code, extract it to a shared location
+5. **Composition over Repetition**: Use component composition to avoid duplication
+
+### Refactoring Requirements
+
+When encountering large files:
+
+1. **STOP IMMEDIATELY** and refactor before any other work
+2. **Extract logical sections** into separate components
+3. **Create sub-components** for repeated UI patterns
+4. **Move business logic** to custom hooks
+5. **Extract constants and types** to separate files
+6. **Split complex functions** into smaller, testable units
+
+### Current Large Files Requiring Refactoring
+
+- `apps/website/app/dashboard/page.tsx` (996 lines) - NEEDS IMMEDIATE REFACTORING
+- `packages/spinners/src/slot-machine/SlotMachineWheel.tsx` (551 lines)
+- `apps/website/lib/directus.ts` (519 lines)
+- `apps/spinner-extension/src/components/options/SpinnerCustomization.tsx` (453 lines)
+- Any file over 200 lines must be added to this list and refactored
+
 ## Critical Implementation Notes
 
 1. **CSV Column Mapper**: Must intelligently pre-select column mappings based on common header names
