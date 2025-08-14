@@ -9,13 +9,13 @@
 @import 'tailwindcss';
 
 /* Import shared Tailwind base configuration */
-@import '@raffle-spinner/tailwind-config/base';
+@import '@drawday/tailwind-config/base';
 
 /* Import shared animations */
-@import '@raffle-spinner/tailwind-config/animations';
+@import '@drawday/tailwind-config/animations';
 
 /* Import shared utilities */
-@import '@raffle-spinner/tailwind-config/utilities';
+@import '@drawday/tailwind-config/utilities';
 
 /* Website-specific customizations */
 @layer utilities {
