@@ -32,7 +32,9 @@ try {
 
   // Build the extension
   console.log('📦 Building extension...');
-  execSync('tsc --noEmit && vite build', { stdio: 'inherit', cwd: path.resolve(__dirname, '..') });
+  const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development';
+  console.log(`📦 Building in ${mode} mode...`);
+  execSync(`tsc --noEmit && vite build --mode ${mode}`, { stdio: 'inherit', cwd: path.resolve(__dirname, '..') });
 
   // Copy manifest and icons to DrawDaySpinner
   console.log('📋 Copying manifest and icons...');

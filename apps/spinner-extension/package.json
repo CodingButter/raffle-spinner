@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "node scripts/build-extension.cjs",
+    "build:production": "NODE_ENV=production node scripts/build-extension.cjs",
     "build:only": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "clean": "rm -rf DrawDaySpinner",
