@@ -141,7 +141,7 @@ function SidePanelContent() {
         {selectedCompetition && (
           <>
             {/* Spinner Container with relative positioning for winner overlay */}
-            <div className="relative">
+            <div className="relative flex justify-center">
               <SlotMachineWheel
                 participants={selectedCompetition.participants}
                 targetTicketNumber={ticketNumber}
@@ -157,7 +157,7 @@ function SidePanelContent() {
                     nameColor: theme.spinnerStyle.nameColor,
                     ticketColor: theme.spinnerStyle.ticketColor,
                     backgroundColor: theme.spinnerStyle.backgroundColor,
-                    canvasBackground: theme.spinnerStyle.canvasBackground,
+                    canvasBackground: 'transparent', // Force transparent background
                     borderColor: theme.spinnerStyle.borderColor,
                     highlightColor: theme.spinnerStyle.highlightColor,
                     nameSize: theme.spinnerStyle.nameSize,

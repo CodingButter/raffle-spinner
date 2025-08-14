@@ -43,7 +43,8 @@ export function drawSlotMachineSegment({
   ctx,
   theme,
 }: WheelSegmentProps) {
-  const centerY = viewportHeight / 2 + 40;
+  const FRAME_BORDER_WIDTH = 8;
+  const centerY = viewportHeight / 2 + FRAME_BORDER_WIDTH;
   const distanceFromCenter = Math.abs(yPos + itemHeight / 2 - centerY);
   const perspectiveFactor = 1 - (distanceFromCenter / (viewportHeight / 2)) * perspectiveScale;
 

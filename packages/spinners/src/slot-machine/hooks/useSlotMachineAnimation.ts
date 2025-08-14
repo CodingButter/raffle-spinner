@@ -131,13 +131,15 @@ export function useSlotMachineAnimation({
     const minRotations = 5;
     const maxRotations = 8;
     const rotations = minRotations + Math.random() * (maxRotations - minRotations);
+    
+    // Make sure we end exactly at the target position by calculating total distance precisely
     const totalDistance = rotations * wheelCircumference + targetPosition;
 
     const physics = {
       duration,
       totalDistance,
       startPosition: 0,
-      finalPosition: targetPosition,
+      finalPosition: totalDistance, // Use totalDistance as final, not targetPosition
     };
 
     // Track animation state
@@ -196,8 +198,8 @@ export function useSlotMachineAnimation({
           recalculatedPhysics = {
             duration: remainingDuration,
             totalDistance: remainingDistance,
-            startPosition: normalizedCurrentPos,
-            finalPosition: newTargetPosition,
+            startPosition: currentPosition, // Use actual current position, not normalized
+            finalPosition: currentPosition + remainingDistance, // Final is start + distance
           };
 
           // Reset start time for the new animation segment
@@ -206,24 +208,24 @@ export function useSlotMachineAnimation({
       }
 
       // Calculate position based on easing
-      let position: number;
-      if (progress < 1) {
-        // Use cubic ease-out for smooth deceleration
-        const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-        position =
-          recalculatedPhysics.startPosition + recalculatedPhysics.totalDistance * easeOutCubic;
-      } else {
-        // Snap to final position
-        position = recalculatedPhysics.finalPosition;
-      }
+      // Use cubic ease-out for smooth deceleration
+      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+      const position =
+        recalculatedPhysics.startPosition + recalculatedPhysics.totalDistance * easeOutCubic;
 
       // Update position
       onPositionUpdate(position);
 
       // Continue or complete animation
-      if (progress < 1) {
+      if (progress < 0.999) {
         animationRef.current = requestAnimationFrame(animate);
       } else {
+        // For the final frame, use the exact eased position, not a snap
+        // This prevents the jarring snap at the end
+        const finalEasedPosition = 
+          recalculatedPhysics.startPosition + recalculatedPhysics.totalDistance * 1.0;
+        onPositionUpdate(finalEasedPosition);
+        
         // Animation complete
         isSpinningRef.current = false;
         animationRef.current = null;

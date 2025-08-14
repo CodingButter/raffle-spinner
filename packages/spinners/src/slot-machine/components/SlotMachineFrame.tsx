@@ -56,39 +56,44 @@ export function drawSlotMachineFrame({ ctx, canvasWidth, viewportHeight, theme }
   // Draw viewport frame with glass effect
   ctx.save();
 
+  const FRAME_BORDER_WIDTH = 8;
+  const VIEWPORT_TOP = FRAME_BORDER_WIDTH;
+  const VIEWPORT_LEFT = FRAME_BORDER_WIDTH;
+  const VIEWPORT_WIDTH = canvasWidth - (FRAME_BORDER_WIDTH * 2);
+
   // Draw outer frame using theme colors
   const borderColor = theme?.spinnerStyle?.borderColor || '#FFD700';
-  const frameGradient = ctx.createLinearGradient(0, 40, 0, viewportHeight + 40);
+  const frameGradient = ctx.createLinearGradient(0, VIEWPORT_TOP, 0, viewportHeight + VIEWPORT_TOP);
   frameGradient.addColorStop(0, adjustBrightness(borderColor, -40));
   frameGradient.addColorStop(0.5, adjustBrightness(borderColor, -60));
   frameGradient.addColorStop(1, adjustBrightness(borderColor, -40));
 
   ctx.strokeStyle = frameGradient;
-  ctx.lineWidth = 8;
-  ctx.strokeRect(20, 40, canvasWidth - 40, viewportHeight);
+  ctx.lineWidth = FRAME_BORDER_WIDTH;
+  ctx.strokeRect(FRAME_BORDER_WIDTH/2, FRAME_BORDER_WIDTH/2, canvasWidth - FRAME_BORDER_WIDTH, viewportHeight + FRAME_BORDER_WIDTH);
 
   // Draw inner frame highlight
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
   ctx.lineWidth = 2;
-  ctx.strokeRect(24, 44, canvasWidth - 48, viewportHeight - 8);
+  ctx.strokeRect(VIEWPORT_LEFT, VIEWPORT_TOP, VIEWPORT_WIDTH, viewportHeight);
 
   // Draw center selection indicator using Hot Pink arrows
-  const centerLineY = viewportHeight / 2 + 40;
+  const centerLineY = viewportHeight / 2 + VIEWPORT_TOP;
 
   // Left arrow (pointing right/inward) - Theme highlight color
   ctx.fillStyle = theme?.spinnerStyle?.highlightColor || '#FF1493';
   ctx.beginPath();
-  ctx.moveTo(40, centerLineY); // Point at the right
-  ctx.lineTo(10, centerLineY - 20); // Top left corner
-  ctx.lineTo(10, centerLineY + 20); // Bottom left corner
+  ctx.moveTo(VIEWPORT_LEFT + 20, centerLineY); // Point at the right
+  ctx.lineTo(2, centerLineY - 20); // Top left corner
+  ctx.lineTo(2, centerLineY + 20); // Bottom left corner
   ctx.closePath();
   ctx.fill();
 
   // Right arrow (pointing left/inward) - Hot Pink
   ctx.beginPath();
-  ctx.moveTo(canvasWidth - 40, centerLineY); // Point at the left
-  ctx.lineTo(canvasWidth - 10, centerLineY - 20); // Top right corner
-  ctx.lineTo(canvasWidth - 10, centerLineY + 20); // Bottom right corner
+  ctx.moveTo(canvasWidth - VIEWPORT_LEFT - 20, centerLineY); // Point at the left
+  ctx.lineTo(canvasWidth - 2, centerLineY - 20); // Top right corner
+  ctx.lineTo(canvasWidth - 2, centerLineY + 20); // Bottom right corner
   ctx.closePath();
   ctx.fill();
 
@@ -97,17 +102,17 @@ export function drawSlotMachineFrame({ ctx, canvasWidth, viewportHeight, theme }
   ctx.lineWidth = 3;
   ctx.setLineDash([5, 5]);
   ctx.beginPath();
-  ctx.moveTo(40, centerLineY);
-  ctx.lineTo(canvasWidth - 40, centerLineY);
+  ctx.moveTo(VIEWPORT_LEFT + 20, centerLineY);
+  ctx.lineTo(canvasWidth - VIEWPORT_LEFT - 20, centerLineY);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Add glass reflection effect
-  const glassGradient = ctx.createLinearGradient(0, 40, 0, viewportHeight / 3 + 40);
-  glassGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+  // Add glass reflection effect - only a subtle overlay, not a fill
+  const glassGradient = ctx.createLinearGradient(0, VIEWPORT_TOP, 0, viewportHeight / 3 + VIEWPORT_TOP);
+  glassGradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
   glassGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = glassGradient;
-  ctx.fillRect(24, 44, canvasWidth - 48, viewportHeight / 3);
+  ctx.fillRect(VIEWPORT_LEFT, VIEWPORT_TOP, VIEWPORT_WIDTH, viewportHeight / 3);
 
   ctx.restore();
 }

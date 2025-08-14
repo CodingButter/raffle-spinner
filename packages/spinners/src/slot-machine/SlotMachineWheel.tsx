@@ -29,8 +29,9 @@ const VISIBLE_ITEMS = 5;
 const VIEWPORT_HEIGHT = VISIBLE_ITEMS * ITEM_HEIGHT;
 const WHEEL_WIDTH = 350;
 const PERSPECTIVE_SCALE = 0.15;
-const CANVAS_WIDTH = 400;
-const CANVAS_HEIGHT = 500;
+const FRAME_BORDER_WIDTH = 8; // Frame border thickness
+const CANVAS_WIDTH = WHEEL_WIDTH + (FRAME_BORDER_WIDTH * 2); // Viewport width + borders
+const CANVAS_HEIGHT = VIEWPORT_HEIGHT + (FRAME_BORDER_WIDTH * 2); // Viewport height + borders
 
 // Subset configuration
 const SUBSET_SIZE = 100; // Total entries to show in the wheel (50 first + 50 last)
@@ -78,9 +79,9 @@ function convertTheme(theme: SpinnerTheme) {
       primary: '#007BFF',
       secondary: '#FF1493',
       accent: '#FFD700',
-      background: theme.canvasBackground || '#09090b',
+      background: 'transparent',
       foreground: '#fafafa',
-      card: '#09090b',
+      card: 'transparent',
       cardForeground: '#fafafa',
       winner: theme.highlightColor || '#FFD700',
       winnerGlow: theme.highlightColor || '#FFD700',
@@ -88,7 +89,7 @@ function convertTheme(theme: SpinnerTheme) {
     spinnerStyle: {
       type: 'slotMachine' as const,
       backgroundColor: theme.backgroundColor || '#1a1a1a',
-      canvasBackground: theme.canvasBackground || '#09090b',
+      canvasBackground: 'transparent',
       borderColor: theme.borderColor || '#FFD700',
       highlightColor: theme.highlightColor || '#FF1493',
       nameColor: theme.nameColor || '#fafafa',
@@ -227,20 +228,34 @@ export function SlotMachineWheel({
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Clear canvas
+      // Clear canvas - make it completely transparent
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-      // Draw background using theme colors
-      // Use the dedicated canvas background color, not the app background
-      const canvasBgColor = internalTheme?.spinnerStyle?.canvasBackground || '#09090b';
-      const bgGradient = ctx.createLinearGradient(0, 0, 0, canvasHeight);
+      // Define viewport area - now starts at top-left with border
+      const VIEWPORT_TOP = FRAME_BORDER_WIDTH;
+      const VIEWPORT_LEFT = FRAME_BORDER_WIDTH;
+      const VIEWPORT_WIDTH = canvasWidth - (FRAME_BORDER_WIDTH * 2);
+      const VIEWPORT_BOTTOM = VIEWPORT_TOP + VIEWPORT_HEIGHT;
 
-      // Create gradient based on the theme background color
-      bgGradient.addColorStop(0, adjustBrightness(canvasBgColor, -20));
-      bgGradient.addColorStop(0.5, canvasBgColor);
-      bgGradient.addColorStop(1, adjustBrightness(canvasBgColor, -20));
-      ctx.fillStyle = bgGradient;
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+      // Save the current context state
+      ctx.save();
+
+      // Create clipping region for the viewport - EVERYTHING inside this will be clipped
+      ctx.beginPath();
+      ctx.rect(VIEWPORT_LEFT, VIEWPORT_TOP, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+      ctx.clip();
+
+      // Only draw background inside the clipped area
+      // Check if we should draw a background at all
+      if (internalTheme?.spinnerStyle?.backgroundColor && internalTheme.spinnerStyle.backgroundColor !== 'transparent') {
+        const slotBgColor = internalTheme.spinnerStyle.backgroundColor;
+        const bgGradient = ctx.createLinearGradient(0, VIEWPORT_TOP, 0, VIEWPORT_BOTTOM);
+        bgGradient.addColorStop(0, adjustBrightness(slotBgColor, -20));
+        bgGradient.addColorStop(0.5, slotBgColor);
+        bgGradient.addColorStop(1, adjustBrightness(slotBgColor, -20));
+        ctx.fillStyle = bgGradient;
+        ctx.fillRect(VIEWPORT_LEFT, VIEWPORT_TOP, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+      }
 
       // Calculate wheel position (based on subset, not all participants)
       const wheelCircumference = subset.length * ITEM_HEIGHT;
@@ -261,7 +276,7 @@ export function SlotMachineWheel({
         }
 
         const participant = subset[participantIndex];
-        const yPosition = i * ITEM_HEIGHT - pixelOffset + 40; // 40px top padding
+        const yPosition = i * ITEM_HEIGHT - pixelOffset + VIEWPORT_TOP;
 
         // Highlight the center position for debugging
         const isCenter = i === 2;
@@ -295,15 +310,7 @@ export function SlotMachineWheel({
         }
       }
 
-      // Draw frame and selection indicators
-      drawSlotMachineFrame({
-        ctx,
-        canvasWidth,
-        viewportHeight: VIEWPORT_HEIGHT,
-        theme: internalTheme,
-      });
-
-      // Draw top and bottom shadow overlays
+      // Draw top and bottom shadow overlays INSIDE the viewport
       const topShadowOpacity = internalTheme?.spinnerStyle?.topShadowOpacity ?? 0.3;
       const bottomShadowOpacity = internalTheme?.spinnerStyle?.bottomShadowOpacity ?? 0.3;
       const shadowSize = (internalTheme?.spinnerStyle?.shadowSize ?? 30) / 100; // Convert percentage to decimal
@@ -326,29 +333,41 @@ export function SlotMachineWheel({
 
       const rgb = hexToRgb(shadowColor);
 
-      // Top shadow gradient - extends full canvas height
+      // Top shadow gradient - within viewport only
       if (topShadowOpacity > 0) {
-        const topShadowHeight = canvasHeight * shadowSize;
-        const topGradient = ctx.createLinearGradient(0, 0, 0, topShadowHeight);
+        const topShadowHeight = VIEWPORT_HEIGHT * shadowSize;
+        const topGradient = ctx.createLinearGradient(0, VIEWPORT_TOP, 0, VIEWPORT_TOP + topShadowHeight);
         topGradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${topShadowOpacity})`);
         topGradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
         ctx.fillStyle = topGradient;
-        ctx.fillRect(0, 0, canvasWidth, topShadowHeight);
+        ctx.fillRect(VIEWPORT_LEFT, VIEWPORT_TOP, VIEWPORT_WIDTH, topShadowHeight);
       }
 
-      // Bottom shadow gradient - extends full canvas height
+      // Bottom shadow gradient - within viewport only
       if (bottomShadowOpacity > 0) {
-        const bottomShadowHeight = canvasHeight * shadowSize;
-        const bottomStart = canvasHeight - bottomShadowHeight;
-        const bottomGradient = ctx.createLinearGradient(0, bottomStart, 0, canvasHeight);
+        const bottomShadowHeight = VIEWPORT_HEIGHT * shadowSize;
+        const bottomStart = VIEWPORT_BOTTOM - bottomShadowHeight;
+        const bottomGradient = ctx.createLinearGradient(0, bottomStart, 0, VIEWPORT_BOTTOM);
         bottomGradient.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
         bottomGradient.addColorStop(
           1,
           `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${bottomShadowOpacity})`
         );
         ctx.fillStyle = bottomGradient;
-        ctx.fillRect(0, bottomStart, canvasWidth, bottomShadowHeight);
+        ctx.fillRect(VIEWPORT_LEFT, bottomStart, VIEWPORT_WIDTH, bottomShadowHeight);
       }
+
+      // Restore context to remove clipping
+      ctx.restore();
+
+      // Draw frame and selection indicators AFTER restoring context
+      // This ensures the frame is drawn on top without clipping
+      drawSlotMachineFrame({
+        ctx,
+        canvasWidth,
+        viewportHeight: VIEWPORT_HEIGHT,
+        theme: internalTheme,
+      });
     },
     [internalTheme, canvasWidth, canvasHeight, showDebug]
   );
@@ -506,14 +525,18 @@ export function SlotMachineWheel({
 
   return (
     <div
-      className={`relative w-full flex items-center justify-center rounded-lg p-4 ${className || ''}`}
+      className={`inline-flex rounded-xl overflow-hidden ${className || ''}`}
+      style={{ background: 'transparent' }}
     >
       <canvas
         ref={canvasRef}
         width={canvasWidth}
         height={canvasHeight}
-        className="max-w-full h-auto rounded-lg shadow-2xl"
-        style={{ imageRendering: 'crisp-edges' }}
+        className="block"
+        style={{ 
+          imageRendering: 'crisp-edges',
+          background: 'transparent' 
+        }}
       />
     </div>
   );

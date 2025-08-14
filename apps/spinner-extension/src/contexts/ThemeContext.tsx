@@ -48,7 +48,7 @@ const DEFAULT_SPINNER_STYLE: SpinnerStyle = (() => {
     nameColor: isDark ? '#fdfeff' : '#161b21', // White on dark, Rich Black on light
     ticketColor: '#e6b540', // DrawDay Gold - Ticket numbers
     backgroundColor: isDark ? '#161b21' : '#fdfeff', // Rich Black for dark, White for light
-    canvasBackground: isDark ? '#0c0e11' : '#f4f4f5', // Night for dark, Light gray for light
+    canvasBackground: 'transparent', // Always transparent for clean overlay
     topShadowOpacity: 0.3, // Top shadow opacity
     bottomShadowOpacity: 0.3, // Bottom shadow opacity
     shadowSize: 30, // Shadow size as percentage
