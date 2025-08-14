@@ -112,9 +112,9 @@ export default function DashboardPage() {
 
       async function fetchUserSubscriptions() {
         try {
-          const response = await fetch(`/api/user-subscriptions?userId=${user.id}`, {
+          const response = await fetch(`/api/user-subscriptions?userId=${user!.id}`, {
             headers: {
-              Authorization: `Bearer ${tokens.access_token}`,
+              Authorization: `Bearer ${tokens!.access_token}`,
             },
           });
           if (response.ok) {
