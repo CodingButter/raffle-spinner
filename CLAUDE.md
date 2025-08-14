@@ -1,10 +1,14 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with this repository.
 
 ## Project Overview
 
-DrawDay is a professional platform for UK raffle companies, featuring multiple applications with the spinner being one of the core apps. The project uses a monorepo structure with shared packages across applications.
+DrawDay is a professional platform for UK raffle companies with:
+
+- **Spinner Extension**: Chrome extension for live raffle draws
+- **Website**: Marketing site with subscription management
+- **Backend**: Directus CMS at admin.drawday.app
 
 ## Architecture
 
@@ -120,3 +124,20 @@ docker-compose up -d
 5. **Data Abstraction**: Keep storage layer abstracted for future backend migration
 6. **Package Organization**: DrawDay general components go in @drawday packages, spinner-specific in @raffle-spinner
 7. **Backend Exclusion**: The backend/ folder is excluded from linting and prettier
+
+## Quick Reference
+
+### Key Guides
+
+- **Stripe Setup**: `/docs/guides/STRIPE_SETUP_GUIDE.md`
+- **Subscription System**: `/docs/guides/SUBSCRIPTION_SYSTEM.md`
+
+### Environment Variables
+
+See `/apps/website/.env.local.example` for required variables
+
+### Current Tasks
+
+- [ ] Create Stripe products and add Price IDs
+- [ ] Configure production webhook
+- [ ] Test complete subscription flow
