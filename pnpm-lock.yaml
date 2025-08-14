@@ -177,6 +177,9 @@ importers:
 
   apps/website:
     dependencies:
+      '@directus/sdk':
+        specifier: ^20.0.2
+        version: 20.0.2
       '@drawday/auth':
         specifier: workspace:*
         version: link:../../packages/@drawday/auth
@@ -665,6 +668,10 @@ packages:
   '@babel/types@7.28.2':
     resolution: {integrity: sha512-ruv7Ae4J5dUYULmeXw1gmb7rYRz57OWCPM57pHojnLq/3Z1CK2lNSLTCVjxVk1F/TZHwOZZrOWi0ur95BbLxNQ==}
     engines: {node: '>=6.9.0'}
+
+  '@directus/sdk@20.0.2':
+    resolution: {integrity: sha512-eZu61BdWN1R4h6A/K3jIiZfK8WMg3z5JLDPrdGPA8ZWpXjXlR0qtPOBJ0dZFJn25C2Huu0ND6UMrFlhDgkIwyw==}
+    engines: {node: '>=22'}
 
   '@emnapi/core@1.4.5':
     resolution: {integrity: sha512-XsLw1dEOpkSX/WucdqUhPWP7hDxSvZiY+fsUC14h+FtQ2Ifni4znbBt8punRX+Uj2JG/uDb8nEHVKvrVlvdZ5Q==}
@@ -4422,6 +4429,8 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
+
+  '@directus/sdk@20.0.2': {}
 
   '@emnapi/core@1.4.5':
     dependencies:

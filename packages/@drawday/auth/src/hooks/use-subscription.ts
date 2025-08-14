@@ -8,37 +8,49 @@ import { Subscription } from '../types';
  */
 export function useSubscription(): {
   subscription: Subscription | null;
-  isPro: boolean;
+  isStarter: boolean;
+  isProfessional: boolean;
   isEnterprise: boolean;
   isTrial: boolean;
   canAccessFeature: (feature: string) => boolean;
 } {
   const { subscription } = useAuth();
 
-  const isPro = subscription?.tier === 'pro' && subscription?.status === 'active';
+  const isStarter = subscription?.tier === 'starter' && subscription?.status === 'active';
+  const isProfessional = subscription?.tier === 'professional' && subscription?.status === 'active';
   const isEnterprise = subscription?.tier === 'enterprise' && subscription?.status === 'active';
-  const isTrial = subscription?.status === 'trial';
+  const isTrial = subscription?.status === 'trialing';
 
   const canAccessFeature = (feature: string): boolean => {
     // Define feature access based on subscription tier
     const freeFeatures = ['basic-spinner', 'csv-import', 'basic-themes'];
-    const proFeatures = [...freeFeatures, 'advanced-themes', 'api-access', 'priority-support'];
+    const starterFeatures = [...freeFeatures, '5000-participants', 'session-management'];
+    const professionalFeatures = [
+      ...starterFeatures,
+      'advanced-themes',
+      'api-access',
+      'priority-support',
+      'unlimited-participants',
+    ];
     const enterpriseFeatures = [
-      ...proFeatures,
+      ...professionalFeatures,
       'custom-branding',
       'white-label',
       'dedicated-support',
+      'custom-features',
     ];
 
-    if (!subscription || subscription.status !== 'active') {
+    if (!subscription || (subscription.status !== 'active' && subscription.status !== 'trialing')) {
       return freeFeatures.includes(feature);
     }
 
     switch (subscription.tier) {
       case 'enterprise':
         return enterpriseFeatures.includes(feature);
-      case 'pro':
-        return proFeatures.includes(feature);
+      case 'professional':
+        return professionalFeatures.includes(feature);
+      case 'starter':
+        return starterFeatures.includes(feature);
       default:
         return freeFeatures.includes(feature);
     }
@@ -46,7 +58,8 @@ export function useSubscription(): {
 
   return {
     subscription,
-    isPro,
+    isStarter,
+    isProfessional,
     isEnterprise,
     isTrial,
     canAccessFeature,

@@ -4,7 +4,7 @@ import { useSubscription } from '../hooks/use-subscription';
 
 interface SubscriptionGateProps {
   children: React.ReactNode;
-  requiredTier?: 'pro' | 'enterprise';
+  requiredTier?: 'starter' | 'professional' | 'enterprise';
   requiredFeature?: string;
   fallback?: React.ReactNode;
 }
@@ -18,14 +18,18 @@ export function SubscriptionGate({
   requiredFeature,
   fallback = <div>Upgrade your subscription to access this feature</div>,
 }: SubscriptionGateProps) {
-  const { isPro, isEnterprise, canAccessFeature } = useSubscription();
+  const { isStarter, isProfessional, isEnterprise, canAccessFeature } = useSubscription();
 
   // Check tier requirement
   if (requiredTier === 'enterprise' && !isEnterprise) {
     return <>{fallback}</>;
   }
 
-  if (requiredTier === 'pro' && !isPro && !isEnterprise) {
+  if (requiredTier === 'professional' && !isProfessional && !isEnterprise) {
+    return <>{fallback}</>;
+  }
+
+  if (requiredTier === 'starter' && !isStarter && !isProfessional && !isEnterprise) {
     return <>{fallback}</>;
   }
 

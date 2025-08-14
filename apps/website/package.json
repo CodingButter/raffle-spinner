@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@directus/sdk": "^20.0.2",
     "@drawday/auth": "workspace:*",
     "@drawday/hooks": "workspace:*",
     "@drawday/tailwind-config": "workspace:*",
