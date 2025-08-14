@@ -44,7 +44,7 @@ export default function DashboardPage() {
   useRequireAuth();
 
   const router = useRouter();
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, isLoading, tokens } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [showUpgradeConfirm, setShowUpgradeConfirm] = useState(false);
@@ -79,28 +79,63 @@ export default function DashboardPage() {
     fetchProducts();
   }, []);
 
-  // Fetch user subscriptions
+  // Fetch user subscriptions OR use user data directly
   useEffect(() => {
-    async function fetchUserSubscriptions() {
-      if (!user?.id) return;
+    // The subscription data is stored on the user object itself
+    if (user?.stripe_subscription_id && user?.subscription_status) {
+      console.log('Dashboard: Using subscription data from user object');
 
-      try {
-        const response = await fetch(`/api/user-subscriptions?userId=${user.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setUserSubscriptions(data.subscriptions || { spinner: [], website: [], streaming: [] });
-        } else {
-          console.error('Failed to fetch user subscriptions');
+      // Create subscription object from user data
+      const subscription = {
+        id: user.stripe_subscription_id,
+        product: {
+          key: `spinner_${user.subscription_tier || 'starter'}`,
+          tier: {
+            key: user.subscription_tier || 'starter',
+          },
+        },
+        status: user.subscription_status,
+        stripe_subscription_id: user.stripe_subscription_id,
+        current_period_end: user.subscription_current_period_end,
+        cancel_at_period_end: user.subscription_cancel_at_period_end,
+      };
+
+      setUserSubscriptions({
+        spinner: [subscription],
+        website: [],
+        streaming: [],
+      });
+      setSubscriptionsLoading(false);
+    } else if (user?.id && tokens?.access_token) {
+      // Try to fetch from API if we have tokens
+      console.log('Dashboard: Fetching subscriptions from API');
+
+      async function fetchUserSubscriptions() {
+        try {
+          const response = await fetch(`/api/user-subscriptions?userId=${user.id}`, {
+            headers: {
+              Authorization: `Bearer ${tokens.access_token}`,
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setUserSubscriptions(data.subscriptions || { spinner: [], website: [], streaming: [] });
+          } else {
+            console.error('Failed to fetch user subscriptions');
+          }
+        } catch (error) {
+          console.error('Error fetching user subscriptions:', error);
+        } finally {
+          setSubscriptionsLoading(false);
         }
-      } catch (error) {
-        console.error('Error fetching user subscriptions:', error);
-      } finally {
-        setSubscriptionsLoading(false);
       }
-    }
 
-    fetchUserSubscriptions();
-  }, [user?.id]);
+      fetchUserSubscriptions();
+    } else {
+      // No subscription data
+      setSubscriptionsLoading(false);
+    }
+  }, [user, tokens?.access_token]);
 
   // Loading state while checking auth
   if (isLoading) {

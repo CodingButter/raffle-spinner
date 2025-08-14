@@ -10,21 +10,33 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
   }
 
+  // Get authorization header from request
+  const authHeader = request.headers.get('authorization');
+  console.log('Auth header present:', !!authHeader);
+
   try {
-    // Fetch user's subscriptions with product details including category and tier
-    const response = await fetch(
-      `${directusUrl}/items/user_subscriptions?filter[user][_eq]=${userId}&fields=*,product.*,product.category.*,product.tier.*`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    // The subscription data is stored on the user object itself, not in a separate collection
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+
+    // If we have an auth token, include it
+    if (authHeader) {
+      headers['Authorization'] = authHeader;
+      console.log('Using auth token for request');
+    }
+
+    // Fetch the user data which contains subscription info
+    // Use /users/me if we have auth, otherwise try direct user ID (will likely fail without auth)
+    const endpoint = authHeader ? '/users/me' : `/users/${userId}`;
+    const response = await fetch(`${directusUrl}${endpoint}`, {
+      headers,
+    });
 
     if (!response.ok) {
       // For now, return empty subscriptions if we get a 403 (permissions issue)
       if (response.status === 403) {
-        console.log('User subscriptions not accessible without authentication - returning empty');
+        console.log('User data not accessible without authentication - returning empty');
         return NextResponse.json({
           subscriptions: {
             spinner: [],
@@ -34,45 +46,51 @@ export async function GET(request: NextRequest) {
           total: 0,
         });
       }
-      throw new Error(`Failed to fetch subscriptions: ${response.status}`);
+      throw new Error(`Failed to fetch user data: ${response.status}`);
     }
 
-    const { data: subscriptions } = await response.json();
+    const { data: userData } = await response.json();
 
-    // Group subscriptions by product type
+    // Convert the user's subscription data to the expected format
+    // Since subscriptions are stored on the user object, we need to transform it
     const grouped = {
       spinner: [],
       website: [],
       streaming: [],
     } as Record<string, any[]>;
 
-    subscriptions?.forEach((sub: any) => {
-      const categoryKey = sub.product?.category?.key || 'spinner';
-      if (!grouped[categoryKey]) {
-        grouped[categoryKey] = [];
-      }
-      grouped[categoryKey].push({
-        id: sub.id,
+    // If the user has an active subscription, add it to the spinner category
+    if (userData?.stripe_subscription_id && userData?.subscription_status) {
+      // Find the product based on the tier
+      const tierToProductKey: Record<string, string> = {
+        starter: 'spinner_starter',
+        professional: 'spinner_professional',
+        enterprise: 'spinner_enterprise',
+      };
+
+      const productKey = tierToProductKey[userData.subscription_tier] || 'spinner_starter';
+
+      // Create a subscription object from the user data
+      const subscription = {
+        id: userData.stripe_subscription_id,
         product: {
-          name: sub.product?.name,
-          key: sub.product?.key,
-          price: sub.product?.price,
-          currency: sub.product?.currency,
-          features: sub.product?.features,
-          category: sub.product?.category,
-          tier: sub.product?.tier,
+          key: productKey,
+          tier: {
+            key: userData.subscription_tier || 'starter',
+          },
         },
-        status: sub.status,
-        stripe_subscription_id: sub.stripe_subscription_id,
-        current_period_end: sub.current_period_end,
-        cancel_at_period_end: sub.cancel_at_period_end,
-        created_at: sub.created_at,
-      });
-    });
+        status: userData.subscription_status,
+        stripe_subscription_id: userData.stripe_subscription_id,
+        current_period_end: userData.subscription_current_period_end,
+        cancel_at_period_end: userData.subscription_cancel_at_period_end,
+      };
+
+      grouped.spinner.push(subscription);
+    }
 
     return NextResponse.json({
       subscriptions: grouped,
-      total: subscriptions?.length || 0,
+      total: grouped.spinner.length + grouped.website.length + grouped.streaming.length,
     });
   } catch (error) {
     console.error('Error fetching user subscriptions:', error);
