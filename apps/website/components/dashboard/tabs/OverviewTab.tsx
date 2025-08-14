@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@drawday/ui/card';
 import { Button } from '@drawday/ui/button';
 import { Chrome, Download, Activity, CreditCard, CheckCircle2, XCircle } from 'lucide-react';
@@ -17,7 +18,6 @@ interface OverviewTabProps {
   userTier: string;
   userSubscriptions: any;
   subscriptionsLoading: boolean;
-  onTabChange: (tab: string) => void;
   onDownloadExtension: () => void;
 }
 
@@ -26,7 +26,6 @@ export function OverviewTab({
   userTier,
   userSubscriptions,
   subscriptionsLoading,
-  onTabChange,
   onDownloadExtension,
 }: OverviewTabProps) {
   return (
@@ -66,13 +65,11 @@ export function OverviewTab({
           title="Current Plan"
           description={userData.plan}
           action={
-            <Button
-              variant="outline"
-              className="w-full border-gray-700"
-              onClick={() => onTabChange('subscription')}
-            >
-              Manage Subscription
-            </Button>
+            <Link href="/dashboard/subscription/spinner" className="w-full">
+              <Button variant="outline" className="w-full border-gray-700">
+                Manage Subscription
+              </Button>
+            </Link>
           }
           footer={`Next billing: ${userData.trialEndsAt}`}
         />

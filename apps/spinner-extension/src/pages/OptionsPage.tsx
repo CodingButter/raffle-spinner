@@ -30,7 +30,7 @@ import { SavedMappingsManager } from '@/components/options/SavedMappingsManager'
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import { CheckCircle, ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
 import { Competition } from '@raffle-spinner/storage';
 
 function OptionsContent() {
@@ -38,7 +38,7 @@ function OptionsContent() {
     useCompetitions();
   const { settings, columnMapping, updateSettings, updateColumnMapping } = useSettings();
   const { collapsedSections, toggleSection } = useCollapsibleState();
-  const { user, logout } = useAuth();
+  const { user, logout, tokens } = useAuth();
 
   // Check if user has pro subscription for customization features
   const isPro = user?.role === 'pro' || user?.role === 'admin';
@@ -97,6 +97,30 @@ function OptionsContent() {
     setShowDeleteDialog(false);
   };
 
+  const handleDashboardClick = () => {
+    // Get the website URL based on environment
+    const baseUrl =
+      import.meta.env.MODE === 'production' ? 'https://www.drawday.app' : 'http://localhost:3000';
+
+    // Create auto-login URL with the user's token
+    const autoLoginUrl = `${baseUrl}/api/auth/auto-login?token=${tokens?.access_token}&returnUrl=/dashboard`;
+
+    // Open in new tab
+    window.open(autoLoginUrl, '_blank');
+  };
+
+  const handleUpgradeClick = () => {
+    // Get the website URL based on environment
+    const baseUrl =
+      import.meta.env.MODE === 'production' ? 'https://www.drawday.app' : 'http://localhost:3000';
+
+    // Create auto-login URL with the user's token - go directly to spinner subscription page
+    const autoLoginUrl = `${baseUrl}/api/auth/auto-login?token=${tokens?.access_token}&returnUrl=/dashboard/subscription/spinner`;
+
+    // Open in new tab
+    window.open(autoLoginUrl, '_blank');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* User Info Bar */}
@@ -115,9 +139,15 @@ function OptionsContent() {
               </span>
             )}
           </div>
-          <Button variant="ghost" size="sm" onClick={logout}>
-            Logout
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleDashboardClick} className="gap-2">
+              <ExternalLink className="h-3.5 w-3.5" />
+              Dashboard
+            </Button>
+            <Button variant="ghost" size="sm" onClick={logout}>
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -201,7 +231,7 @@ function OptionsContent() {
           <Card className={!isPro ? 'opacity-60' : ''}>
             <CardHeader
               className="cursor-pointer select-none"
-              onClick={() => isPro && toggleSection('theme')}
+              onClick={() => (isPro ? toggleSection('theme') : handleUpgradeClick())}
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -244,7 +274,7 @@ function OptionsContent() {
           <Card className={!isPro ? 'opacity-60' : ''}>
             <CardHeader
               className="cursor-pointer select-none"
-              onClick={() => isPro && toggleSection('branding')}
+              onClick={() => (isPro ? toggleSection('branding') : handleUpgradeClick())}
             >
               <div className="flex items-center justify-between">
                 <div>

@@ -19,15 +19,41 @@ export async function POST(request: NextRequest) {
       const data = await response.json();
       return NextResponse.json(
         { errors: data.errors || [{ message: 'Logout failed' }] },
-        { status: response.status }
+        {
+          status: response.status,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        }
       );
     }
 
-    // Return success
-    return NextResponse.json({ success: true });
+    // Return success with CORS headers
+    return NextResponse.json(
+      { success: true },
+      {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      }
+    );
   } catch (error) {
     console.error('Logout proxy error:', error);
-    return NextResponse.json({ errors: [{ message: 'Internal server error' }] }, { status: 500 });
+    return NextResponse.json(
+      { errors: [{ message: 'Internal server error' }] },
+      {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      }
+    );
   }
 }
 

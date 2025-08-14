@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@drawday/ui/card';
 import { Button } from '@drawday/ui/button';
 import { Settings } from 'lucide-react';
@@ -11,17 +12,16 @@ interface SettingsTabProps {
     email: string;
   };
   userTier: string;
-  onTabChange: (tab: string) => void;
 }
 
-export function SettingsTab({ userData, userTier, onTabChange }: SettingsTabProps) {
+export function SettingsTab({ userData, userTier }: SettingsTabProps) {
   return (
     <div className="space-y-8">
       {/* Account Settings */}
       <AccountSettingsCard userData={userData} />
 
       {/* API Access */}
-      <ApiAccessCard userTier={userTier} onTabChange={onTabChange} />
+      <ApiAccessCard userTier={userTier} />
     </div>
   );
 }
@@ -56,13 +56,7 @@ function AccountField({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ApiAccessCard({
-  userTier,
-  onTabChange,
-}: {
-  userTier: string;
-  onTabChange: (tab: string) => void;
-}) {
+function ApiAccessCard({ userTier }: { userTier: string }) {
   const hasApiAccess = userTier === 'professional' || userTier === 'enterprise';
 
   return (
@@ -86,13 +80,11 @@ function ApiAccessCard({
           <div className="text-center py-8 text-gray-500">
             <Settings className="w-16 h-16 mx-auto mb-4 opacity-20" />
             <p>API access available on Professional and Enterprise plans</p>
-            <Button
-              variant="outline"
-              className="mt-4 border-gray-700"
-              onClick={() => onTabChange('subscription')}
-            >
-              Upgrade to Access API
-            </Button>
+            <Link href="/dashboard/subscription/spinner">
+              <Button variant="outline" className="mt-4 border-gray-700">
+                Upgrade to Access API
+              </Button>
+            </Link>
           </div>
         )}
       </CardContent>

@@ -8,13 +8,10 @@ export interface User {
   status: 'active' | 'suspended' | 'draft';
   created_at?: string;
   updated_at?: string;
-  // Stripe subscription fields
+  // Stripe customer ID (needed for payment management)
   stripe_customer_id?: string;
-  stripe_subscription_id?: string;
-  subscription_status?: 'active' | 'trialing' | 'canceled' | 'past_due' | 'unpaid' | 'incomplete';
-  subscription_tier?: 'free' | 'starter' | 'professional' | 'enterprise';
-  subscription_current_period_end?: string;
-  subscription_cancel_at_period_end?: boolean;
+  // Subscriptions array - single source of truth for subscription data
+  subscriptions?: Subscription[];
 }
 
 export interface AuthTokens {
@@ -37,15 +34,13 @@ export interface RegisterData {
 
 export interface Subscription {
   id: string;
-  user_id: string;
-  stripe_subscription_id: string;
-  stripe_customer_id: string;
-  product: 'drawday';
-  tier: 'free' | 'starter' | 'professional' | 'enterprise';
+  product: 'spinner' | 'website' | 'streaming'; // Product category
+  tier: 'starter' | 'professional' | 'enterprise'; // Tier within product
   status: 'active' | 'trialing' | 'canceled' | 'past_due' | 'unpaid' | 'incomplete';
-  current_period_start: string;
-  current_period_end: string;
-  cancel_at_period_end: boolean;
+  current_period_end?: string;
+  cancel_at_period_end?: boolean;
+  // Stripe IDs for management
+  stripe_subscription_id?: string;
   stripe_price_id?: string;
 }
 

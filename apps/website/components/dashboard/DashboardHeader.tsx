@@ -6,17 +6,11 @@ import { LogOut } from 'lucide-react';
 
 interface DashboardHeaderProps {
   activeTab: string;
-  setActiveTab: (tab: string) => void;
   userEmail: string;
   onLogout: () => void;
 }
 
-export function DashboardHeader({
-  activeTab,
-  setActiveTab,
-  userEmail,
-  onLogout,
-}: DashboardHeaderProps) {
+export function DashboardHeader({ activeTab, userEmail, onLogout }: DashboardHeaderProps) {
   const tabs = ['overview', 'subscription', 'usage', 'settings'];
 
   return (
@@ -31,24 +25,28 @@ export function DashboardHeader({
 
             <nav className="hidden md:flex items-center gap-6">
               {tabs.map((tab) => (
-                <button
+                <Link
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
+                  href={tab === 'overview' ? '/dashboard' : `/dashboard/${tab}`}
                   className={`text-sm capitalize ${
                     activeTab === tab ? 'text-white' : 'text-gray-400 hover:text-white'
                   }`}
                 >
                   {tab}
-                </button>
+                </Link>
               ))}
             </nav>
           </div>
 
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-400">{userEmail}</span>
-            <Button onClick={onLogout} variant="outline" size="sm" className="border-gray-700">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
+            <Button
+              onClick={onLogout}
+              variant="outline"
+              className="border-gray-700 h-9 px-4 py-1.5 text-sm rounded-md inline-flex items-center gap-1.5"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Logout</span>
             </Button>
           </div>
         </div>

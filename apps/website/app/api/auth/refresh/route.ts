@@ -20,15 +20,38 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json(
         { errors: data.errors || [{ message: 'Token refresh failed' }] },
-        { status: response.status }
+        {
+          status: response.status,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        }
       );
     }
 
-    // Return the Directus response
-    return NextResponse.json(data);
+    // Return the Directus response with CORS headers
+    return NextResponse.json(data, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
   } catch (error) {
     console.error('Refresh proxy error:', error);
-    return NextResponse.json({ errors: [{ message: 'Internal server error' }] }, { status: 500 });
+    return NextResponse.json(
+      { errors: [{ message: 'Internal server error' }] },
+      {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      }
+    );
   }
 }
 

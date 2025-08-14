@@ -7,9 +7,12 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import { ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useCarouselAutoPlay } from '@/hooks/useCarouselAutoPlay';
+import { CarouselContent } from './carousel/CarouselContent';
+import { CarouselControls } from './carousel/CarouselControls';
+import { ThumbnailStrip } from './carousel/ThumbnailStrip';
 import type { DemoAsset } from '@/lib/get-demo-assets';
 
 interface DemoCarouselProps {
@@ -24,7 +27,6 @@ export function DemoCarousel({ assets, className }: DemoCarouselProps) {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [imageLoaded, setImageLoaded] = useState<{ [key: number]: boolean }>({});
   const videoRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const currentAsset = assets[currentIndex];
   const isVideo = currentAsset?.type === 'video';
@@ -42,26 +44,29 @@ export function DemoCarousel({ assets, className }: DemoCarouselProps) {
     });
   }, [assets]);
 
-  // Auto-advance carousel
-  useEffect(() => {
-    if (!isPlaying || isVideoPlaying) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      return;
-    }
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % assets.length);
+    setIsVideoPlaying(false);
+  };
 
-    intervalRef.current = setInterval(() => {
-      nextSlide();
-    }, 5000); // 5 seconds for images
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev - 1 + assets.length) % assets.length);
+    setIsVideoPlaying(false);
+  };
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [currentIndex, isPlaying, isVideoPlaying, assets.length]);
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+    setIsVideoPlaying(false);
+  };
+
+  // Use auto-play hook
+  useCarouselAutoPlay({
+    isPlaying,
+    isVideoPlaying,
+    currentIndex,
+    itemsLength: assets.length,
+    onNext: nextSlide,
+  });
 
   // Handle video playback
   useEffect(() => {
@@ -77,21 +82,6 @@ export function DemoCarousel({ assets, className }: DemoCarouselProps) {
       }
     }
   }, [currentIndex, isVideo, isPlaying, isMuted]);
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % assets.length);
-    setIsVideoPlaying(false);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + assets.length) % assets.length);
-    setIsVideoPlaying(false);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-    setIsVideoPlaying(false);
-  };
 
   const handleVideoEnd = () => {
     setIsVideoPlaying(false);
@@ -130,45 +120,14 @@ export function DemoCarousel({ assets, className }: DemoCarouselProps) {
       {/* Main Carousel Container */}
       <div className="relative aspect-video bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)] ring-1 ring-white/10">
         {/* Content Display */}
-        <div className="relative w-full h-full">
-          {assets.map((asset, index) => (
-            <div
-              key={index}
-              className={cn(
-                'absolute inset-0 transition-all duration-700 ease-in-out',
-                index === currentIndex
-                  ? 'opacity-100 scale-100'
-                  : 'opacity-0 scale-95 pointer-events-none'
-              )}
-            >
-              {asset.type === 'video' ? (
-                <video
-                  ref={(el) => {
-                    videoRefs.current[index] = el;
-                  }}
-                  src={asset.src}
-                  className="w-full h-full object-cover"
-                  muted={isMuted}
-                  playsInline
-                  onEnded={handleVideoEnd}
-                  onPlay={handleVideoPlay}
-                  controls={false}
-                />
-              ) : (
-                <div className="relative w-full h-full">
-                  <Image
-                    src={asset.src}
-                    alt={asset.name}
-                    fill
-                    className="object-cover"
-                    priority={index === 0}
-                    quality={95}
-                  />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        <CarouselContent
+          assets={assets}
+          currentIndex={currentIndex}
+          isMuted={isMuted}
+          videoRefs={videoRefs}
+          onVideoEnd={handleVideoEnd}
+          onVideoPlay={handleVideoPlay}
+        />
 
         {/* Gradient Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
@@ -191,48 +150,16 @@ export function DemoCarousel({ assets, className }: DemoCarouselProps) {
         </button>
 
         {/* Controls */}
-        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
-          {/* Play/Pause and Mute */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={togglePlayPause}
-              className="p-2 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all"
-              aria-label={isPlaying ? 'Pause' : 'Play'}
-            >
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-            </button>
-            {isVideo && (
-              <button
-                onClick={toggleMute}
-                className="p-2 rounded-full bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all"
-                aria-label={isMuted ? 'Unmute' : 'Mute'}
-              >
-                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-              </button>
-            )}
-          </div>
-
-          {/* Dots Indicator */}
-          <div className="flex gap-2">
-            {assets.map((asset, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={cn(
-                  'transition-all rounded-full',
-                  index === currentIndex
-                    ? 'w-8 h-2 bg-white'
-                    : 'w-2 h-2 bg-white/50 hover:bg-white/75'
-                )}
-                aria-label={`Go to slide ${index + 1}`}
-              >
-                <span className="sr-only">
-                  {asset.type === 'video' ? 'Video' : 'Image'}: {asset.name}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
+        <CarouselControls
+          assets={assets}
+          currentIndex={currentIndex}
+          isPlaying={isPlaying}
+          isMuted={isMuted}
+          isVideo={isVideo}
+          onTogglePlay={togglePlayPause}
+          onToggleMute={toggleMute}
+          onGoToSlide={goToSlide}
+        />
 
         {/* Asset Type Badge */}
         <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -250,39 +177,7 @@ export function DemoCarousel({ assets, className }: DemoCarouselProps) {
       </div>
 
       {/* Thumbnail Strip */}
-      {assets.length > 1 && (
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {assets.map((asset, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={cn(
-                'relative flex-shrink-0 w-24 h-16 rounded-lg overflow-hidden transition-all border-2',
-                index === currentIndex
-                  ? 'border-brand-gold scale-105 shadow-lg'
-                  : 'border-transparent opacity-60 hover:opacity-100 hover:border-gray-600'
-              )}
-            >
-              {asset.type === 'video' ? (
-                <video src={asset.src} className="w-full h-full object-cover" muted />
-              ) : (
-                <Image
-                  src={asset.src}
-                  alt={asset.name}
-                  fill
-                  className="object-cover"
-                  sizes="96px"
-                />
-              )}
-              {asset.type === 'video' && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  <Play className="w-4 h-4 text-white" />
-                </div>
-              )}
-            </button>
-          ))}
-        </div>
-      )}
+      <ThumbnailStrip assets={assets} currentIndex={currentIndex} onGoToSlide={goToSlide} />
     </div>
   );
 }

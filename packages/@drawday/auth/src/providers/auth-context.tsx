@@ -108,15 +108,18 @@ export function AuthProvider({
         // Try to refresh
         const newTokens = await service.refreshToken(tokens.refresh_token);
         const currentUser = await service.getCurrentUser(newTokens.access_token);
-        const subscription = await service.getSubscription(currentUser.id, newTokens.access_token);
+
+        // Use subscriptions from user object (included in /me response)
+        const subscription = (currentUser as any).subscriptions?.[0] || null;
 
         dispatch({
           type: 'AUTH_SUCCESS',
           payload: { user: currentUser, tokens: newTokens, subscription },
         });
       } else {
-        // Token still valid, fetch subscription
-        const subscription = await service.getSubscription(user.id, tokens.access_token);
+        // Token still valid - use subscriptions from stored user
+        const subscription = (user as any).subscriptions?.[0] || null;
+
         dispatch({
           type: 'AUTH_SUCCESS',
           payload: { user, tokens, subscription },
@@ -140,7 +143,9 @@ export function AuthProvider({
 
       try {
         const { user, tokens } = await service.login(credentials);
-        const subscription = await service.getSubscription(user.id, tokens.access_token);
+
+        // Use subscriptions from user object (included in getCurrentUser response)
+        const subscription = (user as any).subscriptions?.[0] || null;
 
         dispatch({
           type: 'AUTH_SUCCESS',

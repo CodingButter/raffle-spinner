@@ -132,7 +132,7 @@ export class AuthService {
   }
 
   /**
-   * Get current user details
+   * Get current user details (includes subscriptions when using proxy)
    */
   async getCurrentUser(accessToken: string): Promise<User> {
     const isProxyUrl = this.baseUrl.includes('/api');
@@ -178,15 +178,13 @@ export class AuthService {
   /**
    * Get user subscription
    */
-  async getSubscription(userId: string, accessToken: string): Promise<Subscription | null> {
-    const response = await fetch(
-      `${this.baseUrl}/items/subscriptions?filter[user][_eq]=${userId}&filter[status][_eq]=active&limit=1`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+  async getSubscription(accessToken: string): Promise<Subscription | null> {
+    // The subscription endpoint now uses the auth token to determine the user
+    const response = await fetch(`${this.baseUrl}/items/subscriptions`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
     if (!response.ok) {
       return null;

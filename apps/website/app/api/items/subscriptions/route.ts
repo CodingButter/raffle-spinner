@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Forward the request to Directus
-    const response = await fetch(`${DIRECTUS_URL}/users/me`, {
+    // Get the current user from the token - no need for userId parameter
+    const userResponse = await fetch(`${DIRECTUS_URL}/users/me`, {
       method: 'GET',
       headers: {
         Authorization: authorization,
@@ -29,12 +29,26 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    if (!response.ok) {
-      const data = await response.json();
+    if (!userResponse.ok) {
+      // Return empty data array for 403 or 404 (common for permissions issues)
+      if (userResponse.status === 403 || userResponse.status === 404) {
+        return NextResponse.json(
+          { data: [] },
+          {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            },
+          }
+        );
+      }
+
+      const data = await userResponse.json();
       return NextResponse.json(
-        { errors: data.errors || [{ message: 'Failed to fetch user' }] },
+        { errors: data.errors || [{ message: 'Failed to fetch subscriptions' }] },
         {
-          status: response.status,
+          status: userResponse.status,
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -44,46 +58,28 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const data = await response.json();
+    const userData = await userResponse.json();
+    const user = userData.data || userData;
 
-    // Transform user data to include subscriptions array
-    const user = data.data || data;
-
-    // Build subscriptions array from user's subscription fields (if they exist in DB)
+    // Convert user subscription data to subscription format
     const subscriptions = [];
-
-    // Check if user has subscription data in old format
-    if (user && user.stripe_subscription_id && user.subscription_status) {
-      // Map old fields to new subscription format
+    if (user.stripe_subscription_id && user.subscription_status === 'active') {
       subscriptions.push({
         id: user.stripe_subscription_id,
-        product: 'spinner', // Default product for now
+        user: user.id, // Use the user ID from the fetched user data
+        product: 'drawday',
         tier: user.subscription_tier || 'starter',
         status: user.subscription_status,
+        stripe_subscription_id: user.stripe_subscription_id,
+        stripe_customer_id: user.stripe_customer_id,
         current_period_end: user.subscription_current_period_end,
         cancel_at_period_end: user.subscription_cancel_at_period_end,
-        stripe_subscription_id: user.stripe_subscription_id,
-        stripe_price_id: user.stripe_price_id,
       });
     }
 
-    // Clean up user object - remove old subscription fields
-    const cleanedUser = {
-      id: user.id,
-      email: user.email,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      avatar: user.avatar,
-      role: user.role,
-      status: user.status,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-      stripe_customer_id: user.stripe_customer_id,
-      subscriptions: subscriptions,
-    };
-
+    // Return in Directus format
     return NextResponse.json(
-      { data: cleanedUser },
+      { data: subscriptions },
       {
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -93,7 +89,7 @@ export async function GET(request: NextRequest) {
       }
     );
   } catch (error) {
-    console.error('Me proxy error:', error);
+    console.error('Subscriptions proxy error:', error);
     return NextResponse.json(
       { errors: [{ message: 'Internal server error' }] },
       {
