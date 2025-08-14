@@ -14,9 +14,5 @@ interface ExtensionAuthProviderProps {
  * Auth provider wrapper for the extension that configures the backend URL
  */
 export function ExtensionAuthProvider({ children }: ExtensionAuthProviderProps) {
-  return (
-    <DrawDayAuthProvider authService={authService}>
-      {children}
-    </DrawDayAuthProvider>
-  );
+  return <DrawDayAuthProvider authService={authService}>{children}</DrawDayAuthProvider>;
 }

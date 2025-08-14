@@ -59,7 +59,7 @@ export function drawSlotMachineFrame({ ctx, canvasWidth, viewportHeight, theme }
   const FRAME_BORDER_WIDTH = 8;
   const VIEWPORT_TOP = FRAME_BORDER_WIDTH;
   const VIEWPORT_LEFT = FRAME_BORDER_WIDTH;
-  const VIEWPORT_WIDTH = canvasWidth - (FRAME_BORDER_WIDTH * 2);
+  const VIEWPORT_WIDTH = canvasWidth - FRAME_BORDER_WIDTH * 2;
 
   // Draw outer frame using theme colors
   const borderColor = theme?.spinnerStyle?.borderColor || '#FFD700';
@@ -70,7 +70,12 @@ export function drawSlotMachineFrame({ ctx, canvasWidth, viewportHeight, theme }
 
   ctx.strokeStyle = frameGradient;
   ctx.lineWidth = FRAME_BORDER_WIDTH;
-  ctx.strokeRect(FRAME_BORDER_WIDTH/2, FRAME_BORDER_WIDTH/2, canvasWidth - FRAME_BORDER_WIDTH, viewportHeight + FRAME_BORDER_WIDTH);
+  ctx.strokeRect(
+    FRAME_BORDER_WIDTH / 2,
+    FRAME_BORDER_WIDTH / 2,
+    canvasWidth - FRAME_BORDER_WIDTH,
+    viewportHeight + FRAME_BORDER_WIDTH
+  );
 
   // Draw inner frame highlight
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
@@ -108,7 +113,12 @@ export function drawSlotMachineFrame({ ctx, canvasWidth, viewportHeight, theme }
   ctx.setLineDash([]);
 
   // Add glass reflection effect - only a subtle overlay, not a fill
-  const glassGradient = ctx.createLinearGradient(0, VIEWPORT_TOP, 0, viewportHeight / 3 + VIEWPORT_TOP);
+  const glassGradient = ctx.createLinearGradient(
+    0,
+    VIEWPORT_TOP,
+    0,
+    viewportHeight / 3 + VIEWPORT_TOP
+  );
   glassGradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
   glassGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = glassGradient;

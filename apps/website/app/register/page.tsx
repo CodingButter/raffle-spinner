@@ -67,8 +67,7 @@ export default function RegisterPage() {
         password: formData.password,
         first_name: firstName,
         last_name: lastName,
-        // Store company name in description or custom field
-        description: `Company: ${formData.companyName}`,
+        // TODO: Store company name in a custom field or separate table
       });
 
       router.push('/dashboard');

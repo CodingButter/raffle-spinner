@@ -131,7 +131,7 @@ export function useSlotMachineAnimation({
     const minRotations = 5;
     const maxRotations = 8;
     const rotations = minRotations + Math.random() * (maxRotations - minRotations);
-    
+
     // Make sure we end exactly at the target position by calculating total distance precisely
     const totalDistance = rotations * wheelCircumference + targetPosition;
 
@@ -159,10 +159,12 @@ export function useSlotMachineAnimation({
       // Trigger onMaxVelocity callback at 15% progress (early enough to be seamless)
       if (!hasTriggeredMaxVelocity && progress >= 0.15 && progress < 0.35 && onMaxVelocity) {
         hasTriggeredMaxVelocity = true;
-        
+
         // Store the current position before the swap for continuity
-        const currentPosition = recalculatedPhysics.startPosition + recalculatedPhysics.totalDistance * (1 - Math.pow(1 - progress, 3));
-        
+        const currentPosition =
+          recalculatedPhysics.startPosition +
+          recalculatedPhysics.totalDistance * (1 - Math.pow(1 - progress, 3));
+
         const newWinnerIndex = onMaxVelocity();
 
         // If subset changed and we got a new winner index, recalculate physics
@@ -185,14 +187,15 @@ export function useSlotMachineAnimation({
           const newTargetPosition = (newWinnerIndex - CENTER_INDEX) * itemHeight;
           const remainingDuration = physics.duration * 0.6; // Shorter for remaining spin
           const remainingRotations = 2 + Math.random() * 2; // Fewer rotations after swap
-          
+
           // Calculate remaining distance from current position
           // Normalize current position to the new wheel circumference
           const normalizedCurrentPos = currentPosition % updatedCircumference;
-          const distanceToTarget = newTargetPosition > normalizedCurrentPos 
-            ? newTargetPosition - normalizedCurrentPos 
-            : updatedCircumference - normalizedCurrentPos + newTargetPosition;
-          
+          const distanceToTarget =
+            newTargetPosition > normalizedCurrentPos
+              ? newTargetPosition - normalizedCurrentPos
+              : updatedCircumference - normalizedCurrentPos + newTargetPosition;
+
           const remainingDistance = remainingRotations * updatedCircumference + distanceToTarget;
 
           recalculatedPhysics = {
@@ -222,10 +225,10 @@ export function useSlotMachineAnimation({
       } else {
         // For the final frame, use the exact eased position, not a snap
         // This prevents the jarring snap at the end
-        const finalEasedPosition = 
+        const finalEasedPosition =
           recalculatedPhysics.startPosition + recalculatedPhysics.totalDistance * 1.0;
         onPositionUpdate(finalEasedPosition);
-        
+
         // Animation complete
         isSpinningRef.current = false;
         animationRef.current = null;

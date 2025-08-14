@@ -13,7 +13,6 @@ DrawDay is a professional platform for UK raffle companies, featuring multiple a
 - **apps/**:
   - `spinner-extension`: Chrome extension for live draws (previously apps/extension)
   - `website`: Next.js marketing website and demo platform
-  
 - **packages/@drawday/** (Platform-wide packages):
   - `auth`: Authentication system with modular hooks and providers
   - `ui`: Shared UI components library

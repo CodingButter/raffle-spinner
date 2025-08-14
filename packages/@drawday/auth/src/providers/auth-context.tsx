@@ -81,10 +81,10 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 // Provider component
-export function AuthProvider({ 
+export function AuthProvider({
   children,
-  authService: customAuthService
-}: { 
+  authService: customAuthService,
+}: {
   children: React.ReactNode;
   authService?: typeof authService;
 }) {
@@ -108,10 +108,7 @@ export function AuthProvider({
         // Try to refresh
         const newTokens = await service.refreshToken(tokens.refresh_token);
         const currentUser = await service.getCurrentUser(newTokens.access_token);
-        const subscription = await service.getSubscription(
-          currentUser.id,
-          newTokens.access_token
-        );
+        const subscription = await service.getSubscription(currentUser.id, newTokens.access_token);
 
         dispatch({
           type: 'AUTH_SUCCESS',
@@ -137,25 +134,28 @@ export function AuthProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const login = useCallback(async (credentials: { email: string; password: string }) => {
-    dispatch({ type: 'AUTH_START' });
+  const login = useCallback(
+    async (credentials: { email: string; password: string }) => {
+      dispatch({ type: 'AUTH_START' });
 
-    try {
-      const { user, tokens } = await service.login(credentials);
-      const subscription = await service.getSubscription(user.id, tokens.access_token);
+      try {
+        const { user, tokens } = await service.login(credentials);
+        const subscription = await service.getSubscription(user.id, tokens.access_token);
 
-      dispatch({
-        type: 'AUTH_SUCCESS',
-        payload: { user, tokens, subscription },
-      });
-    } catch (error) {
-      dispatch({
-        type: 'AUTH_ERROR',
-        payload: error instanceof Error ? error.message : 'Login failed',
-      });
-      throw error;
-    }
-  }, [service]);
+        dispatch({
+          type: 'AUTH_SUCCESS',
+          payload: { user, tokens, subscription },
+        });
+      } catch (error) {
+        dispatch({
+          type: 'AUTH_ERROR',
+          payload: error instanceof Error ? error.message : 'Login failed',
+        });
+        throw error;
+      }
+    },
+    [service]
+  );
 
   const logout = useCallback(async () => {
     await service.logout(state.tokens?.refresh_token);

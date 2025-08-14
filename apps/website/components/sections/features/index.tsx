@@ -28,7 +28,12 @@ interface FeaturesSectionProps {
  * Features section (Why Choose DrawDay)
  */
 export function FeaturesSection({ features }: FeaturesSectionProps) {
-  const colors: Array<'purple' | 'blue' | 'green' | 'yellow'> = ['purple', 'blue', 'green', 'yellow'];
+  const colors: Array<'purple' | 'blue' | 'green' | 'yellow'> = [
+    'purple',
+    'blue',
+    'green',
+    'yellow',
+  ];
 
   return (
     <section className="py-24 bg-gradient-to-b from-transparent via-purple-900/5 to-transparent">

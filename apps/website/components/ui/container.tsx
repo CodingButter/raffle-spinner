@@ -17,8 +17,6 @@ const sizeMap = {
  */
 export function Container({ children, className = '', size = 'xl' }: ContainerProps) {
   return (
-    <div className={`${sizeMap[size]} mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>
-      {children}
-    </div>
+    <div className={`${sizeMap[size]} mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
   );
 }

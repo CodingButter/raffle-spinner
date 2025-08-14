@@ -1,6 +1,6 @@
 /**
  * Modular Homepage Component
- * 
+ *
  * Composes all homepage sections together
  */
 
@@ -24,18 +24,13 @@ export function Homepage({ content }: HomepageProps) {
         ctaLink={content.hero_cta_link}
         ctaText={content.hero_cta_text}
       />
-      
-      <ServicesSection
-        title={content.features_title}
-        subtitle={content.features_subtitle}
-      />
-      
-      <FeaturesSection
-        features={content.features_list || []}
-      />
-      
+
+      <ServicesSection title={content.features_title} subtitle={content.features_subtitle} />
+
+      <FeaturesSection features={content.features_list || []} />
+
       <ClientsSection />
-      
+
       <CTASection
         title={content.cta_title}
         description={content.cta_description}

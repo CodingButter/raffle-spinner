@@ -80,7 +80,7 @@ export default function DashboardPage() {
   const userData = {
     name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User',
     email: user.email,
-    company: user.description?.replace('Company: ', '') || 'Your Company',
+    company: 'Your Company', // TODO: Add company field to User type or get from separate API
     plan: 'Free Trial', // TODO: Get from subscription
     trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     usage: {
