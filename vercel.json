@@ -1,9 +1,10 @@
 {
   "buildCommand": "pnpm build:website",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
   "outputDirectory": "apps/website/.next",
   "env": {
     "ENABLE_EXPERIMENTAL_COREPACK": "1",
-    "COREPACK_ENABLE_STRICT": "0",
-    "VERCEL_FORCE_NO_BUILD_CACHE": "1"
+    "COREPACK_ENABLE_STRICT": "0"
   }
 }
