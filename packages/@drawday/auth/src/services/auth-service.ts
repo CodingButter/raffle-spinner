@@ -5,15 +5,29 @@ export class AuthService {
   private tokenKey = 'auth_tokens';
   private userKey = 'auth_user';
 
-  constructor(baseUrl: string = process.env.NEXT_PUBLIC_DIRECTUS_URL || 'http://localhost:8055') {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl?: string) {
+    // Detect if running in Chrome extension
+    const isExtension = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
+
+    if (baseUrl) {
+      this.baseUrl = baseUrl;
+    } else if (isExtension) {
+      // Use website API as proxy for extension
+      this.baseUrl = 'https://www.drawday.app/api';
+    } else {
+      // Direct Directus URL for website
+      this.baseUrl = process.env.NEXT_PUBLIC_DIRECTUS_URL || 'http://localhost:8055';
+    }
   }
 
   /**
    * Login with email and password
    */
   async login(credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> {
-    const response = await fetch(`${this.baseUrl}/auth/login`, {
+    const isProxyUrl = this.baseUrl.includes('/api');
+    const loginPath = isProxyUrl ? '/auth/login' : '/auth/login';
+
+    const response = await fetch(`${this.baseUrl}${loginPath}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
@@ -47,7 +61,10 @@ export class AuthService {
   async logout(refreshToken?: string): Promise<void> {
     if (refreshToken) {
       try {
-        await fetch(`${this.baseUrl}/auth/logout`, {
+        const isProxyUrl = this.baseUrl.includes('/api');
+        const logoutPath = isProxyUrl ? '/auth/logout' : '/auth/logout';
+
+        await fetch(`${this.baseUrl}${logoutPath}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ refresh_token: refreshToken }),
@@ -90,7 +107,10 @@ export class AuthService {
    * Refresh access token
    */
   async refreshToken(refreshToken: string): Promise<AuthTokens> {
-    const response = await fetch(`${this.baseUrl}/auth/refresh`, {
+    const isProxyUrl = this.baseUrl.includes('/api');
+    const refreshPath = isProxyUrl ? '/auth/refresh' : '/auth/refresh';
+
+    const response = await fetch(`${this.baseUrl}${refreshPath}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh_token: refreshToken }),
@@ -115,7 +135,10 @@ export class AuthService {
    * Get current user details
    */
   async getCurrentUser(accessToken: string): Promise<User> {
-    const response = await fetch(`${this.baseUrl}/users/me`, {
+    const isProxyUrl = this.baseUrl.includes('/api');
+    const mePath = isProxyUrl ? '/auth/me' : '/users/me';
+
+    const response = await fetch(`${this.baseUrl}${mePath}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
