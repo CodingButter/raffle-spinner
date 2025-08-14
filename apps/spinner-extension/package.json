@@ -56,7 +56,7 @@
     "@drawday/typescript-config": "workspace:*",
     "@tailwindcss/vite": "^4.0.0-alpha.30",
     "@types/canvas-confetti": "^1.6.4",
-    "@types/chrome": "^0.0.270",
+    "@types/chrome": "^0.1.4",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
