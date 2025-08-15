@@ -38,7 +38,7 @@ export function Navigation() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-4 lg:gap-6">
             <ServicesDropdown />
 
             <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors py-4">
@@ -57,7 +57,7 @@ export function Navigation() {
               Contact
             </Link>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 lg:gap-3">
               {isAuthenticated ? (
                 <Button variant="ghost" className="text-gray-300 hover:text-white" asChild>
                   <Link href="/dashboard">

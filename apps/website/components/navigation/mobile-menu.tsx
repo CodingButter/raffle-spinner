@@ -19,21 +19,21 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </div>
         <Link
           href="/spinner"
-          className="text-gray-300 hover:text-white transition-colors px-2"
+          className="text-gray-300 hover:text-white transition-colors px-4 py-3 block min-h-[44px] flex items-center"
           onClick={onClose}
         >
           DrawDay Spinner
         </Link>
         <Link
           href="/streaming"
-          className="text-gray-300 hover:text-white transition-colors px-2"
+          className="text-gray-300 hover:text-white transition-colors px-4 py-3 block min-h-[44px] flex items-center"
           onClick={onClose}
         >
           Streaming Production
         </Link>
         <Link
           href="/websites"
-          className="text-gray-300 hover:text-white transition-colors px-2"
+          className="text-gray-300 hover:text-white transition-colors px-4 py-3 block min-h-[44px] flex items-center"
           onClick={onClose}
         >
           Custom Websites
@@ -42,28 +42,28 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         <div className="border-t border-gray-800 pt-4 mt-2">
           <Link
             href="/pricing"
-            className="block text-gray-300 hover:text-white transition-colors px-2 py-2"
+            className="block text-gray-300 hover:text-white transition-colors px-4 py-3 min-h-[44px] flex items-center"
             onClick={onClose}
           >
             Pricing
           </Link>
           <Link
             href="/portfolio"
-            className="block text-gray-300 hover:text-white transition-colors px-2 py-2"
+            className="block text-gray-300 hover:text-white transition-colors px-4 py-3 min-h-[44px] flex items-center"
             onClick={onClose}
           >
             Portfolio
           </Link>
           <Link
             href="/about"
-            className="block text-gray-300 hover:text-white transition-colors px-2 py-2"
+            className="block text-gray-300 hover:text-white transition-colors px-4 py-3 min-h-[44px] flex items-center"
             onClick={onClose}
           >
             About
           </Link>
           <Link
             href="/contact"
-            className="block text-gray-300 hover:text-white transition-colors px-2 py-2"
+            className="block text-gray-300 hover:text-white transition-colors px-4 py-3 min-h-[44px] flex items-center"
             onClick={onClose}
           >
             Contact

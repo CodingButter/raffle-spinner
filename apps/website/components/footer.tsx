@@ -31,7 +31,7 @@ export function Footer() {
                 href="https://github.com/CodingButter/raffle-spinner"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white transition-colors p-2 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
                 aria-label="GitHub"
               >
                 <Github className="w-5 h-5" />
@@ -40,7 +40,7 @@ export function Footer() {
                 href="https://twitter.com/drawdaysolutions"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white transition-colors p-2 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
                 aria-label="Twitter"
               >
                 <Twitter className="w-5 h-5" />
@@ -49,7 +49,7 @@ export function Footer() {
                 href="https://linkedin.com/company/drawday-solutions"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white transition-colors p-2 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="w-5 h-5" />
