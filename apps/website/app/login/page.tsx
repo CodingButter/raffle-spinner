@@ -7,6 +7,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@drawday/ui/button';
 import { Input } from '@drawday/ui/input';
 import { Label } from '@drawday/ui/label';
@@ -67,7 +68,7 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-lg">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-8">
-            <img src="/logo.svg" alt="DrawDay" className="w-12 h-12" />
+            <Image src="/logo.svg" alt="DrawDay" width={48} height={48} className="w-12 h-12" />
             <span className="text-2xl font-bold">DrawDay</span>
           </Link>
 

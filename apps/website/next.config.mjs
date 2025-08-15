@@ -1,8 +1,27 @@
+import bundleAnalyzer from '@next/bundle-analyzer';
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Skip ESLint during builds (temporary fix for deployment)
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  
+  // Performance optimizations
+  swcMinify: true,
+  compress: true,
+  poweredByHeader: false,
+  
+  // Optimize production builds
+  productionBrowserSourceMaps: false,
+  
+  // Experimental features for better performance
+  experimental: {
+    optimizePackageImports: ['@drawday/ui', 'lucide-react'],
   },
   
   // Transpile workspace packages for Vercel deployment
@@ -47,4 +66,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

@@ -47,6 +47,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        {/* Preconnect to critical domains for faster resource loading */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {process.env.NEXT_PUBLIC_DIRECTUS_URL && (
+          <link rel="preconnect" href={process.env.NEXT_PUBLIC_DIRECTUS_URL} />
+        )}
+        
+        {/* DNS prefetch for third-party services */}
+        <link rel="dns-prefetch" href="https://js.stripe.com" />
+        <link rel="dns-prefetch" href="https://api.stripe.com" />
+      </head>
       <body className={`${inter.variable} font-sans antialiased bg-night text-white`}>
         <Providers>
           <div className="min-h-screen flex flex-col">

@@ -9,8 +9,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@drawday/auth';
-import { TrialBanner } from '@/components/dashboard/shared/TrialBanner';
-import { OverviewTab } from '@/components/dashboard/tabs/OverviewTab';
+import dynamic from 'next/dynamic';
+
+// Dynamic imports for better code splitting
+const TrialBanner = dynamic(() => import('@/components/dashboard/shared/TrialBanner').then(mod => ({ default: mod.TrialBanner })), {
+  loading: () => <div className="h-16 bg-gray-800/50 rounded-lg animate-pulse" />,
+});
+
+const OverviewTab = dynamic(() => import('@/components/dashboard/tabs/OverviewTab').then(mod => ({ default: mod.OverviewTab })), {
+  loading: () => <div className="min-h-[400px] bg-gray-800/50 rounded-lg animate-pulse" />,
+});
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { extractUserData } from '@/lib/dashboard-helpers';
 

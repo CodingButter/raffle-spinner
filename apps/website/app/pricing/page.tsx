@@ -5,12 +5,26 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
+
+// Dynamic import for FAQ section - only load when user scrolls down
+const FAQSection = dynamic(() => import('@/components/ui/lazy-section').then(mod => ({ default: mod.LazySection })), {
+  ssr: false,
+});
 import { Button } from '@drawday/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@drawday/ui/card';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { useAuth } from '@drawday/auth';
 import { useRouter } from 'next/navigation';
-import { getStripe } from '@/lib/stripe-client';
+
+// Lazy load Card components as they're quite heavy
+const Card = dynamic(() => import('@drawday/ui/card').then(mod => ({ default: mod.Card })));
+const CardContent = dynamic(() => import('@drawday/ui/card').then(mod => ({ default: mod.CardContent })));
+const CardDescription = dynamic(() => import('@drawday/ui/card').then(mod => ({ default: mod.CardDescription })));
+const CardHeader = dynamic(() => import('@drawday/ui/card').then(mod => ({ default: mod.CardHeader })));
+const CardTitle = dynamic(() => import('@drawday/ui/card').then(mod => ({ default: mod.CardTitle })));
+
+// Lazy load Stripe-related code
+const getStripe = () => import('@/lib/stripe-client').then(mod => mod.getStripe);
 import { PRODUCTS, ProductKey } from '@/lib/stripe';
 
 export default function PricingPage() {
@@ -52,7 +66,8 @@ export default function PricingPage() {
       const { sessionId } = await response.json();
 
       // Redirect to Stripe Checkout
-      const stripe = await getStripe();
+      const stripeLoader = await getStripe();
+      const stripe = await stripeLoader();
       if (!stripe) {
         throw new Error('Stripe not initialized');
       }
@@ -179,8 +194,11 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* FAQ Section */}
-        <div className="mt-24 max-w-3xl mx-auto">
+        {/* FAQ Section - Lazy Loaded */}
+        <FAQSection
+          fallback={<div className="mt-24 h-[400px] bg-gray-900/20 rounded-lg animate-pulse" />}
+          className="mt-24 max-w-3xl mx-auto"
+        >
           <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
 
           <div className="space-y-8">
@@ -218,7 +236,7 @@ export default function PricingPage() {
               </p>
             </div>
           </div>
-        </div>
+        </FAQSection>
       </div>
     </div>
   );
