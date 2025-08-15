@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe, PRODUCTS, ProductKey } from '@/lib/stripe';
+import { getStripe, PRODUCTS, ProductKey } from '@/lib/stripe';
 
 export async function POST(request: NextRequest) {
   try {
+    // Get Stripe instance
+    const stripe = getStripe();
     const body = await request.json();
     const { productKey, userId, email } = body as {
       productKey: ProductKey;
