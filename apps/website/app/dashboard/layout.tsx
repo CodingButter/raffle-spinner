@@ -24,6 +24,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (pathname === '/dashboard') return 'overview';
     if (pathname === '/dashboard/subscription') return 'subscription';
     if (pathname === '/dashboard/usage') return 'usage';
+    if (pathname === '/dashboard/analytics') return 'analytics';
     if (pathname === '/dashboard/settings') return 'settings';
     return 'overview';
   };

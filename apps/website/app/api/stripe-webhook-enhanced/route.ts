@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
-      console.error('❌ Webhook signature verification failed:', err.message);
+      console.error('❌ Webhook signature verification failed:', err instanceof Error ? err.message : 'Unknown error');
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 400 }
@@ -110,8 +110,9 @@ export async function POST(request: NextRequest) {
       
       // Return 200 to prevent Stripe retries for non-critical errors
       // Only return error status for critical failures
-      const isCritical = processingError.message?.includes('auth failed') ||
-                        processingError.message?.includes('Directus');
+      const isCritical = processingError instanceof Error && 
+                        (processingError.message?.includes('auth failed') ||
+                         processingError.message?.includes('Directus'));
       
       if (isCritical) {
         return NextResponse.json(
@@ -127,12 +128,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ 
         received: true, 
         handled: false,
-        error: processingError.message 
+        error: processingError instanceof Error ? processingError.message : 'Unknown error'
       });
     }
   } catch (error) {
     console.error('❌ Webhook error:', error);
-    console.error('   Stack:', error.stack);
+    console.error('   Stack:', error instanceof Error ? error.stack : 'No stack trace');
     
     return NextResponse.json(
       { error: 'Webhook processing failed' },

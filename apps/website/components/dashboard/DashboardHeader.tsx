@@ -11,7 +11,7 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ activeTab, userEmail, onLogout }: DashboardHeaderProps) {
-  const tabs = ['overview', 'subscription', 'usage', 'settings'];
+  const tabs = ['overview', 'subscription', 'usage', 'analytics', 'settings'];
 
   return (
     <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-md">

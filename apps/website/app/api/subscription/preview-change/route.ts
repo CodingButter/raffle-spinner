@@ -71,20 +71,19 @@ export async function POST(request: NextRequest) {
       const previewParams: Stripe.InvoiceCreatePreviewParams = {
         customer: subscription.customer as string,
         subscription: subscriptionId,
-        subscription_items: [
+        invoice_items: [
           {
-            id: subscription.items.data[0].id,
             price: newProduct.priceId,
+            quantity: 1,
           },
         ],
-        subscription_proration_behavior: 'create_prorations',
       };
 
       try {
         const preview = await stripe.invoices.createPreview(previewParams);
 
-        // Calculate proration from preview
-        const prorationItems = preview.lines.data.filter((item) => item.proration);
+        // Calculate proration from preview - all line items represent the proration
+        const prorationItems = preview.lines.data;
         const totalProration = prorationItems.reduce((sum, item) => sum + item.amount, 0);
 
         // Get unused time credit (negative amount)
@@ -116,8 +115,9 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         console.error('Failed to create proration preview:', error);
         // Fallback to manual calculation
+        const periodEnd = 'current_period_end' in subscription ? subscription.current_period_end : 0;
         const daysRemaining = Math.ceil(
-          (subscription.current_period_end * 1000 - Date.now()) / (1000 * 60 * 60 * 24)
+          ((periodEnd ?? 0) * 1000 - Date.now()) / (1000 * 60 * 60 * 24)
         );
         const dailyDifference = (newProduct.price - currentPlanPrice) / 30;
         const estimatedProration = Math.round(dailyDifference * daysRemaining * 100);
