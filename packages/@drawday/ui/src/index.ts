@@ -21,6 +21,7 @@ export * from './components/dialog';
 
 // Feedback components
 export * from './components/alert';
+export * from './badge-component';
 
 // Utility functions
 export { cn } from './lib/utils';

@@ -6,19 +6,158 @@ import { stripe, PRODUCTS } from '@/lib/stripe';
 import { createAdminClient } from '@/lib/directus-admin';
 import Stripe from 'stripe';
 
+const DIRECTUS_URL = process.env.NEXT_PUBLIC_DIRECTUS_URL || 'http://localhost:8055';
+const DIRECTUS_ADMIN_EMAIL = process.env.DIRECTUS_ADMIN_EMAIL || 'admin@drawday.app';
+const DIRECTUS_ADMIN_PASSWORD = process.env.DIRECTUS_ADMIN_PASSWORD || 'Speed4Dayz1!';
+
 // Helper function to determine tier from price ID
 export function getTierFromPriceId(priceId: string): string {
   const productEntries = Object.entries(PRODUCTS);
   for (const [key, product] of productEntries) {
     if (product.priceId === priceId) {
-      return key; // 'starter', 'professional', or 'enterprise'
+      // Map Stripe product keys to our subscription tier keys
+      if (key === 'professional') return 'pro';
+      return key; // 'starter', 'enterprise'
     }
   }
-  return 'free';
+  return 'starter'; // Default to starter instead of free
+}
+
+// Get admin token for Directus operations
+async function getAdminToken(): Promise<string> {
+  const response = await fetch(`${DIRECTUS_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: DIRECTUS_ADMIN_EMAIL,
+      password: DIRECTUS_ADMIN_PASSWORD,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to authenticate with Directus');
+  }
+
+  const data = await response.json();
+  return data.data.access_token;
+}
+
+// Create or update subscription in our collections
+async function createOrUpdateSubscriptionInDirectus(
+  userEmail: string,
+  subscription: Stripe.Subscription,
+  tier: string
+) {
+  try {
+    const token = await getAdminToken();
+
+    // First, get the user ID
+    const userResponse = await fetch(
+      `${DIRECTUS_URL}/users?filter[email][_eq]=${encodeURIComponent(userEmail)}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (!userResponse.ok) {
+      throw new Error('Failed to find user');
+    }
+
+    const userData = await userResponse.json();
+    const user = userData.data?.[0];
+    if (!user) {
+      throw new Error(`User not found: ${userEmail}`);
+    }
+
+    // Get the subscription tier ID
+    const tierResponse = await fetch(
+      `${DIRECTUS_URL}/items/subscription_tiers?filter[tier_key][_eq]=${tier}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (!tierResponse.ok) {
+      throw new Error('Failed to find subscription tier');
+    }
+
+    const tierData = await tierResponse.json();
+    const tierRecord = tierData.data?.[0];
+    if (!tierRecord) {
+      throw new Error(`Subscription tier not found: ${tier}`);
+    }
+
+    // Check if subscription record already exists
+    const existingResponse = await fetch(
+      `${DIRECTUS_URL}/items/subscriptions?filter[stripe_subscription_id][_eq]=${subscription.id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    const subscriptionData = {
+      user: user.id,
+      tier: tierRecord.id,
+      product: 'spinner',
+      status: subscription.status,
+      starts_at: new Date(subscription.created * 1000).toISOString(),
+      expires_at:
+        subscription.status === 'active' && subscription.current_period_end
+          ? new Date(subscription.current_period_end * 1000).toISOString()
+          : null,
+      stripe_subscription_id: subscription.id,
+      raffle_count: 0, // Reset or preserve existing count
+    };
+
+    if (existingResponse.ok) {
+      const existingData = await existingResponse.json();
+      const existingSub = existingData.data?.[0];
+
+      if (existingSub) {
+        // Update existing subscription
+        const updateResponse = await fetch(
+          `${DIRECTUS_URL}/items/subscriptions/${existingSub.id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(subscriptionData),
+          }
+        );
+
+        if (!updateResponse.ok) {
+          throw new Error('Failed to update subscription');
+        }
+
+        console.log(`Updated subscription ${subscription.id} for ${userEmail}`);
+        return;
+      }
+    }
+
+    // Create new subscription
+    const createResponse = await fetch(`${DIRECTUS_URL}/items/subscriptions`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(subscriptionData),
+    });
+
+    if (!createResponse.ok) {
+      throw new Error('Failed to create subscription');
+    }
+
+    console.log(`Created subscription ${subscription.id} for ${userEmail}`);
+  } catch (error) {
+    console.error('Failed to create/update subscription in Directus:', error);
+    throw error;
+  }
 }
 
 export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  const directusAdmin = createAdminClient();
   console.log('Checkout completed:', session.id);
 
   // Get the full session details with line items
@@ -28,81 +167,53 @@ export async function handleCheckoutCompleted(session: Stripe.Checkout.Session) 
 
   if (fullSession.subscription && fullSession.customer_email) {
     const subscription = fullSession.subscription as Stripe.Subscription;
-    const priceId = subscription.items.data[0]?.price.id;
-    const tier = getTierFromPriceId(priceId);
 
-    // Update user subscription in Directus
-    try {
-      await directusAdmin.updateUserSubscription(fullSession.customer_email, {
-        stripe_customer_id: fullSession.customer as string,
-        stripe_subscription_id: subscription.id,
-        subscription_status: subscription.status,
-        subscription_tier: tier,
-        subscription_current_period_end: new Date(
-          (subscription as any).current_period_end * 1000
-        ).toISOString(),
-        subscription_cancel_at_period_end: subscription.cancel_at_period_end,
-      });
+    // Handle subscription update
+    await handleSubscriptionUpdate(subscription);
 
-      console.log(`Updated subscription for ${fullSession.customer_email} to ${tier} tier`);
-    } catch (error) {
-      console.error('Failed to update user subscription in Directus:', error);
-      // Don't fail the webhook, log the error for manual resolution
-    }
+    console.log(`Processed checkout completion for ${fullSession.customer_email}`);
   }
 }
 
 export async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
-  const directusAdmin = createAdminClient();
   console.log('Subscription updated:', subscription.id);
-  console.log('Subscription metadata:', subscription.metadata);
+  console.log('Subscription status:', subscription.status);
 
-  // First try to use directus_user_id from subscription metadata
-  const directusUserId = subscription.metadata?.directus_user_id;
+  try {
+    // Get customer email from Stripe
+    const customer = (await stripe.customers.retrieve(
+      subscription.customer as string
+    )) as Stripe.Customer;
 
-  if (directusUserId) {
-    console.log('Found directus_user_id in metadata:', directusUserId);
-
-    // Use product key from metadata
-    const productKey = subscription.metadata?.product_key || 'spinner_starter';
-    console.log(`Using product key from metadata: ${productKey}`);
-
-    try {
-      // Create or update subscription record
-      const subscriptionData: any = {
-        user_id: directusUserId,
-        product_key: productKey,
-        stripe_subscription_id: subscription.id,
-        stripe_customer_id: subscription.customer as string,
-        status: subscription.status,
-        cancel_at_period_end: subscription.cancel_at_period_end,
-      };
-
-      // Only add period end if it's a valid timestamp
-      if (
-        (subscription as any).current_period_end &&
-        (subscription as any).current_period_end > 0
-      ) {
-        subscriptionData.current_period_end = new Date(
-          (subscription as any).current_period_end * 1000
-        ).toISOString();
-      }
-
-      await directusAdmin.createOrUpdateSubscription(subscriptionData);
-
-      console.log(
-        `Created/updated subscription for user ${directusUserId} with product ${productKey}`
-      );
-    } catch (error) {
-      console.error('Failed to update subscription by ID in Directus:', error);
-
-      // Fallback to customer email method
-      await handleSubscriptionFallback(subscription);
+    if (!customer.email) {
+      console.error('No customer email found for subscription:', subscription.id);
+      return;
     }
-  } else {
-    // Fallback to original method using customer email
-    console.log('No directus_user_id in metadata, using customer email');
-    await handleSubscriptionFallback(subscription);
+
+    // Determine tier from price ID
+    const priceId = subscription.items.data[0]?.price.id;
+    const tier = getTierFromPriceId(priceId);
+    console.log(`Updating ${customer.email} to ${tier} tier`);
+
+    // Create subscription in our new collections system
+    await createOrUpdateSubscriptionInDirectus(customer.email, subscription, tier);
+
+    // Also update the old user fields for backward compatibility
+    const directusAdmin = createAdminClient();
+    await directusAdmin.updateUserSubscription(customer.email, {
+      stripe_customer_id: customer.id,
+      stripe_subscription_id: subscription.id,
+      subscription_status: subscription.status,
+      subscription_tier: tier,
+      subscription_current_period_end: new Date(
+        (subscription as any).current_period_end * 1000
+      ).toISOString(),
+      subscription_cancel_at_period_end: subscription.cancel_at_period_end,
+    });
+
+    console.log(`Successfully updated subscription for ${customer.email} to ${tier}`);
+  } catch (error) {
+    console.error('Failed to update subscription:', error);
   }
 }
 

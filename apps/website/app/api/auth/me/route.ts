@@ -20,14 +20,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Forward the request to Directus
-    const response = await fetch(`${DIRECTUS_URL}/users/me`, {
-      method: 'GET',
-      headers: {
-        Authorization: authorization,
-        'Content-Type': 'application/json',
-      },
-    });
+    // Forward the request to Directus with subscription data
+    const response = await fetch(
+      `${DIRECTUS_URL}/users/me?fields=*,subscriptions.id,subscriptions.status,subscriptions.product,subscriptions.starts_at,subscriptions.expires_at,subscriptions.stripe_subscription_id,subscriptions.raffle_count,subscriptions.tier.name,subscriptions.tier.tier_key,subscriptions.tier.max_contestants,subscriptions.tier.max_raffles,subscriptions.tier.has_api_support,subscriptions.tier.has_branding,subscriptions.tier.has_customization`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: authorization,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
     if (!response.ok) {
       const data = await response.json();
@@ -49,11 +52,46 @@ export async function GET(request: NextRequest) {
     // Transform user data to include subscriptions array
     const user = data.data || data;
 
-    // Build subscriptions array from user's subscription fields (if they exist in DB)
+    // Debug logging
+    console.log('User subscriptions from Directus:', JSON.stringify(user.subscriptions, null, 2));
+
+    // Build subscriptions array from new subscription collections
     const subscriptions = [];
 
-    // Check if user has subscription data in old format
-    if (user && user.stripe_subscription_id && user.subscription_status) {
+    // Transform new subscription structure
+    if (user && user.subscriptions && Array.isArray(user.subscriptions)) {
+      user.subscriptions.forEach((sub: any) => {
+        // Use tier from subscription if available, otherwise fallback to user's subscription_tier
+        const tierKey = sub.tier?.tier_key || user.subscription_tier || 'starter';
+        const isPro = tierKey === 'pro' || tierKey === 'professional';
+
+        subscriptions.push({
+          id: sub.id,
+          product: sub.product,
+          tier: tierKey,
+          status: sub.status,
+          starts_at: sub.starts_at,
+          expires_at: sub.expires_at,
+          stripe_subscription_id: sub.stripe_subscription_id,
+          raffle_count: sub.raffle_count || 0,
+          limits: {
+            maxContestants: sub.tier?.max_contestants ?? (isPro ? null : 1000),
+            maxRaffles: sub.tier?.max_raffles ?? (isPro ? null : 5),
+            hasApiSupport: sub.tier?.has_api_support ?? (isPro ? true : false),
+            hasBranding: sub.tier?.has_branding ?? true,
+            hasCustomization: sub.tier?.has_customization ?? true,
+          },
+        });
+      });
+    }
+
+    // Fallback: Check if user has subscription data in old format
+    if (
+      subscriptions.length === 0 &&
+      user &&
+      user.stripe_subscription_id &&
+      user.subscription_status
+    ) {
       // Map old fields to new subscription format
       subscriptions.push({
         id: user.stripe_subscription_id,

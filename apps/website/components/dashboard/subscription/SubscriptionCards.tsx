@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@draw
 import { Button } from '@drawday/ui/button';
 import { CreditCard } from 'lucide-react';
 import { PricingCard } from '@/components/pricing-card';
+import { ActiveSubscriptions } from './ActiveSubscriptions';
 
 interface SubscriptionCardsProps {
   products: any[];
@@ -62,7 +63,7 @@ export function SubscriptionCards({ products, user, onUpgrade }: SubscriptionCar
                   ...plan,
                   cta: plan.current
                     ? user?.stripe_customer_id
-                      ? 'Manage Plan'
+                      ? 'Manage/Cancel'
                       : 'Current Plan'
                     : plan.tier?.key === 'enterprise'
                       ? 'Contact Sales'
@@ -78,6 +79,9 @@ export function SubscriptionCards({ products, user, onUpgrade }: SubscriptionCar
 
       {/* Info Banner */}
       {user?.stripe_customer_id && <BillingInfoBanner />}
+
+      {/* Active Subscriptions */}
+      <ActiveSubscriptions subscriptions={user?.subscriptions || []} onManage={handleManagePlan} />
 
       {/* Payment & Billing */}
       <PaymentBillingCard user={user} onManage={handleManagePlan} />
@@ -98,8 +102,9 @@ function BillingInfoBanner() {
           <div className="flex-1 text-sm">
             <p className="text-blue-300 font-medium mb-1">Managing Your Subscription</p>
             <p className="text-gray-400">
-              Click "Manage Plan" on your current subscription to change plans, update payment
-              methods, or cancel your subscription. All changes are handled securely through Stripe.
+              Click "Manage/Cancel" on your current subscription to change plans, update payment
+              methods, view invoices, or cancel your subscription. You'll be redirected to Stripe's
+              secure customer portal where you can manage all aspects of your subscription.
             </p>
           </div>
         </div>

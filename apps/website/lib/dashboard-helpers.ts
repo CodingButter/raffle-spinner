@@ -14,10 +14,33 @@ export function groupProductsByCategory(products: any[], userSubscriptions: any)
     }
 
     // Check if user has this specific product
-    const userHasThisProduct = userSubscriptions[categoryKey]?.some(
-      (sub: any) =>
-        sub.product?.key === product.key && (sub.status === 'active' || sub.status === 'trialing')
-    );
+    // The subscription object has tier as a string (e.g., 'pro', 'starter')
+    // And product as a string (e.g., 'spinner')
+    const userHasThisProduct = userSubscriptions[categoryKey]?.some((sub: any) => {
+      // Match by tier key - product.tier.key should match sub.tier
+      // Handle both 'pro' and 'professional' as the same tier
+      const subTier = sub.tier === 'professional' ? 'pro' : sub.tier;
+      const productTier = product.tier?.key === 'professional' ? 'pro' : product.tier?.key;
+      const tierMatch =
+        subTier === productTier ||
+        (subTier === 'pro' && productTier === 'professional') ||
+        (subTier === 'professional' && productTier === 'pro');
+      const isActive = sub.status === 'active' || sub.status === 'trialing';
+
+      // Debug logging
+      if (categoryKey === 'spinner') {
+        console.log('Matching subscription:', {
+          subTier,
+          productTier,
+          productKey: product.key,
+          tierMatch,
+          isActive,
+          result: tierMatch && isActive,
+        });
+      }
+
+      return tierMatch && isActive;
+    });
 
     acc[categoryKey].products.push({
       ...product,

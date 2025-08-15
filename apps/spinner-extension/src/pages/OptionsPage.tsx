@@ -13,6 +13,7 @@ import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionCont
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { CollapsibleStateProvider, useCollapsibleState } from '@/contexts/CollapsibleStateContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { useAuth } from '@drawday/auth';
 import { useCSVImport } from '@/hooks/useCSVImport';
@@ -30,6 +31,7 @@ import { SavedMappingsManager } from '@/components/options/SavedMappingsManager'
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { SubscriptionStatus } from '@/components/ui/subscription-status';
 import { CheckCircle, ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
 import { Competition } from '@raffle-spinner/storage';
 
@@ -39,9 +41,10 @@ function OptionsContent() {
   const { settings, columnMapping, updateSettings, updateColumnMapping } = useSettings();
   const { collapsedSections, toggleSection } = useCollapsibleState();
   const { user, logout, tokens } = useAuth();
+  const { subscription, hasBranding, hasCustomization } = useSubscription();
 
   // Check if user has pro subscription for customization features
-  const isPro = user?.role === 'pro' || user?.role === 'admin';
+  const isPro = subscription?.tier === 'pro' || hasBranding() || hasCustomization();
 
   const [competitionToDelete, setCompetitionToDelete] = useState<Competition | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -167,6 +170,12 @@ function OptionsContent() {
             </Alert>
           )}
 
+          {/* Subscription Status */}
+          <SubscriptionStatus 
+            currentContestants={competitions.reduce((total, comp) => total + comp.participants.length, 0)}
+            onUpgradeClick={handleUpgradeClick}
+          />
+
           <Card>
             <CardHeader
               className="cursor-pointer select-none"
@@ -196,6 +205,7 @@ function OptionsContent() {
                   onDeleteCompetition={handleDeleteClick}
                   onOpenMapper={openMapperModal}
                   onUpdateBanner={updateCompetitionBanner}
+                  onUpgradeClick={handleUpgradeClick}
                 />
               </CardContent>
             )}

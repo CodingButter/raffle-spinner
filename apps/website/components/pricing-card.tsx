@@ -44,11 +44,7 @@ export function PricingCard({
   // Determine the CTA text
   const ctaText =
     plan.cta ||
-    (plan.current
-      ? 'Current Plan'
-      : plan.tier?.key === 'enterprise'
-        ? 'Contact Sales'
-        : 'Start Free Trial');
+    (plan.current ? 'Cancel Plan' : plan.tier?.key === 'enterprise' ? 'Contact Sales' : 'Upgrade');
 
   // Parse price
   const displayPrice =
@@ -76,7 +72,7 @@ export function PricingCard({
     <div
       className={`relative rounded-xl p-6 flex flex-col ${
         plan.current && showCurrent
-          ? 'bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-2 border-purple-500/40'
+          ? 'bg-gray-900/60 border-2 border-gray-600 opacity-90'
           : isPopular
             ? 'bg-gradient-to-br from-purple-900/10 to-blue-900/10 border-2 border-purple-500/30'
             : 'bg-gray-800/50 border border-gray-700'
@@ -129,12 +125,12 @@ export function PricingCard({
       <Button
         className={`w-full transition-all cursor-pointer ${
           plan.current
-            ? 'bg-gray-700 hover:bg-gray-600'
+            ? 'bg-red-900/50 hover:bg-red-800/60 border-red-700/50 text-red-200'
             : isPopular
               ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
               : 'border-gray-600 hover:border-gray-500 hover:bg-gray-800'
         }`}
-        variant={plan.current ? 'secondary' : isPopular ? 'default' : 'outline'}
+        variant={plan.current ? 'outline' : isPopular ? 'default' : 'outline'}
         disabled={plan.current && !onManage}
         onClick={handleClick}
       >

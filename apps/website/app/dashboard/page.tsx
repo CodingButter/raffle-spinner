@@ -30,10 +30,38 @@ export default function DashboardOverviewPage() {
   const activeSpinnerSub = user?.subscriptions?.find(
     (s: any) => s.product === 'spinner' && (s.status === 'active' || s.status === 'trialing')
   );
-  const userTier = activeSpinnerSub?.tier || 'free';
+
+  // Fallback: If no new-format subscriptions found, check old subscription fields
+  const fallbackTier =
+    (user as any)?.subscription_tier !== 'free' ? (user as any)?.subscription_tier : null;
+  const fallbackStatus = (user as any)?.subscription_status;
+
+  // Determine user tier with fallback logic
+  let userTier = activeSpinnerSub?.tier || 'free';
+  if (userTier === 'free' && fallbackTier && fallbackStatus === 'active') {
+    userTier = fallbackTier;
+  }
+
+  // Create a fallback subscription object if needed
+  const displaySpinnerSub =
+    activeSpinnerSub ||
+    (fallbackTier && fallbackStatus === 'active'
+      ? {
+          tier: fallbackTier,
+          status: fallbackStatus,
+          product: 'spinner',
+          limits: {
+            maxContestants: fallbackTier === 'pro' ? null : 1000,
+            maxRaffles: fallbackTier === 'pro' ? null : 5,
+            hasApiSupport: fallbackTier === 'pro',
+            hasBranding: true,
+            hasCustomization: true,
+          },
+        }
+      : null);
 
   // Extract user data
-  const userData = extractUserData(user, activeSpinnerSub);
+  const userData = extractUserData(user, displaySpinnerSub);
 
   const handleDownloadExtension = () => {
     // TODO: Implement actual download

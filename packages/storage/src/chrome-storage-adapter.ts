@@ -12,7 +12,14 @@
  */
 
 import { StorageAdapter } from './storage-adapter';
-import { Competition, SpinnerSettings, ColumnMapping, SavedMapping, StorageData } from './types';
+import {
+  Competition,
+  SpinnerSettings,
+  ColumnMapping,
+  SavedMapping,
+  StorageData,
+  UserSubscription,
+} from './types';
 
 const DEFAULT_SETTINGS: SpinnerSettings = {
   minSpinDuration: 3,
@@ -30,6 +37,8 @@ export class ChromeStorageAdapter implements StorageAdapter {
         savedMappings: [],
         defaultMappingId: undefined,
         theme: undefined, // Include theme in default structure
+        raffleCount: 0,
+        subscription: undefined,
       }
     );
   }
@@ -140,6 +149,33 @@ export class ChromeStorageAdapter implements StorageAdapter {
 
   async setDefaultMapping(id: string | null): Promise<void> {
     await this.setData({ defaultMappingId: id || undefined });
+  }
+
+  // Subscription methods
+  async getSubscription(): Promise<UserSubscription | null> {
+    const data = await this.getData();
+    return data.subscription || null;
+  }
+
+  async saveSubscription(subscription: UserSubscription): Promise<void> {
+    await this.setData({ subscription });
+  }
+
+  // Raffle counting methods
+  async getRaffleCount(): Promise<number> {
+    const data = await this.getData();
+    return data.raffleCount || 0;
+  }
+
+  async incrementRaffleCount(): Promise<number> {
+    const currentCount = await this.getRaffleCount();
+    const newCount = currentCount + 1;
+    await this.setData({ raffleCount: newCount });
+    return newCount;
+  }
+
+  async resetRaffleCount(): Promise<void> {
+    await this.setData({ raffleCount: 0 });
   }
 
   async clear(): Promise<void> {

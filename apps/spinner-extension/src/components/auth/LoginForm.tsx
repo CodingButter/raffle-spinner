@@ -6,6 +6,7 @@ import { Alert, AlertDescription } from '@drawday/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@drawday/ui/card';
 import { useAuth } from '@drawday/auth';
 import { AlertCircle } from 'lucide-react';
+import { syncSubscriptionFromAuth } from '../../services/subscription-sync';
 
 export function LoginForm() {
   const { login } = useAuth();
@@ -21,6 +22,8 @@ export function LoginForm() {
 
     try {
       await login({ email, password });
+      // Sync subscription data to Chrome storage after successful login
+      await syncSubscriptionFromAuth();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to login');
     } finally {

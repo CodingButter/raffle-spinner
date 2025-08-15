@@ -35,6 +35,11 @@
       "import": "./dist/card.mjs",
       "require": "./dist/card.js"
     },
+    "./badge": {
+      "types": "./dist/badge.d.ts",
+      "import": "./dist/badge.mjs",
+      "require": "./dist/badge.js"
+    },
     "./styles": "./src/styles/globals.css"
   },
   "scripts": {

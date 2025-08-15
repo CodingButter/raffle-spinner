@@ -34,6 +34,7 @@
     "@raffle-spinner/csv-parser": "workspace:*",
     "@raffle-spinner/spinner-physics": "workspace:*",
     "@raffle-spinner/storage": "workspace:*",
+    "@raffle-spinner/subscription": "workspace:*",
     "@drawday/tailwind-config": "workspace:*",
     "@drawday/ui": "workspace:*",
     "@drawday/utils": "workspace:*",

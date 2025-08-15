@@ -7,6 +7,7 @@
 import { Competition, ColumnMapping } from '@raffle-spinner/storage';
 import { logger } from '@drawday/utils';
 import { Button } from '@/components/ui/button';
+import { ContestantGuard } from '@/components/ui/subscription-guard';
 import { Upload, Settings, Play } from 'lucide-react';
 import { CompetitionList } from './CompetitionList';
 
@@ -18,6 +19,7 @@ interface CompetitionManagementContentProps {
   onDeleteCompetition: (id: string) => void;
   onOpenMapper: () => void;
   onUpdateBanner?: (id: string, banner: string | undefined) => void;
+  onUpgradeClick?: () => void;
 }
 
 export function CompetitionManagementContent({
@@ -28,7 +30,12 @@ export function CompetitionManagementContent({
   onDeleteCompetition,
   onOpenMapper,
   onUpdateBanner,
+  onUpgradeClick,
 }: CompetitionManagementContentProps) {
+  const totalContestants = competitions.reduce(
+    (total, comp) => total + comp.participants.length,
+    0
+  );
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
@@ -39,10 +46,12 @@ export function CompetitionManagementContent({
           className="hidden"
           onChange={onFileSelect}
         />
-        <Button onClick={() => fileInputRef.current?.click()}>
-          <Upload className="w-4 h-4 mr-2" />
-          Upload CSV
-        </Button>
+        <ContestantGuard currentCount={totalContestants} onUpgradeClick={onUpgradeClick}>
+          <Button onClick={() => fileInputRef.current?.click()}>
+            <Upload className="w-4 h-4 mr-2" />
+            Upload CSV
+          </Button>
+        </ContestantGuard>
         <Button variant="outline" onClick={onOpenMapper}>
           <Settings className="w-4 h-4 mr-2" />
           {columnMapping ? 'Edit Column Mapping' : 'Set Column Mapping'}

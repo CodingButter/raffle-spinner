@@ -20,6 +20,25 @@ module.exports = {
 
     // React rules for Next.js
     'react/react-in-jsx-scope': 'off',
+
+    // File and function size limits (matching CLAUDE.md requirements)
+    'max-lines': [
+      'error',
+      {
+        max: 200,
+        skipBlankLines: true,
+        skipComments: true,
+      },
+    ],
+    'max-lines-per-function': [
+      'error',
+      {
+        max: 100,
+        skipBlankLines: true,
+        skipComments: true,
+      },
+    ],
+    complexity: ['error', 10],
   },
   ignorePatterns: ['.next', 'out', 'public', 'next.config.mjs', 'postcss.config.mjs'],
 };

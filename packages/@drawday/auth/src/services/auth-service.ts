@@ -8,14 +8,19 @@ export class AuthService {
   constructor(baseUrl?: string) {
     // Detect if running in Chrome extension
     const isExtension = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
+    // Detect if running in Next.js app
+    const isNextJS = typeof window !== 'undefined' && window.location?.protocol && !isExtension;
 
     if (baseUrl) {
       this.baseUrl = baseUrl;
     } else if (isExtension) {
       // Use website API as proxy for extension
       this.baseUrl = 'https://www.drawday.app/api';
+    } else if (isNextJS) {
+      // Use local API proxy for website to ensure subscription transformation
+      this.baseUrl = `${window.location.origin}/api`;
     } else {
-      // Direct Directus URL for website
+      // Direct Directus URL for server-side
       this.baseUrl = process.env.NEXT_PUBLIC_DIRECTUS_URL || 'http://localhost:8055';
     }
   }
