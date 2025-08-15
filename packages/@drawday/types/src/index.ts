@@ -157,7 +157,7 @@ export interface ThemeSettings {
 /**
  * Available subscription tiers
  */
-export type SubscriptionTier = 'starter' | 'pro';
+export type SubscriptionTier = 'starter' | 'basic' | 'pro' | 'enterprise';
 
 /**
  * Subscription limits and features

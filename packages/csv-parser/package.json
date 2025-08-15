@@ -30,6 +30,7 @@
     "@drawday/typescript-config": "workspace:*",
     "@types/papaparse": "^5.3.14",
     "tsup": "^8.2.4",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^3.2.4"
   }
 }

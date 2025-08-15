@@ -29,16 +29,15 @@ export function CTASection({ title, description, buttonText, buttonLink }: CTASe
         </h2>
         <p className="text-xl text-gray-300 mb-8">{description}</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg w-full sm:w-auto"
-            asChild
-          >
-            <Link href={buttonLink}>
+          <Link href={buttonLink}>
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg w-full sm:w-auto"
+            >
               {buttonText}
               <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           <Button
             size="lg"
             variant="outline"
