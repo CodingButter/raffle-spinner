@@ -9,7 +9,6 @@
 
 import { useCallback, useRef, useEffect } from 'react';
 import { Participant } from '@raffle-spinner/storage';
-import { normalizeTicketNumber } from '@drawday/utils';
 import { useSlotMachineAnimation } from '../hooks/useSlotMachineAnimation';
 import { SpinnerSettings } from '../../types';
 import { ITEM_HEIGHT, VIEWPORT_HEIGHT, FRAME_BORDER_WIDTH } from '../../constants';
