@@ -15,7 +15,21 @@ export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionLimits> = 
     hasBranding: false,
     hasCustomization: false,
   },
+  basic: {
+    maxContestants: 5000,
+    maxRaffles: 20,
+    hasApiSupport: false,
+    hasBranding: true,
+    hasCustomization: false,
+  },
   pro: {
+    maxContestants: null, // unlimited
+    maxRaffles: null, // unlimited
+    hasApiSupport: true,
+    hasBranding: true,
+    hasCustomization: true,
+  },
+  enterprise: {
     maxContestants: null, // unlimited
     maxRaffles: null, // unlimited
     hasApiSupport: true,

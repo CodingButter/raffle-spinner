@@ -127,31 +127,57 @@ export const SHORTCUT_CATEGORIES = {
  */
 export function getShortcutsByCategory() {
   const categories: Record<string, KeyboardShortcut[]> = {};
-  
-  KEYBOARD_SHORTCUTS.filter(s => !s.disabled).forEach(shortcut => {
+
+  KEYBOARD_SHORTCUTS.filter((s) => !s.disabled).forEach((shortcut) => {
     if (!categories[shortcut.category]) {
       categories[shortcut.category] = [];
     }
     categories[shortcut.category].push(shortcut);
   });
-  
+
   return categories;
 }
 
 /**
  * Format key for display (handle special keys)
  */
-export function formatKeyForDisplay(key: string): string {
+export function formatKeyForDisplay(
+  key: string,
+  modifiers?: ('ctrl' | 'shift' | 'alt' | 'meta')[]
+): string {
   const keyMap: Record<string, string> = {
     ' ': 'Space',
-    'Enter': 'Enter',
-    'Escape': 'Esc',
-    'ArrowUp': '↑',
-    'ArrowDown': '↓',
-    'ArrowLeft': '←',
-    'ArrowRight': '→',
+    Enter: 'Enter',
+    Escape: 'Esc',
+    ArrowUp: '↑',
+    ArrowDown: '↓',
+    ArrowLeft: '←',
+    ArrowRight: '→',
     '?': '?',
   };
-  
-  return keyMap[key] || key.toUpperCase();
+
+  const formattedKey = keyMap[key] || key.toUpperCase();
+
+  if (!modifiers || modifiers.length === 0) {
+    return formattedKey;
+  }
+
+  const modifierSymbols = modifiers
+    .map((mod) => {
+      switch (mod) {
+        case 'ctrl':
+          return 'Ctrl';
+        case 'shift':
+          return '⇧';
+        case 'alt':
+          return 'Alt';
+        case 'meta':
+          return '⌘';
+        default:
+          return '';
+      }
+    })
+    .filter(Boolean);
+
+  return modifierSymbols.join('+') + '+' + formattedKey;
 }

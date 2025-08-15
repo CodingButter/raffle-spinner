@@ -19,11 +19,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Keyboard, Zap, Navigation, Settings2, RotateCcw } from 'lucide-react';
-import { 
-  getShortcutsByCategory, 
-  formatKeyForDisplay, 
+import {
+  getShortcutsByCategory,
+  formatKeyForDisplay,
   SHORTCUT_CATEGORIES,
-  type KeyboardShortcut
+  type KeyboardShortcut,
 } from '@/constants/keyboard-shortcuts';
 
 interface KeyboardShortcutsHelpProps {
@@ -50,15 +50,15 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
             Keyboard Shortcuts
           </DialogTitle>
           <DialogDescription>
-            Use these keyboard shortcuts to quickly control the spinner during live draws.
-            Shortcuts are disabled when typing in input fields.
+            Use these keyboard shortcuts to quickly control the spinner during live draws. Shortcuts
+            are disabled when typing in input fields.
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4">
           {Object.entries(shortcutsByCategory).map(([category, shortcuts]) => {
             const Icon = CategoryIcons[category as keyof typeof CategoryIcons];
-            
+
             return (
               <Card key={category}>
                 <CardHeader className="pb-3">
@@ -77,11 +77,11 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
                         <span className="text-sm text-muted-foreground">
                           {shortcut.description}
                         </span>
-                        <Badge 
-                          variant="secondary" 
+                        <Badge
+                          variant="secondary"
                           className="font-mono text-xs px-2 py-1 min-w-[2.5rem] justify-center"
                         >
-                          {formatKeyForDisplay(shortcut.key)}
+                          {formatKeyForDisplay(shortcut.key, shortcut.modifiers)}
                         </Badge>
                       </div>
                     ))}
@@ -94,9 +94,19 @@ export function KeyboardShortcutsHelp({ isOpen, onClose }: KeyboardShortcutsHelp
 
         <div className="mt-4 p-4 bg-muted/30 rounded-lg">
           <p className="text-sm text-muted-foreground">
-            <strong>Tip:</strong> Press <Badge variant="outline" className="font-mono mx-1">?</Badge> or{' '}
-            <Badge variant="outline" className="font-mono mx-1">H</Badge> anytime to show this help menu.
-            Press <Badge variant="outline" className="font-mono mx-1">Esc</Badge> to close.
+            <strong>Tip:</strong> Press{' '}
+            <Badge variant="outline" className="font-mono mx-1">
+              ?
+            </Badge>{' '}
+            or{' '}
+            <Badge variant="outline" className="font-mono mx-1">
+              H
+            </Badge>{' '}
+            anytime to show this help menu. Press{' '}
+            <Badge variant="outline" className="font-mono mx-1">
+              Esc
+            </Badge>{' '}
+            to close.
           </p>
         </div>
       </DialogContent>
