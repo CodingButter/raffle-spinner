@@ -2,7 +2,7 @@
   "extends": "@drawday/typescript-config/base.json",
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["ES2020"],
+    "lib": ["ES2020", "DOM"],
     "types": ["chrome"],
     "outDir": "dist",
     "rootDir": "src"

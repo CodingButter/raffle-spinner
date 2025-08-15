@@ -17,6 +17,7 @@ import {
   ColumnMapping,
   SavedMapping,
   UserSubscription,
+  SpinnerSession,
 } from './types';
 
 export interface StorageAdapter {
@@ -47,6 +48,11 @@ export interface StorageAdapter {
   getRaffleCount(): Promise<number>;
   incrementRaffleCount(): Promise<number>;
   resetRaffleCount(): Promise<void>;
+
+  // Session persistence methods
+  getSession(): Promise<SpinnerSession | null>;
+  saveSession(session: SpinnerSession): Promise<void>;
+  clearSession(): Promise<void>;
 
   clear(): Promise<void>;
 }

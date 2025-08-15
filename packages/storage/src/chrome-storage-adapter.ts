@@ -19,6 +19,7 @@ import {
   SavedMapping,
   StorageData,
   UserSubscription,
+  SpinnerSession,
 } from './types';
 
 const DEFAULT_SETTINGS: SpinnerSettings = {
@@ -39,6 +40,7 @@ export class ChromeStorageAdapter implements StorageAdapter {
         theme: undefined, // Include theme in default structure
         raffleCount: 0,
         subscription: undefined,
+        session: undefined, // No active session by default
       }
     );
   }
@@ -176,6 +178,39 @@ export class ChromeStorageAdapter implements StorageAdapter {
 
   async resetRaffleCount(): Promise<void> {
     await this.setData({ raffleCount: 0 });
+  }
+
+  // Session persistence methods
+  async getSession(): Promise<SpinnerSession | null> {
+    try {
+      const data = await this.getData();
+      return data.session || null;
+    } catch (error) {
+      console.error('Failed to get session:', error);
+      return null;
+    }
+  }
+
+  async saveSession(session: SpinnerSession): Promise<void> {
+    try {
+      const updatedSession = {
+        ...session,
+        lastActivity: Date.now(),
+      };
+      await this.setData({ session: updatedSession });
+    } catch (error) {
+      console.error('Failed to save session:', error);
+      // Don't throw - session persistence should be non-blocking
+    }
+  }
+
+  async clearSession(): Promise<void> {
+    try {
+      await this.setData({ session: undefined });
+    } catch (error) {
+      console.error('Failed to clear session:', error);
+      // Don't throw - session persistence should be non-blocking
+    }
   }
 
   async clear(): Promise<void> {
