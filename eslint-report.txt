@@ -1,0 +1,62 @@
+
+> drawday@1.0.0 lint /home/codingbutter/GitHub/raffle-worktrees/monorepo-architecture-specialist
+> turbo run lint --concurrency=10
+
+turbo 2.5.6
+
+• Packages in scope: @drawday/auth, @drawday/eslint-config, @drawday/hooks, @drawday/prettier-config, @drawday/spinner-extension, @drawday/tailwind-config, @drawday/types, @drawday/typescript-config, @drawday/ui, @drawday/utils, @drawday/website, @raffle-spinner/contexts, @raffle-spinner/csv-parser, @raffle-spinner/spinner-physics, @raffle-spinner/spinners, @raffle-spinner/storage, @raffle-spinner/subscription
+• Running lint in 17 packages
+• Remote caching disabled
+@drawday/website:lint: cache miss, executing 66ffd7c3928b5961
+@raffle-spinner/csv-parser:lint: cache miss, executing c7fec84536619ebf
+@drawday/ui:lint: cache miss, executing 764de82ddecb98ba
+@raffle-spinner/spinner-physics:lint: cache miss, executing e0da41fb5c452c72
+@drawday/spinner-extension:lint: cache miss, executing dbaed0dfc26fec13
+@drawday/auth:lint: cache miss, executing 3d66d250c4dfc2ad
+@raffle-spinner/storage:lint: cache miss, executing 4ecc1bcbc5698e08
+@drawday/website:lint: 
+@drawday/website:lint: > @drawday/website@1.0.0 lint /home/codingbutter/GitHub/raffle-worktrees/monorepo-architecture-specialist/apps/website
+@drawday/website:lint: > next lint
+@drawday/website:lint: 
+@drawday/ui:lint: 
+@raffle-spinner/spinner-physics:lint: 
+@raffle-spinner/spinner-physics:lint: > @raffle-spinner/spinner-physics@1.0.0 lint /home/codingbutter/GitHub/raffle-worktrees/monorepo-architecture-specialist/packages/spinner-physics
+@raffle-spinner/spinner-physics:lint: > eslint . --ext .ts,.tsx
+@raffle-spinner/spinner-physics:lint: 
+@raffle-spinner/storage:lint: 
+@raffle-spinner/storage:lint: > @raffle-spinner/storage@1.0.0 lint /home/codingbutter/GitHub/raffle-worktrees/monorepo-architecture-specialist/packages/storage
+@raffle-spinner/storage:lint: > eslint . --ext .ts,.tsx
+@raffle-spinner/storage:lint: 
+@drawday/ui:lint: > @drawday/ui@1.0.0 lint /home/codingbutter/GitHub/raffle-worktrees/monorepo-architecture-specialist/packages/@drawday/ui
+@drawday/ui:lint: > eslint . --ext .ts,.tsx
+@drawday/ui:lint: 
+@drawday/spinner-extension:lint: 
+@drawday/spinner-extension:lint: > @drawday/spinner-extension@1.0.0 lint /home/codingbutter/GitHub/raffle-worktrees/monorepo-architecture-specialist/apps/spinner-extension
+@drawday/spinner-extension:lint: > eslint . --ext .ts,.tsx
+@drawday/spinner-extension:lint: 
+@drawday/auth:lint: 
+@drawday/auth:lint: > @drawday/auth@1.0.0 lint /home/codingbutter/GitHub/raffle-worktrees/monorepo-architecture-specialist/packages/@drawday/auth
+@drawday/auth:lint: > eslint . --ext .ts,.tsx
+@drawday/auth:lint: 
+@raffle-spinner/csv-parser:lint: 
+@raffle-spinner/csv-parser:lint: > @raffle-spinner/csv-parser@1.0.0 lint /home/codingbutter/GitHub/raffle-worktrees/monorepo-architecture-specialist/packages/csv-parser
+@raffle-spinner/csv-parser:lint: > eslint . --ext .ts,.tsx
+@raffle-spinner/csv-parser:lint: 
+@drawday/website:lint: Invalid Options:
+@drawday/website:lint: - Unknown options: useEslintrc, extensions, resolvePluginsRelativeTo, rulePaths, ignorePath, reportUnusedDisableDirectives
+@drawday/website:lint: - 'extensions' has been removed.
+@drawday/website:lint: - 'resolvePluginsRelativeTo' has been removed.
+@drawday/website:lint: - 'ignorePath' has been removed.
+@drawday/website:lint: - 'rulePaths' has been removed. Please define your rules using plugins.
+@drawday/website:lint: - 'reportUnusedDisableDirectives' has been removed. Please use the 'overrideConfig.linterOptions.reportUnusedDisableDirectives' option instead.
+@drawday/website:lint:  ELIFECYCLE  Command failed with exit code 1.
+@drawday/website:lint: ERROR: command finished with error: command (/home/codingbutter/GitHub/raffle-worktrees/monorepo-architecture-specialist/apps/website) /home/codingbutter/.local/share/pnpm/.tools/pnpm/9.15.9/bin/pnpm run lint exited (1)
+@drawday/website#lint: command (/home/codingbutter/GitHub/raffle-worktrees/monorepo-architecture-specialist/apps/website) /home/codingbutter/.local/share/pnpm/.tools/pnpm/9.15.9/bin/pnpm run lint exited (1)
+
+ Tasks:    0 successful, 7 total
+Cached:    0 cached, 7 total
+  Time:    606ms 
+Failed:    @drawday/website#lint
+
+ ERROR  run failed: command  exited (1)
+ ELIFECYCLE  Command failed with exit code 1.

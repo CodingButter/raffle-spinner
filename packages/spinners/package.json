@@ -16,7 +16,8 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
     "@raffle-spinner/storage": "workspace:*",
@@ -25,8 +26,10 @@
     "@drawday/hooks": "workspace:*"
   },
   "devDependencies": {
+    "@drawday/eslint-config": "workspace:*",
     "@drawday/typescript-config": "workspace:*",
     "@types/react": "^18.3.16",
+    "eslint": "^8.57.0",
     "react": "^18.3.1",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
