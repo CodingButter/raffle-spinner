@@ -141,9 +141,15 @@ export interface BrandingSettings {
 }
 
 /**
+ * Color scheme preference
+ */
+export type ColorScheme = 'light' | 'dark' | 'system';
+
+/**
  * Complete theme configuration
  */
 export interface ThemeSettings {
+  colorScheme?: ColorScheme; // User's color scheme preference (defaults to 'system')
   colors: ThemeColors;
   spinnerStyle: SpinnerStyle;
   branding: BrandingSettings;

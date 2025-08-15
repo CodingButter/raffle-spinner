@@ -31,6 +31,7 @@ export type {
   SpinnerStyle,
   BrandingSettings,
   ThemeSettings,
+  ColorScheme,
 
   // Session Types
   SessionWinner,
