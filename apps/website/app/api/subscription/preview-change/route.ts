@@ -71,31 +71,36 @@ export async function POST(request: NextRequest) {
       const previewParams: Stripe.InvoiceCreatePreviewParams = {
         customer: subscription.customer as string,
         subscription: subscriptionId,
-        subscription_items: [
-          {
-            id: subscription.items.data[0].id,
-            price: newProduct.priceId,
-          },
-        ],
-        subscription_proration_behavior: 'create_prorations',
+        subscription_details: {
+          items: [
+            {
+              id: subscription.items.data[0].id,
+              price: newProduct.priceId,
+            },
+          ],
+          proration_behavior: 'create_prorations',
+        },
       };
 
       try {
         const preview = await stripe.invoices.createPreview(previewParams);
 
         // Calculate proration from preview
-        const prorationItems = preview.lines.data.filter((item) => item.proration);
-        const totalProration = prorationItems.reduce((sum, item) => sum + item.amount, 0);
+        const prorationItems = preview.lines.data.filter((item: any) => item.proration);
+        const totalProration = prorationItems.reduce(
+          (sum: number, item: any) => sum + item.amount,
+          0
+        );
 
         // Get unused time credit (negative amount)
         const unusedCredit = prorationItems
-          .filter((item) => item.amount < 0)
-          .reduce((sum, item) => sum + item.amount, 0);
+          .filter((item: any) => item.amount < 0)
+          .reduce((sum: number, item: any) => sum + item.amount, 0);
 
         // Get new plan charges (positive amount)
         const newCharges = prorationItems
-          .filter((item) => item.amount > 0)
-          .reduce((sum, item) => sum + item.amount, 0);
+          .filter((item: any) => item.amount > 0)
+          .reduce((sum: number, item: any) => sum + item.amount, 0);
 
         prorationDetails = {
           totalAmount: totalProration,
