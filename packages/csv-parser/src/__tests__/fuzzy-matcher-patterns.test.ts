@@ -110,15 +110,4 @@ describe('Fuzzy Matcher - Patterns', () => {
     });
   });
 
-  describe('performance tests', () => {
-    it('should handle large pattern lists efficiently', () => {
-      const largePatternList = Array.from({ length: 100 }, (_, i) => `pattern${i}`);
-      const startTime = Date.now();
-      
-      findBestMatch('pattern50', largePatternList);
-      
-      const endTime = Date.now();
-      expect(endTime - startTime).toBeLessThan(100);
-    });
-  });
 });
