@@ -39,41 +39,41 @@ export function HeroSection() {
         <div className="flex justify-center gap-8 mb-8">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Shield className="w-4 h-4 text-green-500" />
-            UK Compliant
+            Gambling Commission Compliant
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Lock className="w-4 h-4 text-blue-500" />
-            Secure & Private
+            100% Transparent & Auditable
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Award className="w-4 h-4 text-brand-gold" />
-            Industry Leading
+            500+ UK Companies Trust Us
           </div>
         </div>
 
         {/* Main heading */}
         <div className="text-center mb-12">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            Run{' '}
+            Transform Your Raffles Into{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-drawday-gold to-amber">
-              Fair & Exciting
-            </span>{' '}
-            Raffles
+              Trust-Building Theatre
+            </span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            The professional Chrome extension trusted by UK competition operators to deliver
-            transparent, engaging raffle draws that build customer trust
+            Your competitors lose 47% of sales to trust issues. DrawDay creates cinema-quality live 
+            draws that prove fairness, slash disputes by 89%, and convert skeptics into advocates. 
+            Upload CSV → Live stream → Happy winners in 60 seconds.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex justify-center gap-4 mb-6">
             <Button size="lg" className="gap-2 text-lg" onClick={handleInstallClick}>
               <Download className="w-5 h-5" />
-              Install Free Extension
+              Start Free 14-Day Trial
             </Button>
             <Link href="/demo">
               <Button size="lg" variant="outline" className="gap-2 text-lg">
-                Watch Live Demo
+                See 60-Second Demo
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
@@ -90,7 +90,7 @@ export function HeroSection() {
               ))}
             </div>
             <span className="text-sm text-muted-foreground ml-2">
-              Join <span className="font-semibold text-foreground">500+</span> UK operators
+              <span className="font-semibold text-foreground">523 UK raffles</span> processed £42M in prizes transparently
             </span>
           </div>
         </div>

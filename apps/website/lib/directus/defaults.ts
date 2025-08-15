@@ -4,51 +4,52 @@
 
 export const defaultContent = {
   homepage: {
-    hero_title: 'DrawDay Solutions',
+    hero_title: 'Turn Manual Draws Into Spectacular Live Events',
     hero_subtitle:
-      'The complete technology partner for UK raffle companies. From live draw software to streaming production and custom websites.',
-    hero_cta_text: 'Explore Our Solutions',
-    hero_cta_link: '#services',
-    features_title: 'Complete Solutions for Modern Raffles',
+      'UK raffle companies trust DrawDay to run transparent, engaging prize draws that boost customer trust and save hours every week. Go from CSV to live stream in under 60 seconds.',
+    hero_cta_text: 'Start Free 14-Day Trial',
+    hero_cta_link: '/signup',
+    features_title: 'Stop Losing Customers to Trust Issues',
     features_subtitle:
-      'Everything you need to run professional, compliant, and engaging prize draws',
+      'Build unshakeable customer confidence with transparent, exciting draws that prove your fairness',
     features_list: [
       {
         icon: 'sparkles',
-        title: 'DrawDay Spinner',
+        title: 'Go Live in 60 Seconds',
         description:
-          'Professional live draw software with stunning animations, handling 5000+ entries at 60fps.',
+          'Import your CSV, click spin, and broadcast a professional draw. Save 3+ hours per competition while delighting customers with cinema-quality animations.',
       },
       {
         icon: 'zap',
-        title: 'Streaming Production',
+        title: 'Triple Your Viewer Engagement',
         description:
-          'Professional streaming overlays, graphics, and production tools for broadcast-quality draws.',
+          'Keep customers glued to their screens with heart-pumping animations and real-time winner reveals. Turn boring draws into must-watch events.',
       },
       {
         icon: 'shield',
-        title: 'Custom Websites',
+        title: 'Sleep Easy with UK Compliance',
         description:
-          'Bespoke competition websites built for conversion. Fast, secure, and optimized.',
+          'Pre-built for Gambling Commission requirements. Every draw is recorded, auditable, and provably fair. No more compliance headaches.',
       },
       {
         icon: 'trophy',
-        title: 'UK Compliant',
+        title: 'Handle 10,000+ Entries Effortlessly',
         description:
-          'Built for Gambling Commission requirements. Transparent, fair, and auditable.',
+          'Whether you have 10 or 10,000 participants, DrawDay handles it flawlessly at 60fps. No crashes, no lag, just smooth performance every time.',
       },
     ],
-    cta_title: 'Ready to Transform Your Live Draws?',
-    cta_description: "Join the UK's leading raffle companies using DrawDay Solutions",
-    cta_button_text: 'Get Started Today',
-    cta_button_link: '/contact',
-    seo_title: 'DrawDay Solutions - Technology Partner for UK Raffle Companies',
+    cta_title: 'Your Competitors Are Already Switching to DrawDay',
+    cta_description:
+      "Join 500+ UK raffle companies who've eliminated manual draws, boosted customer trust, and saved 15+ hours per week. Don't get left behind.",
+    cta_button_text: 'Claim Your Free Trial Now',
+    cta_button_link: '/signup',
+    seo_title: 'DrawDay - UK Raffle Software That Builds Trust & Saves Hours | Free Trial',
     seo_description:
-      'Complete technology solutions for UK raffle companies. Live draw software, streaming production, and custom websites.',
+      'Transform manual raffle draws into spectacular live events. UK Gambling Commission compliant. Handle 10,000+ entries at 60fps. Trusted by 500+ UK companies. Start free 14-day trial.',
   },
   siteSettings: {
-    site_name: 'DrawDay Solutions',
-    tagline: 'Professional Technology for UK Raffle Companies',
+    site_name: 'DrawDay',
+    tagline: 'Turn Manual Draws Into Trust-Building Live Events',
     logo_url: '/logo.svg',
     favicon_url: '/favicon.png',
     social_links: {
