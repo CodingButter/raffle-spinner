@@ -34,6 +34,7 @@
     "@drawday/prettier-config": "workspace:*",
     "@drawday/typescript-config": "workspace:*",
     "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^15.4.6",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^18.3.16",

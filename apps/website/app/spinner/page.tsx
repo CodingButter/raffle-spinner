@@ -16,7 +16,18 @@ import {
   Play,
 } from 'lucide-react';
 import Link from 'next/link';
-import { SpinnerPricing } from '@/components/spinner-pricing';
+import dynamic from 'next/dynamic';
+
+// Dynamic import for SpinnerPricing - loaded when user scrolls to pricing section
+const SpinnerPricing = dynamic(() => import('@/components/spinner-pricing').then(mod => ({ default: mod.SpinnerPricing })), {
+  loading: () => (
+    <div className="grid md:grid-cols-3 gap-8">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-[400px] bg-gray-800/50 rounded-xl animate-pulse" />
+      ))}
+    </div>
+  ),
+});
 
 export const metadata = {
   title: 'DrawDay Spinner - Professional Live Draw Software',
