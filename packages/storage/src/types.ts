@@ -19,6 +19,7 @@ export type {
 
   // Configuration Types
   SpinnerSettings,
+  SpinnerSettings as Settings, // Alias for backward compatibility
   ColumnMapping,
   SavedMapping,
 
