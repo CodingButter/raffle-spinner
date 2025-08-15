@@ -8,24 +8,35 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 
 // Dynamic import for FAQ section - only load when user scrolls down
-const FAQSection = dynamic(() => import('@/components/ui/lazy-section').then(mod => ({ default: mod.LazySection })), {
-  ssr: false,
-});
+const FAQSection = dynamic(
+  () => import('@/components/ui/lazy-section').then((mod) => ({ default: mod.LazySection })),
+  {
+    ssr: false,
+  }
+);
 import { Button } from '@drawday/ui/button';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { useAuth } from '@drawday/auth';
 import { useRouter } from 'next/navigation';
 
 // Lazy load Card components as they're quite heavy
-const Card = dynamic(() => import('@drawday/ui/card').then(mod => ({ default: mod.Card })));
-const CardContent = dynamic(() => import('@drawday/ui/card').then(mod => ({ default: mod.CardContent })));
-const CardDescription = dynamic(() => import('@drawday/ui/card').then(mod => ({ default: mod.CardDescription })));
-const CardHeader = dynamic(() => import('@drawday/ui/card').then(mod => ({ default: mod.CardHeader })));
-const CardTitle = dynamic(() => import('@drawday/ui/card').then(mod => ({ default: mod.CardTitle })));
+const Card = dynamic(() => import('@drawday/ui/card').then((mod) => ({ default: mod.Card })));
+const CardContent = dynamic(() =>
+  import('@drawday/ui/card').then((mod) => ({ default: mod.CardContent }))
+);
+const CardDescription = dynamic(() =>
+  import('@drawday/ui/card').then((mod) => ({ default: mod.CardDescription }))
+);
+const CardHeader = dynamic(() =>
+  import('@drawday/ui/card').then((mod) => ({ default: mod.CardHeader }))
+);
+const CardTitle = dynamic(() =>
+  import('@drawday/ui/card').then((mod) => ({ default: mod.CardTitle }))
+);
 
 // Lazy load Stripe-related code
-const getStripe = () => import('@/lib/stripe-client').then(mod => mod.getStripe);
-import { PRODUCTS, ProductKey } from '@/lib/stripe';
+const getStripe = () => import('@/lib/stripe-client').then((mod) => mod.getStripe);
+import { PRODUCTS, ProductKey } from '@/lib/stripe-products';
 
 export default function PricingPage() {
   const { user, isAuthenticated } = useAuth();

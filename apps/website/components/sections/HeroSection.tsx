@@ -15,10 +15,11 @@
 import { Button } from '@drawday/ui';
 import { Download, ArrowRight, Shield, Lock, Award } from 'lucide-react';
 import Link from 'next/link';
-import confetti from 'canvas-confetti';
 
 export function HeroSection() {
-  const handleInstallClick = () => {
+  const handleInstallClick = async () => {
+    // Lazy load confetti only when needed
+    const confetti = (await import('canvas-confetti')).default;
     confetti({
       particleCount: 100,
       spread: 70,

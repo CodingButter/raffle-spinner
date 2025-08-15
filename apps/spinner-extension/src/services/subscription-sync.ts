@@ -19,28 +19,34 @@ interface AuthUser {
 /**
  * Transform auth subscription to UserSubscription format
  */
-function transformSubscription(authSubscription: NonNullable<AuthUser['subscriptions']>[0]): UserSubscription {
-  const isPro = authSubscription.tier === 'professional' || authSubscription.tier === 'pro';
-  const isBasic = authSubscription.tier === 'basic';
+// Helper to determine tier type
+function getSubscriptionTier(tierName: string): 'starter' | 'pro' {
+  const proTiers = ['professional', 'pro', 'enterprise'];
+  return proTiers.includes(tierName) ? 'pro' : 'starter';
+}
 
-  // Handle tier mapping - authSubscription.tier could be any string from Directus
-  const tier = authSubscription.tier === 'professional' 
-    ? 'pro' 
-    : ['starter', 'basic', 'pro', 'enterprise'].includes(authSubscription.tier)
-      ? authSubscription.tier as 'starter' | 'basic' | 'pro' | 'enterprise'
-      : 'starter'; // Default to starter for unknown tiers
+// Helper to get limits based on tier
+function getSubscriptionLimits(tierName: string) {
+  const isPro = tierName === 'professional' || tierName === 'pro';
+  const isBasic = tierName === 'basic';
 
   return {
-    tier,
+    maxContestants: isPro ? null : isBasic ? 250 : 100,
+    maxRaffles: isPro ? null : isBasic ? 50 : 5,
+    hasApiSupport: isPro,
+    hasBranding: isPro,
+    hasCustomization: isPro || isBasic,
+  };
+}
+
+function transformSubscription(
+  authSubscription: NonNullable<AuthUser['subscriptions']>[0]
+): UserSubscription {
+  return {
+    tier: getSubscriptionTier(authSubscription.tier),
     isActive: authSubscription.status === 'active',
     expiresAt: authSubscription.expiresAt || undefined,
-    limits: {
-      maxContestants: isPro ? null : isBasic ? 250 : 100,
-      maxRaffles: isPro ? null : isBasic ? 50 : 5,
-      hasApiSupport: isPro,
-      hasBranding: isPro,
-      hasCustomization: isPro || isBasic,
-    },
+    limits: getSubscriptionLimits(authSubscription.tier),
   };
 }
 
