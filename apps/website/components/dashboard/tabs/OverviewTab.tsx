@@ -14,16 +14,10 @@ export function OverviewTab({
   return (
     <div className="space-y-8">
       {/* Quick Actions */}
-      <QuickActions 
-        userData={userData} 
-        onDownloadExtension={onDownloadExtension} 
-      />
+      <QuickActions userData={userData} onDownloadExtension={onDownloadExtension} />
 
       {/* Active Subscriptions */}
-      <ActiveSubscriptionsCard 
-        subscriptions={userSubscriptions} 
-        loading={subscriptionsLoading} 
-      />
+      <ActiveSubscriptionsCard subscriptions={userSubscriptions} loading={subscriptionsLoading} />
     </div>
   );
 }

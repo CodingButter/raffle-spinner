@@ -28,13 +28,22 @@ export interface ParseResult {
   }>;
 }
 
-export interface ColumnMapper {
-  detectHeaders(headers: string[]): {
-    firstName: string | null;
-    lastName: string | null;
-    fullName: string | null;
-    ticketNumber: string | null;
+export interface ColumnDetectionResult {
+  firstName: string | null;
+  lastName: string | null;
+  fullName: string | null;
+  ticketNumber: string | null;
+  confidence: {
+    firstName: number;
+    lastName: number;
+    fullName: number;
+    ticketNumber: number;
   };
+  overallConfidence: number;
+}
+
+export interface ColumnMapper {
+  detectHeaders(headers: string[]): ColumnDetectionResult;
 }
 
 export interface ValidationError {
