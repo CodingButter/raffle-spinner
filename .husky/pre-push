@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push quality checks..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Run all quality checks using the prepush script
+if ! pnpm prepush; then
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "❌ Pre-push checks failed!"
+  echo ""
+  echo "To fix issues automatically, run:"
+  echo "  pnpm quality:fix"
+  echo ""
+  echo "To see specific errors, run:"
+  echo "  pnpm lint       - Check linting"
+  echo "  pnpm format:check - Check formatting"
+  echo "  pnpm typecheck  - Check TypeScript"
+  echo "  pnpm build      - Check build"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  exit 1
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ All quality checks passed!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

@@ -14,6 +14,8 @@
     "format:check": "prettier --check \"{apps,packages}/**/*.{ts,tsx,js,jsx,json,md,css}\" \"*.{json,md,js}\"",
     "typecheck": "pnpm -r typecheck",
     "quality": "pnpm lint && pnpm format:check && pnpm typecheck",
+    "quality:fix": "pnpm lint:fix && pnpm format",
+    "prepush": "pnpm quality && pnpm build",
     "prepare": "husky"
   },
   "devDependencies": {
