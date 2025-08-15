@@ -18,8 +18,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils';
 
 interface InfoTooltipProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
+  content?: string; // Simple content alternative
   details?: {
     content: string | React.ReactNode;
     examples?: string[];
@@ -33,10 +34,14 @@ interface InfoTooltipProps {
 export function InfoTooltip({
   title,
   description,
+  content,
   details,
   className,
   iconSize = 'sm',
 }: InfoTooltipProps) {
+  // Use content as simple description if provided
+  const tooltipTitle = title || 'Help';
+  const tooltipDescription = content || description || '';
   const [showModal, setShowModal] = React.useState(false);
 
   const iconSizes = {
@@ -59,14 +64,14 @@ export function InfoTooltip({
                 !details && 'cursor-help',
                 className
               )}
-              aria-label={`Help: ${title}`}
+              aria-label={`Help: ${tooltipTitle}`}
             >
               <HelpCircle className={iconSizes[iconSize]} />
             </button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
-            <p className="font-semibold mb-1">{title}</p>
-            <p className="text-sm">{description}</p>
+            {title && <p className="font-semibold mb-1">{tooltipTitle}</p>}
+            <p className="text-sm">{tooltipDescription}</p>
             {details && (
               <p className="text-xs text-brand-blue mt-2 font-medium">Click for more details →</p>
             )}

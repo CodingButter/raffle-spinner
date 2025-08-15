@@ -14,6 +14,7 @@ import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionCont
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { SlotMachineWheel } from '@raffle-spinner/spinners';
 import type { SpinnerTheme } from '@raffle-spinner/spinners';
 import { SessionWinners, Winner } from '@/components/sidepanel/SessionWinners';
@@ -37,14 +38,27 @@ function SidePanelContent() {
   const { competitions, selectedCompetition, selectCompetition } = useCompetitions();
   const { settings } = useSettings();
   const { theme } = useTheme();
+  const { canConductRaffle, incrementRaffleCount, getRemainingRaffles, hasBranding } = useSubscription();
   const [ticketNumber, setTicketNumber] = useState('');
   const [isSpinning, setIsSpinning] = useState(false);
   const [sessionWinners, setSessionWinners] = useState<Winner[]>([]);
   const [currentWinner, setCurrentWinner] = useState<Participant | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [spinTarget, setSpinTarget] = useState(''); // Preserve target during/after spin
 
   const handleSpin = () => {
     setError(null);
+
+    // Check subscription limits first
+    if (!canConductRaffle()) {
+      const remaining = getRemainingRaffles();
+      if (remaining === 0) {
+        setError('You have reached your raffle limit. Upgrade to Pro for unlimited raffles.');
+      } else {
+        setError('You cannot conduct more raffles with your current subscription.');
+      }
+      return;
+    }
 
     if (!selectedCompetition) {
       setError('Please select a competition first');
@@ -70,13 +84,17 @@ function SidePanelContent() {
 
     setIsSpinning(true);
     setCurrentWinner(null);
+    setSpinTarget(ticketNumber); // Lock in the target for this spin
   };
 
   const confettiRef = useRef<boolean>(false);
 
-  const handleSpinComplete = (winner: Participant) => {
+  const handleSpinComplete = async (winner: Participant) => {
     setIsSpinning(false);
     setCurrentWinner(winner);
+
+    // Increment raffle count for subscription tracking
+    await incrementRaffleCount();
 
     // Add to session winners
     setSessionWinners((prev) => [
@@ -114,6 +132,51 @@ function SidePanelContent() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Branding Header - Only show for Pro users */}
+      {hasBranding() && theme.branding && (
+        <div className="w-full h-32 relative overflow-hidden bg-card border-b border-border">
+          {/* Banner Image - Competition banner takes priority over default banner */}
+          {(selectedCompetition?.bannerImage || theme.branding.bannerImage) && (
+            <img 
+              src={selectedCompetition?.bannerImage || theme.branding.bannerImage} 
+              alt={selectedCompetition?.bannerImage ? `${selectedCompetition.name} Banner` : "Company Banner"} 
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
+          
+          {/* Logo and Company Name Overlay */}
+          {(theme.branding.logoImage || theme.branding.companyName) && (
+            <div 
+              className={`absolute inset-0 flex items-center px-6 ${
+                theme.branding.logoPosition === 'left' ? 'justify-start' :
+                theme.branding.logoPosition === 'right' ? 'justify-end' :
+                'justify-center'
+              }`}
+            >
+              <div className="flex items-center gap-3 bg-black/30 backdrop-blur-sm rounded-lg px-4 py-2">
+                {theme.branding.logoImage && (
+                  <img 
+                    src={theme.branding.logoImage} 
+                    alt="Company Logo" 
+                    className="h-16 w-auto object-contain drop-shadow-lg"
+                  />
+                )}
+                {theme.branding.showCompanyName && theme.branding.companyName && (
+                  <h1 className="text-2xl font-bold text-white drop-shadow-lg">
+                    {theme.branding.companyName}
+                  </h1>
+                )}
+              </div>
+            </div>
+          )}
+          
+          {/* Fallback gradient if no banner image */}
+          {!selectedCompetition?.bannerImage && !theme.branding.bannerImage && (
+            <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-90" />
+          )}
+        </div>
+      )}
+
       <div className="max-w-2xl mx-auto space-y-4 p-4">
         {/* Competition Selector - Minimal UI */}
         <div className="flex gap-2">
@@ -144,7 +207,7 @@ function SidePanelContent() {
             <div className="relative flex justify-center">
               <SlotMachineWheel
                 participants={selectedCompetition.participants}
-                targetTicketNumber={ticketNumber}
+                targetTicketNumber={spinTarget || ticketNumber}
                 settings={settings}
                 isSpinning={isSpinning}
                 onSpinComplete={handleSpinComplete}

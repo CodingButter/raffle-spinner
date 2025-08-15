@@ -41,8 +41,15 @@ export interface Competition {
  * Spinner animation physics settings
  */
 export interface SpinnerSettings {
-  minSpinDuration: number; // in seconds
+  minSpinDuration: number; // in seconds (used as total animation duration)
   decelerationRate: 'slow' | 'medium' | 'fast';
+  spinRotations?: number; // Number of full rotations (default: 5)
+  bezierCurve?: {
+    x1: number; // Control point 1 X (0-1)
+    y1: number; // Control point 1 Y (0-1)
+    x2: number; // Control point 2 X (0-1)
+    y2: number; // Control point 2 Y (0-1)
+  };
 }
 
 /**
@@ -144,6 +151,36 @@ export interface ThemeSettings {
 }
 
 // ============================================================================
+// Subscription Types
+// ============================================================================
+
+/**
+ * Available subscription tiers
+ */
+export type SubscriptionTier = 'starter' | 'pro';
+
+/**
+ * Subscription limits and features
+ */
+export interface SubscriptionLimits {
+  maxContestants: number | null; // null = unlimited
+  maxRaffles: number | null; // null = unlimited
+  hasApiSupport: boolean;
+  hasBranding: boolean;
+  hasCustomization: boolean;
+}
+
+/**
+ * User subscription information
+ */
+export interface UserSubscription {
+  tier: SubscriptionTier;
+  isActive: boolean;
+  expiresAt?: string; // ISO date string
+  limits: SubscriptionLimits;
+}
+
+// ============================================================================
 // Storage Types
 // ============================================================================
 
@@ -157,6 +194,8 @@ export interface StorageData {
   savedMappings?: SavedMapping[]; // Array of saved mappings
   defaultMappingId?: string; // ID of the default mapping
   theme?: ThemeSettings; // Theme customization
+  raffleCount?: number; // Track total raffles conducted
+  subscription?: UserSubscription; // Current subscription info
 }
 
 // ============================================================================

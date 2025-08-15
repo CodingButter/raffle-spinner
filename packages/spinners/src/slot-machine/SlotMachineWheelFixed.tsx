@@ -158,9 +158,6 @@ export function SlotMachineWheel({
   const [displaySubset, setDisplaySubset] = useState<Participant[]>([]);
   const isAnimatingRef = useRef(false);
   const hasSwappedRef = useRef(false);
-  const hasInitializedRef = useRef(false); // Track if we've initialized the wheel
-  const lastParticipantsRef = useRef(participants); // Track participant changes
-  const finalPositionRef = useRef<number | null>(null); // Store final position after spin
 
   // Convert theme to internal format
   const internalTheme = convertTheme(theme);
@@ -177,26 +174,10 @@ export function SlotMachineWheel({
   /**
    * Initialize with a subset containing first 50 and last 50 entries
    * This creates the illusion of a complete wheel that wraps around
+   * Only reset if we haven't swapped to a winner subset
    */
   useEffect(() => {
-    // Check if participants have actually changed (new competition)
-    const participantsChanged = participants !== lastParticipantsRef.current;
-    
-    if (participantsChanged) {
-      // New competition - reset everything
-      hasInitializedRef.current = false;
-      hasSwappedRef.current = false;
-      finalPositionRef.current = null;
-      lastParticipantsRef.current = participants;
-    }
-    
-    // Only initialize if not already initialized or if participants changed
-    if (hasInitializedRef.current && !participantsChanged) {
-      return;
-    }
-    
-    if (sortedParticipants.length > 0) {
-      hasInitializedRef.current = true; // Mark as initialized
+    if (sortedParticipants.length > 0 && !hasSwappedRef.current) {
       let initialSubset: Participant[];
 
       if (sortedParticipants.length <= SUBSET_SIZE) {
@@ -225,14 +206,11 @@ export function SlotMachineWheel({
 
       setDisplaySubset(initialSubset);
 
-      // Only set initial position if we don't have a final position stored
-      if (finalPositionRef.current === null) {
-        // Start with the first ticket centered in view
-        // The center position is at index 2 (VISIBLE_ITEMS / 2, rounded down)
-        // To center the first ticket, we need to move up by 2 positions
-        const startPosition = -2 * ITEM_HEIGHT;
-        setPosition(startPosition);
-      }
+      // Start with the first ticket centered in view
+      // The center position is at index 2 (VISIBLE_ITEMS / 2, rounded down)
+      // To center the first ticket, we need to move up by 2 positions
+      const startPosition = -2 * ITEM_HEIGHT;
+      setPosition(startPosition);
     }
   }, [sortedParticipants]); // Depend on the actual sorted array
 
@@ -415,11 +393,11 @@ export function SlotMachineWheel({
   }, [participants, targetTicketNumber]);
 
   /**
-   * Creates a new subset with the winner positioned for optimal animation.
-   * Places the winner approximately in the middle of the 100-entry subset
-   * to ensure smooth animation and proper landing.
+   * Creates a new subset with the winner positioned at index 0.
+   * This makes it easy for the animation to land on the winner since
+   * we can simply animate to position 0 (which centers at index 2 visually).
    *
-   * @returns Subset of participants with winner positioned centrally
+   * @returns Subset of participants with winner at index 0
    */
   const createWinnerSubset = useCallback(() => {
     // Find the winner in sorted participants
@@ -429,7 +407,7 @@ export function SlotMachineWheel({
     );
 
     if (winnerIndex === -1) {
-      // Winner not found - shouldn't happen as validation is in SidePanel
+      console.error('[SlotMachine] Winner not found:', targetTicketNumber);
       // Fallback to initial subset pattern
       if (sortedParticipants.length <= SUBSET_SIZE) {
         return sortedParticipants;
@@ -439,60 +417,72 @@ export function SlotMachineWheel({
       return [...firstHalf, ...lastHalf];
     }
 
-    // If we have 100 or fewer participants, return all of them
+    const winner = sortedParticipants[winnerIndex];
+    
+    // If we have 100 or fewer participants, put winner first and add the rest
     if (sortedParticipants.length <= SUBSET_SIZE) {
-      return [...sortedParticipants];
+      const others = sortedParticipants.filter((_, i) => i !== winnerIndex);
+      return [winner, ...others];
     }
 
-    // Create subset with winner approximately in the middle
-    const subset: Participant[] = [];
-    const halfSize = Math.floor(SUBSET_SIZE / 2);
-
-    // Calculate start index to center the winner
-    const startIdx = winnerIndex - halfSize;
-
-    if (startIdx < 0) {
-      // Winner is in the first half, need to wrap around from the end
-      // Fix: properly handle negative indices by adding array length
-      const wrapStartIdx = sortedParticipants.length + startIdx;
-      const fromEnd = sortedParticipants.slice(wrapStartIdx);
-      const fromStart = sortedParticipants.slice(0, winnerIndex + halfSize);
-      subset.push(...fromEnd, ...fromStart);
-    } else if (startIdx + SUBSET_SIZE > sortedParticipants.length) {
-      // Winner is in the last half, need to wrap around to the beginning
-      const fromMiddle = sortedParticipants.slice(startIdx);
-      const fromBeginning = sortedParticipants.slice(0, SUBSET_SIZE - fromMiddle.length);
-      subset.push(...fromMiddle, ...fromBeginning);
-    } else {
-      // Winner is in the middle, can take a continuous slice
-      subset.push(...sortedParticipants.slice(startIdx, startIdx + SUBSET_SIZE));
+    // Create subset with winner at index 0
+    const subset: Participant[] = [winner]; // Winner at index 0
+    
+    // Fill the rest of the subset with other participants
+    // Take participants around the winner to maintain some locality
+    const beforeWinner = sortedParticipants.slice(0, winnerIndex);
+    const afterWinner = sortedParticipants.slice(winnerIndex + 1);
+    
+    // Alternate between before and after to create a good mix
+    let beforeIdx = beforeWinner.length - 1; // Start from end of before
+    let afterIdx = 0; // Start from beginning of after
+    
+    while (subset.length < SUBSET_SIZE && (beforeIdx >= 0 || afterIdx < afterWinner.length)) {
+      // Add from after first (closer to winner)
+      if (afterIdx < afterWinner.length) {
+        subset.push(afterWinner[afterIdx]);
+        afterIdx++;
+      }
+      // Then add from before
+      if (subset.length < SUBSET_SIZE && beforeIdx >= 0) {
+        subset.push(beforeWinner[beforeIdx]);
+        beforeIdx--;
+      }
     }
 
-    return subset;
+    console.log('[SlotMachine] Created winner subset:', {
+      winnerTicket: winner.ticketNumber,
+      winnerAtIndex: 0,
+      subsetSize: subset.length,
+      firstTicket: subset[0]?.ticketNumber,
+      lastTicket: subset[subset.length - 1]?.ticketNumber
+    });
+
+    return subset.slice(0, SUBSET_SIZE);
   }, [sortedParticipants, targetTicketNumber]);
 
   /**
    * Handles the subset swap at maximum velocity.
    * This creates the illusion of an infinite wheel while maintaining performance.
+   * The winner is always placed at index 0 in the new subset.
    *
-   * @returns New index of the winner in the swapped subset, or -1 if already swapped
+   * @returns New index of the winner in the swapped subset (always 0), or -1 if already swapped
    */
   const handleMaxVelocity = useCallback(() => {
     if (!hasSwappedRef.current) {
       hasSwappedRef.current = true;
       const winnerSubset = createWinnerSubset();
-      // Swap to winner subset at max velocity
-
-      // Find winner's new index in the subset
-      const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
-      const newWinnerIndex = winnerSubset.findIndex(
-        (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
-      );
+      
+      console.log('[SlotMachine] Swapping to winner subset at max velocity:', {
+        targetTicket: targetTicketNumber,
+        winnerAtIndex: 0,
+        firstTicketInSubset: winnerSubset[0]?.ticketNumber
+      });
 
       setDisplaySubset(winnerSubset);
 
-      // Return the new index so animation can adjust
-      return newWinnerIndex;
+      // Winner is always at index 0 in the new subset
+      return 0;
     }
     return -1;
   }, [createWinnerSubset, targetTicketNumber]);
@@ -513,21 +503,21 @@ export function SlotMachineWheel({
       const actualWinner = findWinnerInFullList();
       if (actualWinner) {
         isAnimatingRef.current = false;
-        // Don't reset any flags - keep the wheel in its final position
+        // DON'T reset hasSwappedRef - keep showing the winner subset
         onSpinComplete(actualWinner);
       } else {
         isAnimatingRef.current = false;
+        // DON'T reset hasSwappedRef - keep showing the winner subset
         if (onError) onError(`Ticket ${targetTicketNumber} not found`);
       }
     },
     onError: (error) => {
       isAnimatingRef.current = false;
-      hasSwappedRef.current = false;
+      // DON'T reset hasSwappedRef on error - keep showing current subset
       if (onError) onError(error);
     },
     onPositionUpdate: (pos: number) => {
       setPosition(pos);
-      finalPositionRef.current = pos; // Always store the latest position
       drawWheel(pos, currentSubsetRef.current);
     },
     onMaxVelocity: handleMaxVelocity,
@@ -539,12 +529,12 @@ export function SlotMachineWheel({
   useEffect(() => {
     if (isSpinning && !isAnimatingRef.current) {
       isAnimatingRef.current = true;
-      hasSwappedRef.current = false; // Reset swap flag for new spin
+      hasSwappedRef.current = false; // Reset swap flag for NEW spin
       // Start spinning with current subset (will swap at max velocity)
       spin();
     } else if (!isSpinning && isAnimatingRef.current) {
       isAnimatingRef.current = false;
-      // Don't reset hasSwappedRef here - keep the subset with the winner
+      // DON'T reset hasSwappedRef when stopping - keep showing winner subset
       cancel();
     }
   }, [isSpinning, spin, cancel]);
@@ -552,9 +542,7 @@ export function SlotMachineWheel({
   // Draw wheel when position, subset, or theme changes
   useEffect(() => {
     if (displaySubset.length > 0) {
-      // Use final position if available, otherwise use current position
-      const drawPosition = finalPositionRef.current ?? position;
-      drawWheel(drawPosition, displaySubset);
+      drawWheel(position, displaySubset);
     }
   }, [position, displaySubset, drawWheel]);
 
