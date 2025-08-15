@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/select';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { Square, RefreshCw, Type } from 'lucide-react';
-import type { SpinnerType, SpinnerStyle } from '@raffle-spinner/storage';
+import type { SpinnerType } from '@raffle-spinner/storage';
 
 interface TypeAndSizeTabProps {
   spinnerType: SpinnerType;

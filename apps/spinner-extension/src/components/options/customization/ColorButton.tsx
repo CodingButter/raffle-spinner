@@ -3,12 +3,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { HexColorPicker } from 'react-colorful';
-import type { SpinnerStyle } from '@raffle-spinner/storage';
 
 interface ColorButtonProps {
   label: string;
   color: string;
-  field: keyof SpinnerStyle;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onColorChange: (color: string) => void;
@@ -17,7 +15,6 @@ interface ColorButtonProps {
 export function ColorButton({
   label,
   color,
-  field,
   isOpen,
   onOpenChange,
   onColorChange,

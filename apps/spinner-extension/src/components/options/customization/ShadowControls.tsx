@@ -12,7 +12,7 @@ interface ShadowControlsProps {
   shadowColor?: string;
   backgroundColor: string;
   activeColorPicker: string | null;
-  onUpdateStyle: (updates: Record<string, any>) => void;
+  onUpdateStyle: (updates: Record<string, unknown>) => void;
   setActiveColorPicker: (picker: string | null) => void;
 }
 
