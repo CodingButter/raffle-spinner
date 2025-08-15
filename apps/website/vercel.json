@@ -1,5 +1,0 @@
-{
-  "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm --filter @drawday/website build",
-  "installCommand": "cd ../.. && pnpm install"
-}
