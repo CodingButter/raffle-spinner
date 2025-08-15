@@ -130,6 +130,11 @@ export function findBestMatch(
  * Handles common variations in CSV headers
  */
 export function normalizeHeader(header: string): string {
+  // Handle non-string inputs gracefully
+  if (typeof header !== 'string') {
+    return '';
+  }
+  
   return header
     .toLowerCase()
     .trim()

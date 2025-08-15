@@ -15,6 +15,9 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "typecheck": "tsc --noEmit",
@@ -29,7 +32,9 @@
     "@drawday/eslint-config": "workspace:*",
     "@drawday/typescript-config": "workspace:*",
     "@types/papaparse": "^5.3.14",
+    "@vitest/coverage-v8": "^1.6.0",
     "tsup": "^8.2.4",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^1.6.0"
   }
 }

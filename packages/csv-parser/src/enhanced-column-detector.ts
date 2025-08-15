@@ -88,7 +88,7 @@ const TICKET_PATTERNS = [
   
   // Raffle specific (medium priority)
   'raffle', 'raffle number', 'rafflenumber', 'raffle_number', 'raffle-number',
-  'raffle ticket', 'raffle entry', 'draw number', 'drawnumber',
+  'raffle ticket', 'raffle entry', 'raffle ticket id', 'draw number', 'drawnumber',
   
   // Generic ID variations (lower priority)
   'id', 'number', 'no', 'num', '#', 'identifier', 'unique id',
@@ -102,7 +102,7 @@ const TICKET_PATTERNS = [
 ];
 
 export class EnhancedColumnMapper implements ColumnMapper {
-  private minConfidenceThreshold = 60; // Minimum 60% confidence for auto-mapping
+  private minConfidenceThreshold = 50; // Minimum 50% confidence for auto-mapping
 
   private processNameFields(
     firstNameMatch: { header: string; confidence: number } | null,
@@ -184,6 +184,11 @@ export class EnhancedColumnMapper implements ColumnMapper {
     let bestMatch: { header: string; confidence: number } | null = null;
 
     for (const header of headers) {
+      // Skip non-string values or empty strings
+      if (typeof header !== 'string' || !header || !header.trim()) {
+        continue;
+      }
+      
       // Skip headers that are clearly not names or tickets
       const normalizedHeader = header.toLowerCase();
       if (normalizedHeader === 'email' || normalizedHeader === 'phone' || normalizedHeader === 'address') {
