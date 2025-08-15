@@ -87,6 +87,12 @@ pnpm typecheck
 # Backend (Directus CMS)
 cd backend
 docker-compose up -d
+
+# Vercel CLI (for deployment and environment management)
+vercel                  # Deploy to Vercel
+vercel env ls           # List environment variables
+vercel env add          # Add environment variable
+vercel logs             # View deployment logs
 ```
 
 ## Technical Stack
