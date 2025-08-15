@@ -73,16 +73,24 @@ export default function PricingPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
+          <div className="inline-block mb-4 px-4 py-1 bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-red-500/30 rounded-full">
+            <span className="text-sm font-semibold text-red-400">
+              🔥 Limited: 50% off first 3 months (17 spots left)
+            </span>
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Investment That Pays for Itself in
+            Your Competitors Are Stealing
             <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
               {' '}
-              7 Days
+              £10,000+ Monthly
             </span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Join 500+ UK raffle companies saving £4,500/month on average. Start free for 14 days -
-            no card needed. Most see 3.2x ROI in first month.
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-4">
+            While you run manual draws, they stream transparency. 73% of players choose raffles they
+            can watch live. Stop bleeding revenue to trust issues.
+          </p>
+          <p className="text-sm text-gray-500">
+            ⚡ 247 companies switched this month • Average revenue boost: £8,400/month
           </p>
         </div>
 
@@ -123,15 +131,16 @@ export default function PricingPage() {
                   <CardTitle className="text-2xl">{product.name}</CardTitle>
                   <CardDescription className="text-gray-400">
                     {productKey === 'starter' &&
-                      'Turn your first 1,000 participants into believers'}
-                    {productKey === 'professional' &&
-                      'Scale to 10K entries without losing personal touch'}
-                    {productKey === 'enterprise' &&
-                      'White-label solution for serious revenue generation'}
+                      "Perfect for testing (but you'll upgrade in 2 weeks)"}
+                    {productKey === 'professional' && "87% choose this plan - there's a reason"}
+                    {productKey === 'enterprise' && 'When £100K+ monthly needs bulletproof trust'}
                   </CardDescription>
                   <div className="flex items-baseline mt-4">
                     <span className="text-4xl font-bold">£{product.price}</span>
                     <span className="text-gray-400 ml-2">/month</span>
+                    {productKey === 'professional' && (
+                      <span className="ml-2 text-sm text-green-400">Save £360/year</span>
+                    )}
                   </div>
                 </CardHeader>
 
@@ -160,8 +169,12 @@ export default function PricingPage() {
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Processing...
                       </>
+                    ) : productKey === 'professional' ? (
+                      'Start Winning Now →'
+                    ) : productKey === 'enterprise' ? (
+                      'Get Custom Demo'
                     ) : (
-                      'Start Free Trial'
+                      'Try Risk-Free'
                     )}
                   </Button>
                 </CardContent>
@@ -172,13 +185,20 @@ export default function PricingPage() {
 
         {/* Additional Info */}
         <div className="mt-16 text-center">
+          <div className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-500/30 rounded-lg p-6 max-w-2xl mx-auto mb-8">
+            <p className="text-green-400 font-semibold mb-2">💰 30-Day Money-Back Guarantee</p>
+            <p className="text-gray-300">
+              If DrawDay doesn't boost revenue by 20% in 30 days, get a full refund PLUS 3 months
+              free. We're that confident.
+            </p>
+          </div>
           <p className="text-gray-400 mb-4">
-            Risk-free 14-day trial • No card required • Average setup: 4 minutes
+            🚀 Live in 4 minutes • 🎯 Results in 24 hours • 💳 No card for trial
           </p>
           <p className="text-sm text-gray-500">
             Running 50+ raffles monthly?{' '}
-            <a href="/contact" className="text-purple-400 hover:text-purple-300">
-              Get volume pricing (save up to 40%)
+            <a href="/contact" className="text-purple-400 hover:text-purple-300 underline">
+              Unlock VIP pricing (save £2,000+/year)
             </a>
           </p>
         </div>
