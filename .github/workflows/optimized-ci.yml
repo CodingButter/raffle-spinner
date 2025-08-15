@@ -1,0 +1,145 @@
+name: Optimized CI Build
+
+on:
+  push:
+    branches: [main, development, 'worktree/**']
+  pull_request:
+    branches: [main, development]
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.15.9
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      
+      - name: Setup Turbo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      
+      - name: Setup Next.js cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/website/.next/cache
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/pnpm-lock.yaml') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/pnpm-lock.yaml') }}-
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Run quality checks
+        run: pnpm quality
+        env:
+          TURBO_CONCURRENCY: 4
+      
+      - name: Build all packages
+        run: pnpm build
+        env:
+          NODE_ENV: production
+          TURBO_CONCURRENCY: 4
+      
+      - name: Run tests
+        run: pnpm test
+        env:
+          TURBO_CONCURRENCY: 4
+      
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            apps/website/.next
+            apps/spinner-extension/dist
+            packages/*/dist
+          retention-days: 7
+      
+      - name: Report build time
+        if: always()
+        run: |
+          echo "Build completed at: $(date)"
+          if [ -f ".turbo/runs/*/summary.json" ]; then
+            echo "Turbo build summary available"
+            cat .turbo/runs/*/summary.json | jq '.tasks | map({package: .package, duration: .duration})'
+          fi
+
+  analyze:
+    name: Analyze Build Performance
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.15.9
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Analyze bundle size
+        run: |
+          pnpm build:analyze || true
+          echo "Bundle analysis complete"
+      
+      - name: Generate build report
+        run: |
+          echo "## Build Performance Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Cache Hit Rates" >> $GITHUB_STEP_SUMMARY
+          turbo run build --dry-run --summarize 2>&1 | grep -E "Cached|Hash" >> $GITHUB_STEP_SUMMARY || true
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Build Times" >> $GITHUB_STEP_SUMMARY
+          echo "See artifacts for detailed timing information" >> $GITHUB_STEP_SUMMARY

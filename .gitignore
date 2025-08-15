@@ -71,3 +71,4 @@ backend/.env
 backend/*.backup
 backend/*.sql
 backend/*.dump
+.turbo/cache/

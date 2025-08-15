@@ -23,4 +23,8 @@ export default defineConfig({
   sourcemap: true,
   minify: false,
   splitting: false,
+  target: 'node16',
+  treeshake: true,
+  bundle: true,
+  outDir: 'dist',
 });

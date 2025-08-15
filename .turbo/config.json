@@ -1,0 +1,24 @@
+{
+  "teamId": "team_drawday",
+  "apiUrl": "https://api.turbo.build",
+  "cacheConfig": {
+    "local": {
+      "enabled": true,
+      "compression": "zstd",
+      "maxSize": "10GB"
+    },
+    "remote": {
+      "enabled": false,
+      "timeout": 60
+    }
+  },
+  "daemon": {
+    "enabled": true,
+    "idleTimeout": 3600
+  },
+  "ui": {
+    "mode": "stream",
+    "prefixLogs": true,
+    "showSpinner": true
+  }
+}
