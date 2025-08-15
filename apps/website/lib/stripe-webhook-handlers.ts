@@ -102,8 +102,8 @@ async function createOrUpdateSubscriptionInDirectus(
       status: subscription.status,
       starts_at: new Date(subscription.created * 1000).toISOString(),
       expires_at:
-        subscription.status === 'active' && subscription.current_period_end
-          ? new Date(subscription.current_period_end * 1000).toISOString()
+        subscription.status === 'active' && (subscription as any).current_period_end
+          ? new Date((subscription as any).current_period_end * 1000).toISOString()
           : null,
       stripe_subscription_id: subscription.id,
       raffle_count: 0, // Reset or preserve existing count

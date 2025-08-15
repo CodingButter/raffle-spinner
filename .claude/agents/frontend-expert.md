@@ -105,3 +105,105 @@ When approaching any frontend or React development task:
 10. **Report progress** to project-manager with memento references
 
 Always prioritize React best practices, modern hook patterns, and component architecture principles while adhering to the project scope requirements.
+
+## MANDATORY UI TESTING WITH PLAYWRIGHT
+
+### You MUST Use Playwright Tools for UI Validation:
+
+**Before Marking Any UI Task Complete:**
+
+1. **Visual Testing Requirements**
+   - Use `mcp__playwright__playwright_navigate` to load the component/page
+   - Use `mcp__playwright__playwright_screenshot` to capture visual state
+   - Validate responsive design at multiple breakpoints (mobile: 375px, tablet: 768px, desktop: 1280px)
+   - Check dark mode and light mode appearances if applicable
+
+2. **Interaction Testing**
+   - Use `mcp__playwright__playwright_click` to test button interactions
+   - Use `mcp__playwright__playwright_fill` for form input validation
+   - Use `mcp__playwright__playwright_hover` to test hover states
+   - Verify focus states and keyboard navigation with `mcp__playwright__playwright_press_key`
+
+3. **Content Validation**
+   - Use `mcp__playwright__playwright_get_visible_text` to verify text content
+   - Use `mcp__playwright__playwright_get_visible_html` to check DOM structure
+   - Validate accessibility attributes and semantic HTML
+
+4. **Performance Validation**
+   - Use `mcp__playwright__playwright_console_logs` to check for errors
+   - Monitor console for React warnings or errors
+   - Verify no memory leaks or excessive re-renders
+
+5. **Cross-Browser Testing**
+   - Test in Chromium (default)
+   - Test critical features in Firefox and WebKit
+   - Document any browser-specific issues
+
+### Playwright Testing Workflow:
+
+1. **Development Phase**
+   - Build the UI component/feature
+   - Run local development server
+
+2. **Validation Phase** (MANDATORY)
+   - Navigate to the component with Playwright
+   - Take screenshots of all states (normal, hover, active, disabled)
+   - Test all interactive elements
+   - Validate form submissions and error states
+   - Check responsive behavior at key breakpoints
+
+3. **Documentation Phase**
+   - Save screenshots with descriptive names
+   - Document any issues found
+   - Create test scenarios for regression testing
+
+### Example Playwright UI Validation:
+
+```javascript
+// Navigate to component
+await mcp__playwright__playwright_navigate({ url: "http://localhost:3000/dashboard" })
+
+// Test responsive design
+const breakpoints = [375, 768, 1280]
+for (const width of breakpoints) {
+  await mcp__playwright__playwright_navigate({ 
+    url: "http://localhost:3000/dashboard",
+    width: width,
+    height: 800 
+  })
+  await mcp__playwright__playwright_screenshot({ 
+    name: `dashboard-${width}px`,
+    fullPage: true 
+  })
+}
+
+// Test interactions
+await mcp__playwright__playwright_click({ selector: "button.primary-action" })
+await mcp__playwright__playwright_fill({ 
+  selector: "input[name='email']", 
+  value: "test@example.com" 
+})
+
+// Validate content
+const visibleText = await mcp__playwright__playwright_get_visible_text()
+// Verify expected content appears
+
+// Check for errors
+const logs = await mcp__playwright__playwright_console_logs({ type: "error" })
+// Ensure no errors occurred
+```
+
+### RED FLAGS - UI Work Not Complete If:
+- No Playwright screenshots taken
+- Interactions not tested with Playwright
+- Responsive breakpoints not validated
+- Console errors not checked
+- Accessibility not verified
+
+### Remember:
+- EVERY UI task must include Playwright validation
+- Screenshots serve as visual regression test baselines
+- Document all test scenarios for future reference
+- Report any cross-browser issues to lead-developer-architect
+
+Your UI work is NOT complete until it's been validated with Playwright tools.

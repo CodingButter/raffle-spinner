@@ -19,12 +19,19 @@ interface AuthUser {
 /**
  * Transform auth subscription to UserSubscription format
  */
-function transformSubscription(authSubscription: AuthUser['subscriptions'][0]): UserSubscription {
+function transformSubscription(authSubscription: NonNullable<AuthUser['subscriptions']>[0]): UserSubscription {
   const isPro = authSubscription.tier === 'professional' || authSubscription.tier === 'pro';
   const isBasic = authSubscription.tier === 'basic';
 
+  // Handle tier mapping - authSubscription.tier could be any string from Directus
+  const tier = authSubscription.tier === 'professional' 
+    ? 'pro' 
+    : ['starter', 'basic', 'pro', 'enterprise'].includes(authSubscription.tier)
+      ? authSubscription.tier as 'starter' | 'basic' | 'pro' | 'enterprise'
+      : 'starter'; // Default to starter for unknown tiers
+
   return {
-    tier: authSubscription.tier === 'professional' ? 'pro' : authSubscription.tier,
+    tier,
     isActive: authSubscription.status === 'active',
     expiresAt: authSubscription.expiresAt || undefined,
     limits: {
