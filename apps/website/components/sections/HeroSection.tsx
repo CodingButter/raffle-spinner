@@ -67,12 +67,12 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex justify-center gap-4 mb-6">
-            <Button size="lg" className="gap-2 text-lg px-8 py-6" onClick={handleInstallClick}>
+            <Button size="lg" className="gap-2 text-lg" onClick={handleInstallClick}>
               <Download className="w-5 h-5" />
               Install Free Extension
             </Button>
             <Link href="/demo">
-              <Button size="lg" variant="outline" className="gap-2 text-lg px-8 py-6">
+              <Button size="lg" variant="outline" className="gap-2 text-lg">
                 Watch Live Demo
                 <ArrowRight className="w-5 h-5" />
               </Button>

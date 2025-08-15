@@ -181,6 +181,39 @@ export interface UserSubscription {
 }
 
 // ============================================================================
+// Session Types
+// ============================================================================
+
+/**
+ * Session winner entry for persistence
+ */
+export interface SessionWinner {
+  firstName: string;
+  lastName: string;
+  ticketNumber: string;
+  competition: string;
+  timestamp: number;
+}
+
+/**
+ * Spinner session state for persistence across page refreshes
+ */
+export interface SpinnerSession {
+  selectedCompetitionId?: string;
+  sessionWinners: SessionWinner[];
+  currentTicketNumber: string;
+  isSpinning: boolean;
+  currentWinner?: {
+    firstName: string;
+    lastName: string;
+    ticketNumber: string;
+  };
+  spinTarget: string;
+  sessionStartTime: number;
+  lastActivity: number;
+}
+
+// ============================================================================
 // Storage Types
 // ============================================================================
 
@@ -196,6 +229,7 @@ export interface StorageData {
   theme?: ThemeSettings; // Theme customization
   raffleCount?: number; // Track total raffles conducted
   subscription?: UserSubscription; // Current subscription info
+  session?: SpinnerSession; // Current session state for persistence
 }
 
 // ============================================================================
