@@ -9,7 +9,9 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Trophy, Download, Trash2 } from 'lucide-react';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { helpContent } from '@/lib/help-content';
 
@@ -23,9 +25,11 @@ export interface Winner {
 
 interface SessionWinnersProps {
   winners: Winner[];
+  onExport?: () => void;
+  onClear?: () => void;
 }
 
-export function SessionWinners({ winners }: SessionWinnersProps) {
+export function SessionWinners({ winners, onExport, onClear }: SessionWinnersProps) {
   if (winners.length === 0) {
     return null;
   }
@@ -33,11 +37,53 @@ export function SessionWinners({ winners }: SessionWinnersProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Trophy className="h-5 w-5" />
-          Session Winners
-          <InfoTooltip {...helpContent.sessionWinners.overview} iconSize="sm" />
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Trophy className="h-5 w-5" />
+            Session Winners
+            <InfoTooltip {...helpContent.sessionWinners.overview} iconSize="sm" />
+          </CardTitle>
+          <div className="flex gap-1">
+            {onExport && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    data-export-button
+                    onClick={onExport}
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 px-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span className="ml-1 text-xs">E</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Export winners (Press E)</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            {onClear && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    data-clear-button
+                    onClick={onClear}
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 px-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span className="ml-1 text-xs">⇧C</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Clear all winners (Press Shift+C)</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-3 max-h-48 overflow-y-auto">

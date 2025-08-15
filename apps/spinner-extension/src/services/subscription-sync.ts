@@ -6,7 +6,7 @@
 
 import { storage } from '@raffle-spinner/storage';
 import { authService } from '@drawday/auth';
-import { UserSubscription } from '@drawday/types';
+import { UserSubscription, SubscriptionTier } from '@drawday/types';
 
 interface AuthUser {
   subscriptions?: Array<{
@@ -19,16 +19,16 @@ interface AuthUser {
 /**
  * Transform auth subscription to UserSubscription format
  */
-function transformSubscription(authSubscription: NonNullable<AuthUser['subscriptions']>[0]): UserSubscription {
+function transformSubscription(
+  authSubscription: NonNullable<AuthUser['subscriptions']>[0]
+): UserSubscription {
   const isPro = authSubscription.tier === 'professional' || authSubscription.tier === 'pro';
   const isBasic = authSubscription.tier === 'basic';
 
   // Handle tier mapping - authSubscription.tier could be any string from Directus
-  const tier = authSubscription.tier === 'professional' 
-    ? 'pro' 
-    : ['starter', 'basic', 'pro', 'enterprise'].includes(authSubscription.tier)
-      ? authSubscription.tier as 'starter' | 'basic' | 'pro' | 'enterprise'
-      : 'starter'; // Default to starter for unknown tiers
+  // SubscriptionTier type only supports 'starter' | 'pro'
+  const tier: SubscriptionTier =
+    authSubscription.tier === 'professional' || authSubscription.tier === 'pro' ? 'pro' : 'starter'; // Default to starter for all other tiers
 
   return {
     tier,

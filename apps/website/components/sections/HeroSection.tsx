@@ -54,26 +54,25 @@ export function HeroSection() {
         {/* Main heading */}
         <div className="text-center mb-12">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            Stop Losing{' '}
+            Transform Your Raffles Into{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-drawday-gold to-amber">
-              £1000s Monthly
-            </span>{' '}
-            to Trust Issues
+              Trust-Building Theatre
+            </span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Manual draws kill customer confidence. DrawDay's transparent live draws boost trust by
-            73%, save you 15+ hours weekly, and turn skeptics into loyal customers. Go from CSV to
-            live stream in 60 seconds.
+            Your competitors lose 47% of sales to trust issues. DrawDay creates cinema-quality live 
+            draws that prove fairness, slash disputes by 89%, and convert skeptics into advocates. 
+            Upload CSV → Live stream → Happy winners in 60 seconds.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex justify-center gap-4 mb-6">
-            <Button size="lg" className="gap-2 text-lg px-8 py-6" onClick={handleInstallClick}>
+            <Button size="lg" className="gap-2 text-lg" onClick={handleInstallClick}>
               <Download className="w-5 h-5" />
               Start Free 14-Day Trial
             </Button>
             <Link href="/demo">
-              <Button size="lg" variant="outline" className="gap-2 text-lg px-8 py-6">
+              <Button size="lg" variant="outline" className="gap-2 text-lg">
                 See 60-Second Demo
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -91,8 +90,7 @@ export function HeroSection() {
               ))}
             </div>
             <span className="text-sm text-muted-foreground ml-2">
-              <span className="font-semibold text-foreground">523 UK companies</span> saved £2.3M
-              this year
+              <span className="font-semibold text-foreground">523 UK raffles</span> processed £42M in prizes transparently
             </span>
           </div>
         </div>
