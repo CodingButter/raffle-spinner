@@ -32,6 +32,10 @@ export type {
   BrandingSettings,
   ThemeSettings,
 
+  // Session Types
+  SessionWinner,
+  SpinnerSession,
+
   // Storage Types
   StorageData,
 
