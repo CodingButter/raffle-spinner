@@ -108,7 +108,9 @@ export class PerformanceBenchmark {
     
     // Try to get memory usage if available
     let memoryUsed: number | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ('memory' in performance && (performance as any).memory) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       memoryUsed = (performance as any).memory.usedJSHeapSize;
     }
     
@@ -132,6 +134,7 @@ export class PerformanceBenchmark {
   logReport(participantCount: number, subsetSize: number): void {
     const metrics = this.getMetrics(participantCount, subsetSize);
     
+    /* eslint-disable no-console */
     console.group('🎯 Performance Benchmark Report');
     console.log(`Participants: ${metrics.participantCount.toLocaleString()}`);
     console.log(`Subset Size: ${metrics.subsetSize}`);
@@ -155,6 +158,7 @@ export class PerformanceBenchmark {
     
     console.log(`Performance Rating: ${rating}`);
     console.groupEnd();
+    /* eslint-enable no-console */
   }
 }
 
@@ -174,6 +178,7 @@ export async function runPerformanceTest(
 ): Promise<PerformanceMetrics> {
   const benchmark = createBenchmark();
   
+  // eslint-disable-next-line no-console
   console.log(`🚀 Starting performance test with ${participantCount.toLocaleString()} participants...`);
   
   benchmark.start();
@@ -196,6 +201,7 @@ export async function runScalingTest(): Promise<void> {
   const testCounts = [100, 500, 1000, 5000, 10000, 20000];
   const results: PerformanceMetrics[] = [];
   
+  // eslint-disable-next-line no-console
   console.log('🔬 Running scaling performance tests...\n');
   
   for (const count of testCounts) {
@@ -207,6 +213,7 @@ export async function runScalingTest(): Promise<void> {
   }
   
   // Summary report
+  /* eslint-disable no-console */
   console.group('📊 Scaling Test Summary');
   console.table(results.map(r => ({
     Participants: r.participantCount.toLocaleString(),
@@ -216,4 +223,5 @@ export async function runScalingTest(): Promise<void> {
     'Memory (MB)': r.memoryUsed ? (r.memoryUsed / 1024 / 1024).toFixed(2) : 'N/A',
   })));
   console.groupEnd();
+  /* eslint-enable no-console */
 }
