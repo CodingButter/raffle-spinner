@@ -142,7 +142,8 @@ export default function PricingPage() {
                   </ul>
 
                   <Button
-                    className={`w-full ${
+                    size="default"
+                    className={`w-full min-h-[44px] ${
                       isPopular
                         ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700'
                         : ''

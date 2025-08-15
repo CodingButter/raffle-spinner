@@ -23,7 +23,7 @@ export function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3 py-2 min-h-[44px]">
             <Image
               src="/logo.svg"
               alt="DrawDay Solutions"
@@ -59,7 +59,12 @@ export function Navigation() {
 
             <div className="flex items-center gap-2 lg:gap-3">
               {isAuthenticated ? (
-                <Button variant="ghost" className="text-gray-300 hover:text-white" asChild>
+                <Button
+                  variant="ghost"
+                  size="default"
+                  className="text-gray-300 hover:text-white min-h-[44px]"
+                  asChild
+                >
                   <Link href="/dashboard">
                     <User className="w-4 h-4 mr-2" />
                     Dashboard
@@ -67,11 +72,17 @@ export function Navigation() {
                 </Button>
               ) : (
                 <>
-                  <Button variant="ghost" className="text-gray-300 hover:text-white" asChild>
+                  <Button
+                    variant="ghost"
+                    size="default"
+                    className="text-gray-300 hover:text-white min-h-[44px]"
+                    asChild
+                  >
                     <Link href="/login">Login</Link>
                   </Button>
                   <Button
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                    size="default"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white min-h-[44px]"
                     asChild
                   >
                     <Link href="/register">Start Free Trial</Link>

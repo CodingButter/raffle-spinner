@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-3 mb-4">
+            <Link href="/" className="flex items-center gap-3 mb-4 py-2 min-h-[44px]">
               <Image
                 src="/logo.svg"
                 alt="DrawDay Solutions"
@@ -64,7 +64,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/spinner"
-                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-2 -ml-2 pl-2 min-h-[44px]"
                 >
                   <Monitor className="w-4 h-4" />
                   Spinner Software
@@ -73,7 +73,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/streaming"
-                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-2 -ml-2 pl-2 min-h-[44px]"
                 >
                   <Tv className="w-4 h-4" />
                   Streaming Production
@@ -82,7 +82,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/websites"
-                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-2 -ml-2 pl-2 min-h-[44px]"
                 >
                   <Code className="w-4 h-4" />
                   Custom Websites
@@ -96,25 +96,34 @@ export function Footer() {
             <h3 className="font-semibold text-white mb-4">Company</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/about"
+                  className="text-gray-400 hover:text-white transition-colors block py-2 -ml-2 pl-2 min-h-[44px] flex items-center"
+                >
                   About Us
                 </Link>
               </li>
               <li>
                 <Link
                   href="/portfolio"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-white transition-colors block py-2 -ml-2 pl-2 min-h-[44px] flex items-center"
                 >
                   Portfolio
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/contact"
+                  className="text-gray-400 hover:text-white transition-colors block py-2 -ml-2 pl-2 min-h-[44px] flex items-center"
+                >
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="/careers" className="text-gray-400 hover:text-white transition-colors">
+                <Link
+                  href="/careers"
+                  className="text-gray-400 hover:text-white transition-colors block py-2 -ml-2 pl-2 min-h-[44px] flex items-center"
+                >
                   Careers
                 </Link>
               </li>
@@ -128,7 +137,7 @@ export function Footer() {
               <li>
                 <a
                   href="mailto:hello@drawday.app"
-                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-2 -ml-2 pl-2 min-h-[44px]"
                 >
                   <Mail className="w-4 h-4" />
                   hello@drawday.app
@@ -137,7 +146,7 @@ export function Footer() {
               <li>
                 <a
                   href="tel:+44-20-1234-5678"
-                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+                  className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-2 -ml-2 pl-2 min-h-[44px]"
                 >
                   <Phone className="w-4 h-4" />
                   +44 20 1234 5678
@@ -161,14 +170,23 @@ export function Footer() {
             <p className="text-gray-400 text-sm">
               © {new Date().getFullYear()} DrawDay Solutions. All rights reserved.
             </p>
-            <div className="flex gap-6 text-sm">
-              <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+            <div className="flex gap-2 sm:gap-6 text-sm">
+              <Link
+                href="/privacy"
+                className="text-gray-400 hover:text-white transition-colors p-2 min-h-[44px] flex items-center"
+              >
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/terms"
+                className="text-gray-400 hover:text-white transition-colors p-2 min-h-[44px] flex items-center"
+              >
                 Terms of Service
               </Link>
-              <Link href="/cookies" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/cookies"
+                className="text-gray-400 hover:text-white transition-colors p-2 min-h-[44px] flex items-center"
+              >
                 Cookie Policy
               </Link>
             </div>

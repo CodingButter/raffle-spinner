@@ -71,10 +71,19 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </div>
 
         <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-800">
-          <Button variant="outline" className="w-full border-gray-700 text-gray-300" asChild>
+          <Button
+            variant="outline"
+            size="default"
+            className="w-full border-gray-700 text-gray-300 min-h-[44px]"
+            asChild
+          >
             <Link href="/login">Login</Link>
           </Button>
-          <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600" asChild>
+          <Button
+            size="default"
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 min-h-[44px]"
+            asChild
+          >
             <Link href="/register">Start Free Trial</Link>
           </Button>
         </div>
