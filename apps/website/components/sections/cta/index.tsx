@@ -29,19 +29,20 @@ export function CTASection({ title, description, buttonText, buttonLink }: CTASe
         </h2>
         <p className="text-xl text-gray-300 mb-8">{description}</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href={buttonLink}>
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg"
-            >
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg w-full sm:w-auto"
+            asChild
+          >
+            <Link href={buttonLink}>
               {buttonText}
               <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <Button
             size="lg"
             variant="outline"
-            className="border-gray-700 text-white hover:bg-white/10 text-lg"
+            className="border-gray-700 text-white hover:bg-white/10 text-lg w-full sm:w-auto"
           >
             Schedule Demo
           </Button>
