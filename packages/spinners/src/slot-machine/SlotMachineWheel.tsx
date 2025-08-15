@@ -22,6 +22,7 @@ import { useSlotMachineAnimation } from './hooks/useSlotMachineAnimation';
 import { drawSlotMachineSegment } from './components/SlotMachineSegment';
 import { drawSlotMachineFrame } from './components/SlotMachineFrame';
 import { BaseSpinnerProps, DEFAULT_SPINNER_THEME, SpinnerTheme } from '../types';
+import { usePerformanceMonitor, PerformanceOverlay } from './hooks/usePerformanceMonitor';
 
 // Visual constants
 const ITEM_HEIGHT = 80;
@@ -164,6 +165,14 @@ export function SlotMachineWheel({
 
   // Convert theme to internal format
   const internalTheme = convertTheme(theme);
+  
+  // Performance monitoring for large datasets
+  const { metrics } = usePerformanceMonitor({
+    enabled: showDebug && participants.length > 1000,
+    participantCount: participants.length,
+    subsetSize: SUBSET_SIZE,
+    warnThreshold: 50,
+  });
 
   // Sort participants by ticket number to get consistent ordering - MEMOIZED
   const sortedParticipants = React.useMemo(() => {
@@ -559,20 +568,23 @@ export function SlotMachineWheel({
   }, [position, displaySubset, drawWheel]);
 
   return (
-    <div
-      className={`inline-flex rounded-xl overflow-hidden ${className || ''}`}
-      style={{ background: 'transparent' }}
-    >
-      <canvas
-        ref={canvasRef}
-        width={canvasWidth}
-        height={canvasHeight}
-        className="block"
-        style={{
-          imageRendering: 'crisp-edges',
-          background: 'transparent',
-        }}
-      />
-    </div>
+    <>
+      <div
+        className={`inline-flex rounded-xl overflow-hidden ${className || ''}`}
+        style={{ background: 'transparent' }}
+      >
+        <canvas
+          ref={canvasRef}
+          width={canvasWidth}
+          height={canvasHeight}
+          className="block"
+          style={{
+            imageRendering: 'crisp-edges',
+            background: 'transparent',
+          }}
+        />
+      </div>
+      {showDebug && <PerformanceOverlay metrics={metrics} />}
+    </>
   );
 }
