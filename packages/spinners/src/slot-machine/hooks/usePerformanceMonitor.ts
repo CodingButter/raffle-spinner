@@ -136,7 +136,7 @@ export function usePerformanceMonitor({
 /**
  * Performance overlay component for development
  */
-export function PerformanceOverlay({ metrics }: { metrics: PerformanceMetrics | null }): JSX.Element | null {
+export function PerformanceOverlay({ metrics }: { metrics: PerformanceMetrics | null }): React.ReactElement | null {
   if (!metrics || process.env.NODE_ENV !== 'development') return null;
   
   const fpsColor = metrics.averageFps >= 55 ? '#10b981' : 
