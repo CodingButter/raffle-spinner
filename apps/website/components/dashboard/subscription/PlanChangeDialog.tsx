@@ -10,7 +10,6 @@ import {
 } from '@drawday/ui/dialog';
 import { Button } from '@drawday/ui/button';
 import { Badge } from '@drawday/ui/badge';
-import { RadioGroup, RadioGroupItem } from '@drawday/ui/radio-group';
 import { Label } from '@drawday/ui/label';
 import { Alert, AlertDescription } from '@drawday/ui/alert';
 import { ArrowUp, ArrowDown, Clock, Zap, AlertTriangle, Check, Loader2 } from 'lucide-react';
@@ -139,49 +138,48 @@ export function PlanChangeDialog({
           {/* Timing Options */}
           <div className="space-y-4">
             <Label className="text-base font-medium">When to apply this change?</Label>
-            <RadioGroup
-              value={upgradeType}
-              onValueChange={(value) => setUpgradeType(value as 'immediate' | 'end_of_period')}
-            >
-              <div className="space-y-3">
-                <UpgradeOption
-                  value="immediate"
-                  icon={<Zap className="w-4 h-4" />}
-                  title={getUpgradeTypeDisplayName('immediate')}
-                  description={
-                    isUpgrade
-                      ? 'Changes take effect immediately with prorated billing'
-                      : 'Changes take effect immediately with prorated credit'
-                  }
-                  recommended={recommendedType === 'immediate'}
-                  details={
-                    isLoadingPreview ? (
-                      <span className="flex items-center gap-1">
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                        Calculating proration...
-                      </span>
-                    ) : preview?.proration ? (
-                      preview.proration.totalAmount > 0 ? (
-                        `Charge: £${Math.abs(preview.proration.totalAmount / 100).toFixed(2)}`
-                      ) : (
-                        `Credit: £${Math.abs(preview.proration.totalAmount / 100).toFixed(2)}`
-                      )
-                    ) : prorationEstimate ? (
-                      `${prorationEstimate.amount > 0 ? 'Charge' : 'Credit'}: £${Math.abs(prorationEstimate.amount / 100).toFixed(2)}`
-                    ) : undefined
-                  }
-                />
+            <div className="space-y-3">
+              <UpgradeOption
+                value="immediate"
+                icon={<Zap className="w-4 h-4" />}
+                title={getUpgradeTypeDisplayName('immediate')}
+                description={
+                  isUpgrade
+                    ? 'Changes take effect immediately with prorated billing'
+                    : 'Changes take effect immediately with prorated credit'
+                }
+                recommended={recommendedType === 'immediate'}
+                selected={upgradeType === 'immediate'}
+                onSelect={(v) => setUpgradeType(v as 'immediate' | 'end_of_period')}
+                details={
+                  isLoadingPreview ? (
+                    <span className="flex items-center gap-1">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Calculating proration...
+                    </span>
+                  ) : preview?.proration ? (
+                    preview.proration.totalAmount > 0 ? (
+                      `Charge: £${Math.abs(preview.proration.totalAmount / 100).toFixed(2)}`
+                    ) : (
+                      `Credit: £${Math.abs(preview.proration.totalAmount / 100).toFixed(2)}`
+                    )
+                  ) : prorationEstimate ? (
+                    `${prorationEstimate.amount > 0 ? 'Charge' : 'Credit'}: £${Math.abs(prorationEstimate.amount / 100).toFixed(2)}`
+                  ) : undefined
+                }
+              />
 
-                <UpgradeOption
-                  value="end_of_period"
-                  icon={<Clock className="w-4 h-4" />}
-                  title={getUpgradeTypeDisplayName('end_of_period')}
-                  description={`Changes take effect in ${daysRemaining} days at period end`}
-                  recommended={recommendedType === 'end_of_period'}
-                  details="No immediate charges or credits"
-                />
-              </div>
-            </RadioGroup>
+              <UpgradeOption
+                value="end_of_period"
+                icon={<Clock className="w-4 h-4" />}
+                title={getUpgradeTypeDisplayName('end_of_period')}
+                description={`Changes take effect in ${daysRemaining} days at period end`}
+                recommended={recommendedType === 'end_of_period'}
+                selected={upgradeType === 'end_of_period'}
+                onSelect={(v) => setUpgradeType(v as 'immediate' | 'end_of_period')}
+                details="No immediate charges or credits"
+              />
+            </div>
           </div>
 
           {/* Change Summary */}
@@ -266,6 +264,8 @@ function UpgradeOption({
   description,
   recommended,
   details,
+  selected,
+  onSelect,
 }: {
   value: string;
   icon: React.ReactNode;
@@ -273,10 +273,25 @@ function UpgradeOption({
   description: string;
   recommended?: boolean;
   details?: React.ReactNode;
+  selected?: boolean;
+  onSelect?: (value: string) => void;
 }) {
   return (
-    <div className="flex items-start space-x-3">
-      <RadioGroupItem value={value} id={value} className="mt-1" />
+    <div
+      className={`flex items-start space-x-3 p-4 rounded-lg border cursor-pointer transition-colors ${
+        selected ? 'border-primary bg-primary/5' : 'border-input hover:bg-accent'
+      }`}
+      onClick={() => onSelect?.(value)}
+    >
+      <div className="mt-1">
+        <div
+          className={`h-4 w-4 rounded-full border-2 ${
+            selected ? 'border-primary' : 'border-input'
+          }`}
+        >
+          {selected && <div className="h-2 w-2 rounded-full bg-primary m-auto mt-0.5" />}
+        </div>
+      </div>
       <div className="flex-1">
         <Label htmlFor={value} className="flex items-center gap-2 cursor-pointer font-medium">
           {icon}

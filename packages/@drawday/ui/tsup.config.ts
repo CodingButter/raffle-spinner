@@ -9,6 +9,7 @@ export default defineConfig({
     'src/alert.ts',
     'src/card.ts',
     'src/badge.ts',
+    'src/dialog.ts',
   ],
   format: ['cjs', 'esm'],
   dts: {

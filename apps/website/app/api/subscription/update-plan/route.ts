@@ -119,12 +119,16 @@ export async function POST(request: NextRequest) {
         const tierKey = newProductKey === 'professional' ? 'pro' : newProductKey;
 
         if (userEmail) {
+          const periodEnd =
+            'current_period_end' in updatedSubscription
+              ? Number(updatedSubscription.current_period_end)
+              : 0;
           await directusAdmin.updateUserSubscription(userEmail, {
+            stripe_customer_id: updatedSubscription.customer as string,
+            stripe_subscription_id: updatedSubscription.id,
             subscription_tier: tierKey,
             subscription_status: updatedSubscription.status,
-            subscription_current_period_end: new Date(
-              updatedSubscription.current_period_end * 1000
-            ).toISOString(),
+            subscription_current_period_end: new Date(periodEnd * 1000).toISOString(),
           });
         }
       } catch (error) {
@@ -144,7 +148,9 @@ export async function POST(request: NextRequest) {
 
       if (invoices.data.length > 0) {
         const latestInvoice = invoices.data[0];
-        const prorationItems = latestInvoice.lines.data.filter((item) => item.proration);
+        const prorationItems = latestInvoice.lines.data.filter(
+          (item) => 'proration' in item && item.proration
+        );
 
         if (prorationItems.length > 0) {
           prorationInfo = {
@@ -163,7 +169,8 @@ export async function POST(request: NextRequest) {
       subscription: {
         id: updatedSubscription.id,
         status: updatedSubscription.status,
-        current_period_end: updatedSubscription.current_period_end,
+        current_period_end:
+          'current_period_end' in updatedSubscription ? updatedSubscription.current_period_end : 0,
         plan: newProductKey,
       },
       change_type: isUpgrade ? 'upgrade' : 'downgrade',

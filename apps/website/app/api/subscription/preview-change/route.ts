@@ -115,10 +115,9 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         console.error('Failed to create proration preview:', error);
         // Fallback to manual calculation
-        const periodEnd = 'current_period_end' in subscription ? subscription.current_period_end : 0;
-        const daysRemaining = Math.ceil(
-          ((periodEnd ?? 0) * 1000 - Date.now()) / (1000 * 60 * 60 * 24)
-        );
+        const periodEnd =
+          'current_period_end' in subscription ? Number(subscription.current_period_end) : 0;
+        const daysRemaining = Math.ceil((periodEnd * 1000 - Date.now()) / (1000 * 60 * 60 * 24));
         const dailyDifference = (newProduct.price - currentPlanPrice) / 30;
         const estimatedProration = Math.round(dailyDifference * daysRemaining * 100);
 
@@ -135,7 +134,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate timing information
-    const currentPeriodEnd = subscription.current_period_end;
+    const currentPeriodEnd =
+      'current_period_end' in subscription ? Number(subscription.current_period_end) : 0;
     const daysRemaining = Math.ceil((currentPeriodEnd * 1000 - Date.now()) / (1000 * 60 * 60 * 24));
 
     return NextResponse.json({

@@ -40,6 +40,11 @@
       "import": "./dist/badge.mjs",
       "require": "./dist/badge.js"
     },
+    "./dialog": {
+      "types": "./dist/dialog.d.ts",
+      "import": "./dist/dialog.mjs",
+      "require": "./dist/dialog.js"
+    },
     "./styles": "./src/styles/globals.css"
   },
   "scripts": {
