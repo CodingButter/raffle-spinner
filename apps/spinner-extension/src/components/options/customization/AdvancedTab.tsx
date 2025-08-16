@@ -13,18 +13,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { RefreshCw } from 'lucide-react';
+import type { ThemeSettings } from '@raffle-spinner/storage';
 
 interface AdvancedTabProps {
-  theme: any;
+  theme: ThemeSettings;
   handleFontChange: (font: string) => void;
   resetTheme: () => void;
 }
 
-export function AdvancedTab({
-  theme,
-  handleFontChange,
-  resetTheme,
-}: AdvancedTabProps) {
+export function AdvancedTab({ theme, handleFontChange, resetTheme }: AdvancedTabProps) {
   return (
     <div className="space-y-4">
       <div className="space-y-2">

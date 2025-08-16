@@ -5,14 +5,14 @@
 
 import { Label } from '@/components/ui/label';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
-import type { SpinnerStyle } from '@raffle-spinner/storage';
+import type { SpinnerStyle, ThemeSettings } from '@raffle-spinner/storage';
 import { ColorButton } from './ColorButton';
 import { ShadowControls } from './ShadowControls';
 import { CanvasBackgroundControl } from './CanvasBackgroundControl';
 import { helpContent } from './helpContent';
 
 interface ColorsTabProps {
-  theme: any;
+  theme: ThemeSettings;
   activeColorPicker: string | null;
   setActiveColorPicker: (value: string | null) => void;
   updateSpinnerStyle: (style: Partial<SpinnerStyle>) => void;

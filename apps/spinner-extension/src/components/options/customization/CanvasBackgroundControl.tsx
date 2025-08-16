@@ -8,10 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { HexColorPicker } from 'react-colorful';
-import type { SpinnerStyle } from '@raffle-spinner/storage';
+import type { SpinnerStyle, ThemeSettings } from '@raffle-spinner/storage';
 
 interface CanvasBackgroundControlProps {
-  theme: any;
+  theme: ThemeSettings;
   activeColorPicker: string | null;
   setActiveColorPicker: (value: string | null) => void;
   updateSpinnerStyle: (style: Partial<SpinnerStyle>) => void;

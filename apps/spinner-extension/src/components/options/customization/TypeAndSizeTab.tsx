@@ -20,8 +20,8 @@ interface TypeAndSizeTabProps {
   handleTypeChange: (type: SpinnerType) => void;
   handleSizeChange: (field: 'nameSize' | 'ticketSize', size: string) => void;
   helpContent: {
-    spinnerType: any;
-    textSizes: any;
+    spinnerType: string;
+    textSizes: string;
   };
 }
 
