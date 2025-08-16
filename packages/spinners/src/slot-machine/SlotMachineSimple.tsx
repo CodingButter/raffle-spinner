@@ -1,6 +1,8 @@
+/* eslint-disable max-lines-per-function, max-lines, no-console */
+// TODO: This file needs refactoring to meet 200-line limit
 /**
  * Simplified Slot Machine Component
- * 
+ *
  * Key simplifications:
  * 1. Winner always placed at index 0 of subset
  * 2. Wheel always returns to starting position (0)
@@ -33,7 +35,7 @@ const DEFAULT_BEZIER = {
   x1: 0.42,
   y1: 0,
   x2: 0.58,
-  y2: 1.0
+  y2: 1.0,
 };
 
 export interface SlotMachineSimpleProps extends BaseSpinnerProps {
@@ -93,28 +95,28 @@ function cubicBezier(x1: number, y1: number, x2: number, y2: number) {
     // Newton-Raphson iteration for cubic bezier
     const epsilon = 0.001;
     let x = t;
-    
+
     for (let i = 0; i < 8; i++) {
       const cx = 3 * x1;
       const bx = 3 * (x2 - x1) - cx;
       const ax = 1 - cx - bx;
-      
+
       const currentX = ax * x * x * x + bx * x * x + cx * x;
       const dx = currentX - t;
-      
+
       if (Math.abs(dx) < epsilon) break;
-      
+
       const currentSlope = 3 * ax * x * x + 2 * bx * x + cx;
       if (Math.abs(currentSlope) < epsilon) break;
-      
+
       x -= dx / currentSlope;
     }
-    
+
     // Calculate y from x
     const cy = 3 * y1;
     const by = 3 * (y2 - y1) - cy;
     const ay = 1 - cy - by;
-    
+
     return ay * x * x * x + by * x * x + cy * x;
   };
 }
@@ -135,7 +137,7 @@ export function SlotMachineSimple({
   const animationRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
   const isAnimatingRef = useRef(false);
-  
+
   const internalTheme = getTheme(theme as Partial<ThemeSettings>);
   const canvasWidth = 440;
   const canvasHeight = 440;
@@ -157,7 +159,7 @@ export function SlotMachineSimple({
 
     const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
     const winnerIndex = sortedParticipants.findIndex(
-      p => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
+      (p) => normalizeTicketNumber(p.ticketNumber) === normalizedTarget
     );
 
     if (winnerIndex === -1) {
@@ -174,39 +176,44 @@ export function SlotMachineSimple({
       const beforeWinner = sortedParticipants.slice(0, winnerIndex);
       const afterWinner = sortedParticipants.slice(winnerIndex + 1);
       subset = [winner, ...afterWinner, ...beforeWinner];
-      
+
       // Repeat if needed to fill SUBSET_SIZE
       while (subset.length < SUBSET_SIZE) {
-        subset.push(...sortedParticipants.slice(0, Math.min(sortedParticipants.length, SUBSET_SIZE - subset.length)));
+        subset.push(
+          ...sortedParticipants.slice(
+            0,
+            Math.min(sortedParticipants.length, SUBSET_SIZE - subset.length)
+          )
+        );
       }
     } else {
       // Take participants around the winner
       let beforeCount = Math.floor((SUBSET_SIZE - 1) / 2);
       let afterCount = SUBSET_SIZE - 1 - beforeCount;
-      
+
       // Adjust if not enough before or after
       const actualBefore = Math.min(beforeCount, winnerIndex);
       const actualAfter = Math.min(afterCount, sortedParticipants.length - winnerIndex - 1);
-      
+
       // Rebalance if needed
       if (actualBefore < beforeCount) {
-        afterCount += (beforeCount - actualBefore);
+        afterCount += beforeCount - actualBefore;
       }
       if (actualAfter < afterCount) {
-        beforeCount += (afterCount - actualAfter);
+        beforeCount += afterCount - actualAfter;
       }
-      
+
       const startIdx = Math.max(0, winnerIndex - beforeCount);
       const endIdx = Math.min(sortedParticipants.length, winnerIndex + afterCount + 1);
-      
+
       const nearbyParticipants = sortedParticipants.slice(startIdx, endIdx);
       const winnerPosInSlice = winnerIndex - startIdx;
-      
+
       // Rearrange so winner is at index 0
       subset = [
         winner,
         ...nearbyParticipants.slice(winnerPosInSlice + 1),
-        ...nearbyParticipants.slice(0, winnerPosInSlice)
+        ...nearbyParticipants.slice(0, winnerPosInSlice),
       ];
     }
 
@@ -214,7 +221,7 @@ export function SlotMachineSimple({
       winnerTicket: winner.ticketNumber,
       subsetSize: subset.length,
       firstTicket: subset[0]?.ticketNumber,
-      lastTicket: subset[subset.length - 1]?.ticketNumber
+      lastTicket: subset[subset.length - 1]?.ticketNumber,
     });
 
     return subset.slice(0, SUBSET_SIZE);
@@ -230,61 +237,67 @@ export function SlotMachineSimple({
   }, [sortedParticipants, targetTicketNumber, createWinnerSubset]);
 
   // Draw the wheel
-  const drawWheel = useCallback((currentPosition: number) => {
-    const canvas = canvasRef.current;
-    if (!canvas || displaySubset.length === 0) return;
+  const drawWheel = useCallback(
+    (currentPosition: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas || displaySubset.length === 0) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    ctx.save();
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      ctx.save();
 
-    // Background
-    if (internalTheme?.spinnerStyle?.backgroundColor && 
-        internalTheme.spinnerStyle.backgroundColor !== 'transparent') {
-      ctx.fillStyle = internalTheme.spinnerStyle.backgroundColor;
-      ctx.fillRect(VIEWPORT_LEFT, VIEWPORT_TOP, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
-    }
-
-    const wheelCircumference = displaySubset.length * ITEM_HEIGHT;
-    const normalizedPos = ((currentPosition % wheelCircumference) + wheelCircumference) % wheelCircumference;
-    const topParticipantIndex = Math.floor(normalizedPos / ITEM_HEIGHT);
-    const pixelOffset = normalizedPos % ITEM_HEIGHT;
-
-    // Draw visible participants
-    for (let i = -2; i <= VISIBLE_ITEMS + 2; i++) {
-      let participantIndex = (topParticipantIndex + i) % displaySubset.length;
-      if (participantIndex < 0) {
-        participantIndex += displaySubset.length;
+      // Background
+      if (
+        internalTheme?.spinnerStyle?.backgroundColor &&
+        internalTheme.spinnerStyle.backgroundColor !== 'transparent'
+      ) {
+        ctx.fillStyle = internalTheme.spinnerStyle.backgroundColor;
+        ctx.fillRect(VIEWPORT_LEFT, VIEWPORT_TOP, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
       }
 
-      const participant = displaySubset[participantIndex];
-      const yPosition = i * ITEM_HEIGHT - pixelOffset + VIEWPORT_TOP;
+      const wheelCircumference = displaySubset.length * ITEM_HEIGHT;
+      const normalizedPos =
+        ((currentPosition % wheelCircumference) + wheelCircumference) % wheelCircumference;
+      const topParticipantIndex = Math.floor(normalizedPos / ITEM_HEIGHT);
+      const pixelOffset = normalizedPos % ITEM_HEIGHT;
 
-      drawSlotMachineSegment({
-        participant,
-        yPos: yPosition,
-        itemIndex: participantIndex,
-        itemHeight: ITEM_HEIGHT,
-        viewportHeight: VIEWPORT_HEIGHT,
-        wheelWidth: WHEEL_WIDTH,
-        canvasWidth,
-        perspectiveScale: PERSPECTIVE_SCALE,
+      // Draw visible participants
+      for (let i = -2; i <= VISIBLE_ITEMS + 2; i++) {
+        let participantIndex = (topParticipantIndex + i) % displaySubset.length;
+        if (participantIndex < 0) {
+          participantIndex += displaySubset.length;
+        }
+
+        const participant = displaySubset[participantIndex];
+        const yPosition = i * ITEM_HEIGHT - pixelOffset + VIEWPORT_TOP;
+
+        drawSlotMachineSegment({
+          participant,
+          yPos: yPosition,
+          itemIndex: participantIndex,
+          itemHeight: ITEM_HEIGHT,
+          viewportHeight: VIEWPORT_HEIGHT,
+          wheelWidth: WHEEL_WIDTH,
+          canvasWidth,
+          perspectiveScale: PERSPECTIVE_SCALE,
+          ctx,
+          theme: internalTheme,
+        });
+      }
+
+      ctx.restore();
+
+      drawSlotMachineFrame({
         ctx,
+        canvasWidth,
+        viewportHeight: VIEWPORT_HEIGHT,
         theme: internalTheme,
       });
-    }
-
-    ctx.restore();
-
-    drawSlotMachineFrame({
-      ctx,
-      canvasWidth,
-      viewportHeight: VIEWPORT_HEIGHT,
-      theme: internalTheme,
-    });
-  }, [displaySubset, internalTheme, canvasWidth, canvasHeight]);
+    },
+    [displaySubset, internalTheme, canvasWidth, canvasHeight]
+  );
 
   // Redraw when position changes
   useEffect(() => {
@@ -301,18 +314,18 @@ export function SlotMachineSimple({
     const wheelCircumference = displaySubset.length * ITEM_HEIGHT;
     const totalDistance = rotations * wheelCircumference; // Always return to start
     const duration = (settings?.minSpinDuration || 3) * 1000; // Use duration for total time
-    
+
     // Create easing function from bezier curve
     const ease = cubicBezier(bezierCurve.x1, bezierCurve.y1, bezierCurve.x2, bezierCurve.y2);
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTimeRef.current;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       // Apply bezier easing
       const easedProgress = ease(progress);
       const currentPosition = totalDistance * easedProgress;
-      
+
       setPosition(currentPosition);
 
       if (progress < 1) {
@@ -322,14 +335,14 @@ export function SlotMachineSimple({
         setPosition(0);
         isAnimatingRef.current = false;
         animationRef.current = null;
-        
+
         // Winner is at index 0
         const winner = displaySubset[0];
         if (winner) {
           console.log('[SlotMachine] Spin complete:', {
             winner: winner.ticketNumber,
             target: targetTicketNumber,
-            finalPosition: 0
+            finalPosition: 0,
           });
           onSpinComplete(winner);
         }

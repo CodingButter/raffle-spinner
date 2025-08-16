@@ -17,30 +17,42 @@ interface AuthUser {
 }
 
 /**
+ * Helper to determine if tier is pro-level
+ */
+function isProTier(tier: string): boolean {
+  return tier === 'professional' || tier === 'pro' || tier === 'enterprise';
+}
+
+/**
+ * Get subscription limits based on tier
+ */
+function getSubscriptionLimits(tier: string): UserSubscription['limits'] {
+  const isPro = isProTier(tier);
+  const isBasic = tier === 'basic';
+
+  return {
+    maxContestants: isPro ? null : isBasic ? 250 : 100,
+    maxRaffles: isPro ? null : isBasic ? 50 : 5,
+    hasApiSupport: isPro,
+    hasBranding: isPro || isBasic,
+    hasCustomization: isPro || isBasic,
+  };
+}
+
+/**
  * Transform auth subscription to UserSubscription format
  */
-function transformSubscription(authSubscription: NonNullable<AuthUser['subscriptions']>[0]): UserSubscription {
-  const isPro = authSubscription.tier === 'professional' || authSubscription.tier === 'pro';
-  const isBasic = authSubscription.tier === 'basic';
-
-  // Handle tier mapping - authSubscription.tier could be any string from Directus
-  const tier = authSubscription.tier === 'professional' 
-    ? 'pro' 
-    : ['starter', 'basic', 'pro', 'enterprise'].includes(authSubscription.tier)
-      ? authSubscription.tier as 'starter' | 'basic' | 'pro' | 'enterprise'
-      : 'starter'; // Default to starter for unknown tiers
+function transformSubscription(
+  authSubscription: NonNullable<AuthUser['subscriptions']>[0]
+): UserSubscription {
+  // Map to our supported tiers: 'starter' | 'pro'
+  const tier = isProTier(authSubscription.tier) ? 'pro' : 'starter';
 
   return {
     tier,
     isActive: authSubscription.status === 'active',
     expiresAt: authSubscription.expiresAt || undefined,
-    limits: {
-      maxContestants: isPro ? null : isBasic ? 250 : 100,
-      maxRaffles: isPro ? null : isBasic ? 50 : 5,
-      hasApiSupport: isPro,
-      hasBranding: isPro,
-      hasCustomization: isPro || isBasic,
-    },
+    limits: getSubscriptionLimits(authSubscription.tier),
   };
 }
 

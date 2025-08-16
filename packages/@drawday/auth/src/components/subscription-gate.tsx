@@ -20,23 +20,39 @@ export function SubscriptionGate({
 }: SubscriptionGateProps) {
   const { isStarter, isProfessional, isEnterprise, canAccessFeature } = useSubscription();
 
-  // Check tier requirement
-  if (requiredTier === 'enterprise' && !isEnterprise) {
-    return <>{fallback}</>;
-  }
-
-  if (requiredTier === 'professional' && !isProfessional && !isEnterprise) {
-    return <>{fallback}</>;
-  }
-
-  if (requiredTier === 'starter' && !isStarter && !isProfessional && !isEnterprise) {
-    return <>{fallback}</>;
-  }
-
-  // Check feature requirement
+  // Check feature requirement first (simpler check)
   if (requiredFeature && !canAccessFeature(requiredFeature)) {
     return <>{fallback}</>;
   }
 
+  // Check tier requirement using a map for cleaner logic
+  if (requiredTier) {
+    const hasRequiredTier = checkTierAccess(requiredTier, {
+      isStarter,
+      isProfessional,
+      isEnterprise,
+    });
+    if (!hasRequiredTier) {
+      return <>{fallback}</>;
+    }
+  }
+
   return <>{children}</>;
+}
+
+// Helper function to check tier access (reduces complexity)
+function checkTierAccess(
+  requiredTier: 'starter' | 'professional' | 'enterprise',
+  tiers: { isStarter: boolean; isProfessional: boolean; isEnterprise: boolean }
+): boolean {
+  switch (requiredTier) {
+    case 'enterprise':
+      return tiers.isEnterprise;
+    case 'professional':
+      return tiers.isProfessional || tiers.isEnterprise;
+    case 'starter':
+      return tiers.isStarter || tiers.isProfessional || tiers.isEnterprise;
+    default:
+      return true;
+  }
 }
