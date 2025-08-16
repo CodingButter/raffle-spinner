@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@drawday/auth';
 import { ServicesDropdown } from './navigation/services-dropdown';
 import { MobileMenu } from './navigation/mobile-menu';
+import { ThemeToggle } from './theme-toggle';
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -19,7 +20,7 @@ export function Navigation() {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800">
+    <nav className="sticky top-0 z-50 bg-background/90 dark:bg-black/90 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -32,8 +33,8 @@ export function Navigation() {
               className="w-10 h-10"
             />
             <div>
-              <span className="font-bold text-xl text-white">DrawDay</span>
-              <span className="text-xs text-gray-400 ml-2">Solutions</span>
+              <span className="font-bold text-xl text-foreground">DrawDay</span>
+              <span className="text-xs text-muted-foreground ml-2">Solutions</span>
             </div>
           </Link>
 
@@ -41,28 +42,38 @@ export function Navigation() {
           <div className="hidden md:flex items-center gap-4 lg:gap-6">
             <ServicesDropdown />
 
-            <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors py-4">
+            <Link
+              href="/pricing"
+              className="text-muted-foreground hover:text-foreground transition-colors py-4"
+            >
               Pricing
             </Link>
             <Link
               href="/portfolio"
-              className="text-gray-300 hover:text-white transition-colors py-4"
+              className="text-muted-foreground hover:text-foreground transition-colors py-4"
             >
               Portfolio
             </Link>
-            <Link href="/about" className="text-gray-300 hover:text-white transition-colors py-4">
+            <Link
+              href="/about"
+              className="text-muted-foreground hover:text-foreground transition-colors py-4"
+            >
               About
             </Link>
-            <Link href="/contact" className="text-gray-300 hover:text-white transition-colors py-4">
+            <Link
+              href="/contact"
+              className="text-muted-foreground hover:text-foreground transition-colors py-4"
+            >
               Contact
             </Link>
 
             <div className="flex items-center gap-2 lg:gap-3">
+              <ThemeToggle />
               {isAuthenticated ? (
                 <Button
                   variant="ghost"
                   size="default"
-                  className="text-gray-300 hover:text-white min-h-[44px]"
+                  className="text-muted-foreground hover:text-foreground min-h-[44px]"
                   asChild
                 >
                   <Link href="/dashboard">
@@ -75,7 +86,7 @@ export function Navigation() {
                   <Button
                     variant="ghost"
                     size="default"
-                    className="text-gray-300 hover:text-white min-h-[44px]"
+                    className="text-muted-foreground hover:text-foreground min-h-[44px]"
                     asChild
                   >
                     <Link href="/login">Login</Link>
@@ -94,7 +105,7 @@ export function Navigation() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-3 text-white min-w-[44px] min-h-[44px]"
+            className="md:hidden p-3 text-foreground min-w-[44px] min-h-[44px]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >

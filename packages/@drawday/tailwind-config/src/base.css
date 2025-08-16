@@ -118,31 +118,36 @@
 }
 
 /* =========================
- * Dark Mode Overrides
+ * Dark Mode Overrides - Class-based and Media Query
  * ========================= */
+.dark {
+  --color-background: var(--color-night);
+  --color-foreground: var(--color-white);
+  --color-card: var(--color-rich-black);
+  --color-card-foreground: var(--color-white);
+  --color-popover: var(--color-rich-black);
+  --color-popover-foreground: var(--color-white);
+  --color-muted: var(--color-raisin-black);
+  --color-muted-foreground: #9ca3af;
+  --color-accent: var(--color-drawday-gold);
+  --color-accent-foreground: var(--color-rich-black);
+  --color-border: var(--color-raisin-black);
+  --color-input: var(--color-rich-black);
+  --color-ring: var(--color-drawday-gold);
+}
+
 @media (prefers-color-scheme: dark) {
-  @theme {
-    /* Background and foreground */
+  :root:not(.light) {
     --color-background: var(--color-night);
     --color-foreground: var(--color-white);
-
-    /* Card components */
     --color-card: var(--color-rich-black);
     --color-card-foreground: var(--color-white);
-
-    /* Popover components */
     --color-popover: var(--color-rich-black);
     --color-popover-foreground: var(--color-white);
-
-    /* Muted elements */
     --color-muted: var(--color-raisin-black);
     --color-muted-foreground: #9ca3af;
-
-    /* Accent elements */
     --color-accent: var(--color-drawday-gold);
     --color-accent-foreground: var(--color-rich-black);
-
-    /* Form elements */
     --color-border: var(--color-raisin-black);
     --color-input: var(--color-rich-black);
     --color-ring: var(--color-drawday-gold);
