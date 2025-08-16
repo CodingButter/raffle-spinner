@@ -171,8 +171,11 @@ function OptionsContent() {
           )}
 
           {/* Subscription Status */}
-          <SubscriptionStatus 
-            currentContestants={competitions.reduce((total, comp) => total + comp.participants.length, 0)}
+          <SubscriptionStatus
+            currentContestants={competitions.reduce(
+              (total, comp) => total + comp.participants.length,
+              0
+            )}
             onUpgradeClick={handleUpgradeClick}
           />
 

@@ -1,43 +1,43 @@
 /**
  * Subscription Context
- * 
+ *
  * Manages subscription state and limits across the extension
  */
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { UserSubscription } from '@drawday/types';
 import { storage } from '@raffle-spinner/storage';
-import { 
-  createStarterSubscription, 
-  canAddContestants, 
-  canConductRaffle, 
+import {
+  createStarterSubscription,
+  canAddContestants,
+  canConductRaffle,
   hasFeature,
   getRemainingQuota,
   getSubscriptionStatusMessage,
-  updateSubscriptionStatus
+  updateSubscriptionStatus,
 } from '@raffle-spinner/subscription';
 
 interface SubscriptionContextType {
   subscription: UserSubscription | null;
   isLoading: boolean;
   raffleCount: number;
-  
+
   // Limit checking functions
   canAddContestants: (currentCount: number, adding?: number) => boolean;
   canConductRaffle: () => boolean;
   hasApiSupport: () => boolean;
   hasBranding: () => boolean;
   hasCustomization: () => boolean;
-  
+
   // Quota functions
   getRemainingContestants: (currentCount: number) => number | null;
   getRemainingRaffles: () => number | null;
-  
+
   // Actions
   incrementRaffleCount: () => Promise<void>;
   updateSubscription: (subscription: UserSubscription) => Promise<void>;
   refreshSubscription: () => Promise<void>;
-  
+
   // Status
   getStatusMessage: () => string;
 }
@@ -58,24 +58,24 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     const initializeSubscription = async () => {
       try {
         setIsLoading(true);
-        
+
         let currentSubscription = await storage.getSubscription();
         const currentRaffleCount = await storage.getRaffleCount();
-        
+
         // If no subscription exists, create a starter subscription
         if (!currentSubscription) {
           currentSubscription = createStarterSubscription();
           await storage.saveSubscription(currentSubscription);
         }
-        
+
         // Update subscription status based on expiration
         const updatedSubscription = updateSubscriptionStatus(currentSubscription);
-        
+
         // Save if status changed
         if (updatedSubscription.isActive !== currentSubscription.isActive) {
           await storage.saveSubscription(updatedSubscription);
         }
-        
+
         setSubscription(updatedSubscription);
         setRaffleCount(currentRaffleCount);
       } catch (error) {
@@ -107,16 +107,16 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     try {
       const currentSubscription = await storage.getSubscription();
       const currentRaffleCount = await storage.getRaffleCount();
-      
+
       if (currentSubscription) {
         const updatedSubscription = updateSubscriptionStatus(currentSubscription);
         setSubscription(updatedSubscription);
-        
+
         if (updatedSubscription.isActive !== currentSubscription.isActive) {
           await storage.saveSubscription(updatedSubscription);
         }
       }
-      
+
       setRaffleCount(currentRaffleCount);
     } catch (error) {
       console.error('Failed to refresh subscription:', error);
@@ -186,32 +186,28 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     subscription,
     isLoading,
     raffleCount,
-    
+
     // Limit checking
     canAddContestants: checkCanAddContestants,
     canConductRaffle: checkCanConductRaffle,
     hasApiSupport: checkHasApiSupport,
     hasBranding: checkHasBranding,
     hasCustomization: checkHasCustomization,
-    
+
     // Quota functions
     getRemainingContestants,
     getRemainingRaffles,
-    
+
     // Actions
     incrementRaffleCount: incrementRaffleCountState,
     updateSubscription: updateSubscriptionState,
     refreshSubscription,
-    
+
     // Status
     getStatusMessage,
   };
 
-  return (
-    <SubscriptionContext.Provider value={value}>
-      {children}
-    </SubscriptionContext.Provider>
-  );
+  return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
 }
 
 export function useSubscription(): SubscriptionContextType {

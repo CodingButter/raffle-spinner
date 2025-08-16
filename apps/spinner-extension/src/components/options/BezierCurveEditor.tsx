@@ -17,35 +17,35 @@ interface BezierCurveEditorProps {
 
 // Preset curves for quick selection
 const PRESETS: { name: string; curve: BezierCurve; description: string }[] = [
-  { 
-    name: 'Linear', 
+  {
+    name: 'Linear',
     curve: { x1: 0, y1: 0, x2: 1, y2: 1 },
-    description: 'Constant speed throughout'
+    description: 'Constant speed throughout',
   },
-  { 
-    name: 'Ease In-Out', 
+  {
+    name: 'Ease In-Out',
     curve: { x1: 0.42, y1: 0, x2: 0.58, y2: 1 },
-    description: 'Slow start and end, fast middle'
+    description: 'Slow start and end, fast middle',
   },
-  { 
-    name: 'Ease Out', 
+  {
+    name: 'Ease Out',
     curve: { x1: 0, y1: 0, x2: 0.58, y2: 1 },
-    description: 'Fast start, slow end'
+    description: 'Fast start, slow end',
   },
-  { 
-    name: 'Ease In', 
+  {
+    name: 'Ease In',
     curve: { x1: 0.42, y1: 0, x2: 1, y2: 1 },
-    description: 'Slow start, fast end'
+    description: 'Slow start, fast end',
   },
-  { 
-    name: 'Dramatic', 
+  {
+    name: 'Dramatic',
     curve: { x1: 0.2, y1: 0.9, x2: 0.8, y2: 0.1 },
-    description: 'Very fast middle, very slow ends'
+    description: 'Very fast middle, very slow ends',
   },
-  { 
-    name: 'Smooth Stop', 
+  {
+    name: 'Smooth Stop',
     curve: { x1: 0.25, y1: 0.1, x2: 0.75, y2: 0.9 },
-    description: 'Gradual acceleration and deceleration'
+    description: 'Gradual acceleration and deceleration',
   },
 ];
 
@@ -145,46 +145,52 @@ export function BezierCurveEditor({ value, onChange }: BezierCurveEditorProps) {
   }
 
   // Handle mouse interactions for dragging control points
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
 
-    const p1x = value.x1 * canvas.width;
-    const p1y = canvas.height - value.y1 * canvas.height;
-    const p2x = value.x2 * canvas.width;
-    const p2y = canvas.height - value.y2 * canvas.height;
+      const p1x = value.x1 * canvas.width;
+      const p1y = canvas.height - value.y1 * canvas.height;
+      const p2x = value.x2 * canvas.width;
+      const p2y = canvas.height - value.y2 * canvas.height;
 
-    // Check if clicking on control points
-    const dist1 = Math.sqrt((x - p1x) ** 2 + (y - p1y) ** 2);
-    const dist2 = Math.sqrt((x - p2x) ** 2 + (y - p2y) ** 2);
+      // Check if clicking on control points
+      const dist1 = Math.sqrt((x - p1x) ** 2 + (y - p1y) ** 2);
+      const dist2 = Math.sqrt((x - p2x) ** 2 + (y - p2y) ** 2);
 
-    if (dist1 < 15) {
-      setIsDragging('p1');
-    } else if (dist2 < 15) {
-      setIsDragging('p2');
-    }
-  }, [value]);
+      if (dist1 < 15) {
+        setIsDragging('p1');
+      } else if (dist2 < 15) {
+        setIsDragging('p2');
+      }
+    },
+    [value]
+  );
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDragging) return;
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!isDragging) return;
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / canvas.width));
-    const y = Math.max(0, Math.min(1, 1 - (e.clientY - rect.top) / canvas.height));
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / canvas.width));
+      const y = Math.max(0, Math.min(1, 1 - (e.clientY - rect.top) / canvas.height));
 
-    if (isDragging === 'p1') {
-      onChange({ ...value, x1: x, y1: y });
-    } else if (isDragging === 'p2') {
-      onChange({ ...value, x2: x, y2: y });
-    }
-  }, [isDragging, value, onChange]);
+      if (isDragging === 'p1') {
+        onChange({ ...value, x1: x, y1: y });
+      } else if (isDragging === 'p2') {
+        onChange({ ...value, x2: x, y2: y });
+      }
+    },
+    [isDragging, value, onChange]
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(null);
@@ -281,9 +287,7 @@ export function BezierCurveEditor({ value, onChange }: BezierCurveEditorProps) {
               <Button
                 key={preset.name}
                 variant={
-                  JSON.stringify(value) === JSON.stringify(preset.curve)
-                    ? 'default'
-                    : 'outline'
+                  JSON.stringify(value) === JSON.stringify(preset.curve) ? 'default' : 'outline'
                 }
                 size="sm"
                 onClick={() => onChange(preset.curve)}
@@ -299,7 +303,8 @@ export function BezierCurveEditor({ value, onChange }: BezierCurveEditorProps) {
         <div className="space-y-2">
           <label className="text-sm font-medium">CSS Value</label>
           <code className="block p-2 bg-gray-800 rounded text-xs">
-            cubic-bezier({value.x1.toFixed(2)}, {value.y1.toFixed(2)}, {value.x2.toFixed(2)}, {value.y2.toFixed(2)})
+            cubic-bezier({value.x1.toFixed(2)}, {value.y1.toFixed(2)}, {value.x2.toFixed(2)},{' '}
+            {value.y2.toFixed(2)})
           </code>
         </div>
       </CardContent>

@@ -38,7 +38,8 @@ function SidePanelContent() {
   const { competitions, selectedCompetition, selectCompetition } = useCompetitions();
   const { settings } = useSettings();
   const { theme } = useTheme();
-  const { canConductRaffle, incrementRaffleCount, getRemainingRaffles, hasBranding } = useSubscription();
+  const { canConductRaffle, incrementRaffleCount, getRemainingRaffles, hasBranding } =
+    useSubscription();
   const [ticketNumber, setTicketNumber] = useState('');
   const [isSpinning, setIsSpinning] = useState(false);
   const [sessionWinners, setSessionWinners] = useState<Winner[]>([]);
@@ -137,27 +138,33 @@ function SidePanelContent() {
         <div className="w-full h-32 relative overflow-hidden bg-card border-b border-border">
           {/* Banner Image - Competition banner takes priority over default banner */}
           {(selectedCompetition?.bannerImage || theme.branding.bannerImage) && (
-            <img 
-              src={selectedCompetition?.bannerImage || theme.branding.bannerImage} 
-              alt={selectedCompetition?.bannerImage ? `${selectedCompetition.name} Banner` : "Company Banner"} 
+            <img
+              src={selectedCompetition?.bannerImage || theme.branding.bannerImage}
+              alt={
+                selectedCompetition?.bannerImage
+                  ? `${selectedCompetition.name} Banner`
+                  : 'Company Banner'
+              }
               className="absolute inset-0 w-full h-full object-cover"
             />
           )}
-          
+
           {/* Logo and Company Name Overlay */}
           {(theme.branding.logoImage || theme.branding.companyName) && (
-            <div 
+            <div
               className={`absolute inset-0 flex items-center px-6 ${
-                theme.branding.logoPosition === 'left' ? 'justify-start' :
-                theme.branding.logoPosition === 'right' ? 'justify-end' :
-                'justify-center'
+                theme.branding.logoPosition === 'left'
+                  ? 'justify-start'
+                  : theme.branding.logoPosition === 'right'
+                    ? 'justify-end'
+                    : 'justify-center'
               }`}
             >
               <div className="flex items-center gap-3 bg-black/30 backdrop-blur-sm rounded-lg px-4 py-2">
                 {theme.branding.logoImage && (
-                  <img 
-                    src={theme.branding.logoImage} 
-                    alt="Company Logo" 
+                  <img
+                    src={theme.branding.logoImage}
+                    alt="Company Logo"
                     className="h-16 w-auto object-contain drop-shadow-lg"
                   />
                 )}
@@ -169,7 +176,7 @@ function SidePanelContent() {
               </div>
             </div>
           )}
-          
+
           {/* Fallback gradient if no banner image */}
           {!selectedCompetition?.bannerImage && !theme.branding.bannerImage && (
             <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-90" />

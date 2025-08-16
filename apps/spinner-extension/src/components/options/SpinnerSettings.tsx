@@ -45,9 +45,7 @@ export function SpinnerSettings({ settings, onUpdate }: SpinnerSettingsProps) {
             {/* Total Duration */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Label htmlFor="duration">
-                  Total Duration: {settings.minSpinDuration} seconds
-                </Label>
+                <Label htmlFor="duration">Total Duration: {settings.minSpinDuration} seconds</Label>
                 <InfoTooltip content="How long the entire spin animation takes from start to finish" />
               </div>
               <Slider
@@ -67,9 +65,7 @@ export function SpinnerSettings({ settings, onUpdate }: SpinnerSettingsProps) {
             {/* Total Rotations */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Label htmlFor="rotations">
-                  Total Rotations: {spinRotations} full spins
-                </Label>
+                <Label htmlFor="rotations">Total Rotations: {spinRotations} full spins</Label>
                 <InfoTooltip content="How many complete 360° rotations the wheel makes" />
               </div>
               <Slider
@@ -81,9 +77,7 @@ export function SpinnerSettings({ settings, onUpdate }: SpinnerSettingsProps) {
                 onValueChange={([value]) => onUpdate({ spinRotations: value })}
                 className="w-full"
               />
-              <p className="text-xs text-muted-foreground">
-                More rotations create more suspense
-              </p>
+              <p className="text-xs text-muted-foreground">More rotations create more suspense</p>
             </div>
 
             {/* Quick presets for common scenarios */}
@@ -91,31 +85,37 @@ export function SpinnerSettings({ settings, onUpdate }: SpinnerSettingsProps) {
               <Label>Quick Presets</Label>
               <div className="grid grid-cols-3 gap-2">
                 <button
-                  onClick={() => onUpdate({
-                    minSpinDuration: 2,
-                    spinRotations: 3,
-                    bezierCurve: { x1: 0, y1: 0, x2: 0.58, y2: 1 }
-                  })}
+                  onClick={() =>
+                    onUpdate({
+                      minSpinDuration: 2,
+                      spinRotations: 3,
+                      bezierCurve: { x1: 0, y1: 0, x2: 0.58, y2: 1 },
+                    })
+                  }
                   className="px-3 py-2 text-sm bg-secondary hover:bg-secondary/80 rounded-md transition-colors"
                 >
                   Quick Draw
                 </button>
                 <button
-                  onClick={() => onUpdate({
-                    minSpinDuration: 3,
-                    spinRotations: 5,
-                    bezierCurve: { x1: 0.42, y1: 0, x2: 0.58, y2: 1 }
-                  })}
+                  onClick={() =>
+                    onUpdate({
+                      minSpinDuration: 3,
+                      spinRotations: 5,
+                      bezierCurve: { x1: 0.42, y1: 0, x2: 0.58, y2: 1 },
+                    })
+                  }
                   className="px-3 py-2 text-sm bg-secondary hover:bg-secondary/80 rounded-md transition-colors"
                 >
                   Standard
                 </button>
                 <button
-                  onClick={() => onUpdate({
-                    minSpinDuration: 5,
-                    spinRotations: 8,
-                    bezierCurve: { x1: 0.2, y1: 0.9, x2: 0.8, y2: 0.1 }
-                  })}
+                  onClick={() =>
+                    onUpdate({
+                      minSpinDuration: 5,
+                      spinRotations: 8,
+                      bezierCurve: { x1: 0.2, y1: 0.9, x2: 0.8, y2: 0.1 },
+                    })
+                  }
                   className="px-3 py-2 text-sm bg-secondary hover:bg-secondary/80 rounded-md transition-colors"
                 >
                   Dramatic
