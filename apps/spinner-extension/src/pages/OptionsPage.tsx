@@ -273,7 +273,10 @@ function OptionsContent() {
             </CardHeader>
             {isPro && !collapsedSections.theme && (
               <CardContent>
-                <SpinnerCustomization />
+                <ColorSchemeSelector />
+                <div className="mt-6">
+                  <SpinnerCustomization />
+                </div>
                 <div className="mt-6">
                   <ThemeColors />
                 </div>

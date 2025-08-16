@@ -103,7 +103,6 @@ export function ColorsTab({
         <ColorButton
           label="Panel Color"
           color={theme.spinnerStyle.backgroundColor}
-          field="backgroundColor"
           isOpen={activeColorPicker === 'backgroundColor'}
           onOpenChange={(open) => setActiveColorPicker(open ? 'backgroundColor' : null)}
           onColorChange={(color) => handleColorChange('backgroundColor', color)}
@@ -111,7 +110,6 @@ export function ColorsTab({
         <ColorButton
           label="Name Color"
           color={theme.spinnerStyle.nameColor}
-          field="nameColor"
           isOpen={activeColorPicker === 'nameColor'}
           onOpenChange={(open) => setActiveColorPicker(open ? 'nameColor' : null)}
           onColorChange={(color) => handleColorChange('nameColor', color)}
@@ -119,7 +117,6 @@ export function ColorsTab({
         <ColorButton
           label="Ticket Color"
           color={theme.spinnerStyle.ticketColor}
-          field="ticketColor"
           isOpen={activeColorPicker === 'ticketColor'}
           onOpenChange={(open) => setActiveColorPicker(open ? 'ticketColor' : null)}
           onColorChange={(color) => handleColorChange('ticketColor', color)}
@@ -127,7 +124,6 @@ export function ColorsTab({
         <ColorButton
           label="Border"
           color={theme.spinnerStyle.borderColor}
-          field="borderColor"
           isOpen={activeColorPicker === 'borderColor'}
           onOpenChange={(open) => setActiveColorPicker(open ? 'borderColor' : null)}
           onColorChange={(color) => handleColorChange('borderColor', color)}
@@ -135,7 +131,6 @@ export function ColorsTab({
         <ColorButton
           label="Highlight"
           color={theme.spinnerStyle.highlightColor}
-          field="highlightColor"
           isOpen={activeColorPicker === 'highlightColor'}
           onOpenChange={(open) => setActiveColorPicker(open ? 'highlightColor' : null)}
           onColorChange={(color) => handleColorChange('highlightColor', color)}
