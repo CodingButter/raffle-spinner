@@ -37,10 +37,6 @@ export type {
   SessionWinner,
   SpinnerSession,
 
-  // Session Types
-  SessionWinner,
-  SpinnerSession,
-
   // Storage Types
   StorageData,
 

@@ -31,7 +31,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Get current subscription details
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const subscription = (await stripe.subscriptions.retrieve(
+      subscriptionId
+    )) as Stripe.Subscription;
     const currentPriceId = subscription.items.data[0]?.price.id;
     const currentPrice = subscription.items.data[0]?.price;
 
@@ -122,7 +124,7 @@ export async function POST(request: NextRequest) {
         console.error('Failed to create proration preview:', error);
         // Fallback to manual calculation
         const daysRemaining = Math.ceil(
-          (subscription.current_period_end * 1000 - Date.now()) / (1000 * 60 * 60 * 24)
+          ((subscription as any).current_period_end * 1000 - Date.now()) / (1000 * 60 * 60 * 24)
         );
         const dailyDifference = (newProduct.price - currentPlanPrice) / 30;
         const estimatedProration = Math.round(dailyDifference * daysRemaining * 100);
@@ -140,7 +142,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate timing information
-    const currentPeriodEnd = subscription.current_period_end;
+    const currentPeriodEnd = (subscription as any).current_period_end;
     const daysRemaining = Math.ceil((currentPeriodEnd * 1000 - Date.now()) / (1000 * 60 * 60 * 24));
 
     return NextResponse.json({
