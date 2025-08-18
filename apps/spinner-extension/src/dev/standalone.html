@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DrawDay Spinner - Standalone Dev Mode</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f0f0f;
+      color: #fff;
+    }
+    
+    .dev-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .dev-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: #1a1a1a;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .dev-header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    
+    .dev-controls {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .dev-button {
+      padding: 8px 16px;
+      background: #4ECDC4;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    .dev-button:hover {
+      background: #45B7D1;
+    }
+    
+    .dev-panels {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 20px;
+      height: calc(100vh - 160px);
+    }
+    
+    .panel {
+      background: #1a1a1a;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .panel-header {
+      padding: 12px 16px;
+      background: #2a2a2a;
+      border-bottom: 1px solid #333;
+      font-weight: 500;
+    }
+    
+    .panel-content {
+      flex: 1;
+      overflow: auto;
+    }
+    
+    #sidepanel-root,
+    #options-root {
+      height: 100%;
+    }
+    
+    .chrome-api-status {
+      padding: 16px;
+    }
+    
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #333;
+    }
+    
+    .status-badge {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .status-mocked {
+      background: #FFB84D;
+      color: #000;
+    }
+    
+    .status-ready {
+      background: #4ECDC4;
+      color: #000;
+    }
+    
+    .storage-viewer {
+      padding: 16px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+    }
+    
+    .storage-content {
+      background: #0f0f0f;
+      padding: 12px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="dev-container">
+    <div class="dev-header">
+      <h1>🚀 DrawDay Spinner - Standalone Dev Mode</h1>
+      <div class="dev-controls">
+        <button class="dev-button" onclick="window.location.reload()">Refresh</button>
+        <button class="dev-button" onclick="clearStorage()">Clear Storage</button>
+        <button class="dev-button" onclick="loadMockData()">Load Mock Data</button>
+        <button class="dev-button" onclick="toggleView()">Toggle View</button>
+      </div>
+    </div>
+    
+    <div class="dev-panels">
+      <div class="panel">
+        <div class="panel-header">Side Panel</div>
+        <div class="panel-content">
+          <div id="sidepanel-root"></div>
+        </div>
+      </div>
+      
+      <div class="panel" id="options-panel">
+        <div class="panel-header">Options Page</div>
+        <div class="panel-content">
+          <div id="options-root"></div>
+        </div>
+      </div>
+      
+      <div class="panel" id="debug-panel" style="display: none;">
+        <div class="panel-header">Debug Info</div>
+        <div class="panel-content">
+          <div class="chrome-api-status">
+            <h3>Chrome API Status</h3>
+            <div class="status-item">
+              <span>chrome.storage</span>
+              <span class="status-badge status-mocked">Mocked</span>
+            </div>
+            <div class="status-item">
+              <span>chrome.runtime</span>
+              <span class="status-badge status-mocked">Mocked</span>
+            </div>
+            <div class="status-item">
+              <span>chrome.tabs</span>
+              <span class="status-badge status-mocked">Mocked</span>
+            </div>
+            <div class="status-item">
+              <span>chrome.sidePanel</span>
+              <span class="status-badge status-mocked">Mocked</span>
+            </div>
+          </div>
+          
+          <div class="storage-viewer">
+            <h3>Storage State</h3>
+            <div class="storage-content" id="storage-content">
+              {}
+            </div>
+            <button class="dev-button" style="margin-top: 10px;" onclick="refreshStorage()">
+              Refresh Storage View
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module">
+    // Setup Chrome API mocks before loading the app
+    import { chromeStorageMock } from '../test/mocks/chrome-storage.js';
+    import { chromeRuntimeMock } from '../test/mocks/chrome-runtime.js';
+    import { chromeTabsMock } from '../test/mocks/chrome-tabs.js';
+    
+    window.chrome = {
+      storage: {
+        local: chromeStorageMock,
+        sync: chromeStorageMock,
+        managed: chromeStorageMock,
+        session: chromeStorageMock,
+      },
+      runtime: chromeRuntimeMock,
+      tabs: chromeTabsMock,
+      sidePanel: {
+        open: () => Promise.resolve(),
+        setOptions: () => Promise.resolve(),
+        setPanelBehavior: () => Promise.resolve(),
+      },
+      action: {
+        onClicked: {
+          addListener: () => {},
+          removeListener: () => {},
+        },
+        setBadgeText: () => Promise.resolve(),
+        setBadgeBackgroundColor: () => Promise.resolve(),
+      },
+    };
+    
+    // Global functions for dev controls
+    window.clearStorage = () => {
+      chromeStorageMock._reset();
+      refreshStorage();
+      console.log('Storage cleared');
+    };
+    
+    window.loadMockData = () => {
+      chromeStorageMock._setData({
+        competitions: [{
+          id: 'dev-comp-1',
+          name: 'Dev Test Competition',
+          participants: [
+            { firstName: 'Alice', lastName: 'Developer', ticketNumber: 'DEV001' },
+            { firstName: 'Bob', lastName: 'Tester', ticketNumber: 'DEV002' },
+            { firstName: 'Charlie', lastName: 'Designer', ticketNumber: 'DEV003' },
+            { firstName: 'Diana', lastName: 'Manager', ticketNumber: 'DEV004' },
+          ],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }],
+        currentCompetitionId: 'dev-comp-1',
+        settings: {
+          minSpinDuration: 3,
+          maxSpinDuration: 5,
+          decelerationRate: 0.98,
+          soundEnabled: true,
+          confettiEnabled: true,
+          wheelColors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A'],
+          backgroundColor: '#1a1a2e',
+          textColor: '#ffffff',
+        },
+      });
+      refreshStorage();
+      console.log('Mock data loaded');
+    };
+    
+    window.toggleView = () => {
+      const optionsPanel = document.getElementById('options-panel');
+      const debugPanel = document.getElementById('debug-panel');
+      
+      if (optionsPanel.style.display === 'none') {
+        optionsPanel.style.display = '';
+        debugPanel.style.display = 'none';
+      } else {
+        optionsPanel.style.display = 'none';
+        debugPanel.style.display = '';
+      }
+    };
+    
+    window.refreshStorage = () => {
+      const storageContent = document.getElementById('storage-content');
+      const data = chromeStorageMock._getData();
+      storageContent.textContent = JSON.stringify(data, null, 2);
+    };
+    
+    // Listen for storage changes
+    chromeStorageMock.onChanged.addListener((changes, areaName) => {
+      console.log('Storage changed:', changes);
+      refreshStorage();
+    });
+    
+    // Initial storage refresh
+    refreshStorage();
+  </script>
+  
+  <script type="module" src="/src/sidepanel.tsx"></script>
+  <script type="module" src="/src/options.tsx"></script>
+</body>
+</html>
