@@ -10,7 +10,7 @@
       "args": ["--yes", "--package=butter-code-health@latest", "code-health-mcp"],
       "env": {
         "CODE_HEALTH_AUTO_START": "true",
-        "CODE_HEALTH_PORT": "3021"
+        "CODE_HEALTH_PORT": "43112"
       }
     },
     "memento": {
@@ -26,6 +26,28 @@
         "OPENAI_EMBEDDING_MODEL": "text-embedding-3-small",
         "TEAM_NAME": "DrawDay Development Team",
         "TEAM_ID": "drawday-dev-team"
+      }
+    },
+    "elevenlabs": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["elevenlabs-mcp"],
+      "env": {
+        "ELEVENLABS_API_KEY": "sk_9d262b4ef8c9773d64201e2c9ec82dc9c5453456808af0dc"
+      }
+    },
+    "elevenlabs-streaming": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "elevenlabs-streaming-mcp-server"],
+      "env": {
+        "ELEVENLABS_API_KEY": "sk_9d262b4ef8c9773d64201e2c9ec82dc9c5453456808af0dc",
+        "ELEVENLABS_VOICE_ID": "cgSgspJ2msm6clMCkdW9",
+        "ELEVENLABS_MODEL_ID": "eleven_turbo_v2",
+        "ELEVENLABS_OUTPUT_FORMAT": "mp3_44100_128",
+        "ELEVENLABS_STABILITY": "0.5",
+        "ELEVENLABS_SIMILARITY_BOOST": "0.8",
+        "ELEVENLABS_STYLE": "0.0"
       }
     }
   }

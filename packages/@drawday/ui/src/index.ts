@@ -15,6 +15,7 @@ export * from './components/card';
 export * from './components/input';
 export * from './components/label';
 export * from './components/select';
+export * from './components/radio-group';
 
 // Dialog components
 export * from './components/dialog';
@@ -25,3 +26,7 @@ export * from './badge-component';
 
 // Utility functions
 export { cn } from './lib/utils';
+
+// Layout components
+export * from './components/user-info-bar';
+export * from './components/collapsible-card';

@@ -80,20 +80,15 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 // Create context
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-// Provider component
-export function AuthProvider({
-  children,
-  authService: customAuthService,
-}: {
-  children: React.ReactNode;
-  authService?: typeof authService;
-}) {
-  const [state, dispatch] = useReducer(authReducer, initialState);
-  const service = customAuthService || authService;
+// Helper to extract subscription from user object
+function extractSubscription(user: any): Subscription | null {
+  return user?.subscriptions?.[0] || null;
+}
 
-  const checkAuth = useCallback(async () => {
+// Helper to create auth methods
+function useCheckAuth(service: typeof authService, dispatch: React.Dispatch<AuthAction>) {
+  return useCallback(async () => {
     dispatch({ type: 'AUTH_START' });
-
     try {
       const tokens = service.getStoredTokens();
       const user = service.getStoredUser();
@@ -103,53 +98,43 @@ export function AuthProvider({
         return;
       }
 
-      // Check if token is expired
       if (service.isTokenExpired(tokens.expires)) {
-        // Try to refresh
         const newTokens = await service.refreshToken(tokens.refresh_token);
         const currentUser = await service.getCurrentUser(newTokens.access_token);
-
-        // Use subscriptions from user object (included in /me response)
-        const subscription = (currentUser as any).subscriptions?.[0] || null;
-
         dispatch({
           type: 'AUTH_SUCCESS',
-          payload: { user: currentUser, tokens: newTokens, subscription },
+          payload: {
+            user: currentUser,
+            tokens: newTokens,
+            subscription: extractSubscription(currentUser),
+          },
         });
       } else {
-        // Token still valid - use subscriptions from stored user
-        const subscription = (user as any).subscriptions?.[0] || null;
-
         dispatch({
           type: 'AUTH_SUCCESS',
-          payload: { user, tokens, subscription },
+          payload: { user, tokens, subscription: extractSubscription(user) },
         });
       }
     } catch (error) {
       service.clearStorage();
       dispatch({ type: 'AUTH_ERROR', payload: 'Authentication check failed' });
     }
-  }, [service]);
+  }, [service, dispatch]);
+}
 
-  // Check authentication on mount
-  useEffect(() => {
-    checkAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+function useAuthActions(
+  service: typeof authService,
+  state: AuthState,
+  dispatch: React.Dispatch<AuthAction>
+) {
   const login = useCallback(
     async (credentials: { email: string; password: string }) => {
       dispatch({ type: 'AUTH_START' });
-
       try {
         const { user, tokens } = await service.login(credentials);
-
-        // Use subscriptions from user object (included in getCurrentUser response)
-        const subscription = (user as any).subscriptions?.[0] || null;
-
         dispatch({
           type: 'AUTH_SUCCESS',
-          payload: { user, tokens, subscription },
+          payload: { user, tokens, subscription: extractSubscription(user) },
         });
       } catch (error) {
         dispatch({
@@ -159,21 +144,19 @@ export function AuthProvider({
         throw error;
       }
     },
-    [service]
+    [service, dispatch]
   );
 
   const logout = useCallback(async () => {
     await service.logout(state.tokens?.refresh_token);
     dispatch({ type: 'LOGOUT' });
-  }, [state.tokens, service]);
+  }, [state.tokens, service, dispatch]);
 
   const register = useCallback(
     async (data: { email: string; password: string; first_name?: string; last_name?: string }) => {
       dispatch({ type: 'AUTH_START' });
-
       try {
         const { user, tokens } = await service.register(data);
-
         dispatch({
           type: 'AUTH_SUCCESS',
           payload: { user, tokens, subscription: null },
@@ -186,32 +169,26 @@ export function AuthProvider({
         throw error;
       }
     },
-    [service]
+    [service, dispatch]
   );
 
   const refreshToken = useCallback(async () => {
     if (!state.tokens) return;
-
     try {
       const newTokens = await service.refreshToken(state.tokens.refresh_token);
       dispatch({
         type: 'AUTH_SUCCESS',
-        payload: {
-          user: state.user!,
-          tokens: newTokens,
-          subscription: state.subscription,
-        },
+        payload: { user: state.user!, tokens: newTokens, subscription: state.subscription },
       });
     } catch (error) {
       dispatch({ type: 'LOGOUT' });
       throw error;
     }
-  }, [state.tokens, state.user, state.subscription, service]);
+  }, [state.tokens, state.user, state.subscription, service, dispatch]);
 
   const updateUser = useCallback(
     async (updates: Partial<User>) => {
       if (!state.user || !state.tokens) return;
-
       const updatedUser = await service.updateUser(
         state.user.id,
         updates,
@@ -219,19 +196,33 @@ export function AuthProvider({
       );
       dispatch({ type: 'UPDATE_USER', payload: updatedUser });
     },
-    [state.user, state.tokens, service]
+    [state.user, state.tokens, service, dispatch]
   );
 
-  const value: AuthContextValue = {
-    ...state,
-    login,
-    logout,
-    register,
-    refreshToken,
-    updateUser,
-    checkAuth,
-  };
+  return { login, logout, register, refreshToken, updateUser };
+}
 
+// Provider component
+export function AuthProvider({
+  children,
+  authService: customAuthService,
+}: {
+  children: React.ReactNode;
+  authService?: typeof authService;
+}) {
+  const [state, dispatch] = useReducer(authReducer, initialState);
+  const service = customAuthService || authService;
+
+  const checkAuth = useCheckAuth(service, dispatch);
+  const authActions = useAuthActions(service, state, dispatch);
+
+  // Check authentication on mount
+  useEffect(() => {
+    checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const value: AuthContextValue = { ...state, checkAuth, ...authActions };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

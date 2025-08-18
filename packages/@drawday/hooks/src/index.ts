@@ -18,3 +18,6 @@ export {
 
 // Performance hooks
 export { useDebounce, useDebounceCallback } from './useDebounce';
+
+// Modal management hooks
+export { useModalManager } from './useModalManager';

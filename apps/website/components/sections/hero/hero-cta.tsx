@@ -16,7 +16,7 @@ export function HeroCTA({ primaryLink, primaryText }: HeroCTAProps) {
       <Link href={primaryLink}>
         <Button
           size="lg"
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-6 text-lg rounded-xl shadow-2xl shadow-purple-500/25"
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg shadow-2xl shadow-purple-500/25 w-full sm:w-auto"
         >
           {primaryText}
           <ArrowRight className="ml-2 w-5 h-5" />
@@ -25,7 +25,7 @@ export function HeroCTA({ primaryLink, primaryText }: HeroCTAProps) {
       <Button
         size="lg"
         variant="outline"
-        className="border-gray-700 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-xl"
+        className="border-gray-700 text-white hover:bg-white/10 text-lg w-full sm:w-auto"
       >
         <Play className="mr-2 w-5 h-5" />
         Watch Demo

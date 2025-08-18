@@ -11,78 +11,29 @@ import type {
   ThemeColors,
   SpinnerStyle,
   BrandingSettings,
+  ColorScheme,
 } from '@raffle-spinner/storage';
-
-// Get system color scheme preference
-const getSystemColorScheme = () => {
-  if (typeof window !== 'undefined' && window.matchMedia) {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-  return 'light';
-};
-
-// Default theme configuration - Adapts to system preference
-const DEFAULT_COLORS: ThemeColors = (() => {
-  const isDark = getSystemColorScheme() === 'dark';
-
-  return {
-    primary: '#0b1e3a', // DrawDay Navy - Primary brand color
-    secondary: '#e6b540', // DrawDay Gold - Brand accent
-    accent: '#e6b540', // DrawDay Gold - Highlight
-    background: isDark ? '#0c0e11' : '#fdfeff', // Night for dark, White for light
-    foreground: isDark ? '#fdfeff' : '#161b21', // White text on dark, Rich Black on light
-    card: isDark ? '#161b21' : '#fdfeff', // Rich Black for dark, White for light
-    cardForeground: isDark ? '#fdfeff' : '#161b21', // White on dark, Rich Black on light
-    winner: '#e6b540', // DrawDay Gold for winner highlight
-    winnerGlow: '#e6b540', // DrawDay Gold glow
-  };
-})();
-
-const DEFAULT_SPINNER_STYLE: SpinnerStyle = (() => {
-  const isDark = getSystemColorScheme() === 'dark';
-
-  return {
-    type: 'slotMachine',
-    nameSize: 'large',
-    ticketSize: 'extra-large',
-    nameColor: isDark ? '#fdfeff' : '#161b21', // White on dark, Rich Black on light
-    ticketColor: '#e6b540', // DrawDay Gold - Ticket numbers
-    backgroundColor: isDark ? '#161b21' : '#fdfeff', // Rich Black for dark, White for light
-    canvasBackground: 'transparent', // Always transparent for clean overlay
-    topShadowOpacity: 0.3, // Top shadow opacity
-    bottomShadowOpacity: 0.3, // Bottom shadow opacity
-    shadowSize: 30, // Shadow size as percentage
-    shadowColor: undefined, // Use panel background by default
-    borderColor: '#e6b540', // DrawDay Gold - Borders
-    highlightColor: '#e6b540', // DrawDay Gold - Highlights
-    fontFamily: 'system-ui',
-  };
-})();
-
-const DEFAULT_BRANDING: BrandingSettings = {
-  logoPosition: 'center',
-  showCompanyName: true,
-};
-
-const DEFAULT_THEME: ThemeSettings = {
-  colors: DEFAULT_COLORS,
-  spinnerStyle: DEFAULT_SPINNER_STYLE,
-  branding: DEFAULT_BRANDING,
-};
+import { getDefaultTheme, getDefaultColors, getDefaultSpinnerStyle, DEFAULT_BRANDING, getSystemColorScheme } from './theme-defaults';
+import { applyThemeToDOM } from './theme-dom';
 
 interface ThemeContextType {
   theme: ThemeSettings;
   updateColors: (colors: Partial<ThemeColors>) => Promise<void>;
   updateSpinnerStyle: (style: Partial<SpinnerStyle>) => Promise<void>;
   updateBranding: (branding: Partial<BrandingSettings>) => Promise<void>;
+  updateColorScheme: (scheme: ColorScheme) => Promise<void>;
   resetTheme: () => Promise<void>;
   applyCustomCSS: (css: string) => Promise<void>;
+  effectiveColorScheme: 'light' | 'dark'; // Resolved color scheme (never 'system')
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<ThemeSettings>(DEFAULT_THEME);
+  const [theme, setTheme] = useState<ThemeSettings>(getDefaultTheme());
+  const [effectiveColorScheme, setEffectiveColorScheme] = useState<'light' | 'dark'>(
+    getSystemColorScheme() as 'light' | 'dark'
+  );
 
   useEffect(() => {
     loadTheme();
@@ -93,19 +44,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const newData = changes.data.newValue;
         if (newData?.theme) {
           setTheme(newData.theme);
+          updateEffectiveColorScheme(newData.theme.colorScheme);
         }
       }
     };
 
     // Listen for system color scheme changes
     const handleColorSchemeChange = () => {
-      // If no custom theme is saved, update defaults based on system preference
-      chrome.storage.local.get('data').then((result) => {
-        if (!result.data?.theme) {
-          // Reset to new defaults when system theme changes
-          window.location.reload(); // Simple reload to apply new defaults
-        }
-      });
+      if (theme.colorScheme === 'system' || !theme.colorScheme) {
+        const newScheme = getSystemColorScheme() as 'light' | 'dark';
+        setEffectiveColorScheme(newScheme);
+        // Update theme colors based on new system preference
+        const isDark = newScheme === 'dark';
+        setTheme(prev => ({
+          ...prev,
+          colors: getDefaultColors(isDark),
+          spinnerStyle: getDefaultSpinnerStyle(isDark),
+        }));
+      }
     };
 
     chrome.storage.onChanged.addListener(handleStorageChange);
@@ -124,74 +80,46 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     applyThemeToDOM(theme);
   }, [theme]);
 
+  const updateEffectiveColorScheme = (scheme?: ColorScheme) => {
+    const resolvedScheme = scheme || 'system';
+    if (resolvedScheme === 'system') {
+      setEffectiveColorScheme(getSystemColorScheme() as 'light' | 'dark');
+    } else {
+      setEffectiveColorScheme(resolvedScheme as 'light' | 'dark');
+    }
+  };
+
   const loadTheme = async () => {
-    // Get the current theme from storage
     const result = await chrome.storage.local.get('data');
     const data = result.data || {};
     if (data.theme) {
+      const isDark = determineIsDark(data.theme.colorScheme);
       // Merge with defaults to ensure all properties exist
       const loadedTheme = {
-        colors: { ...DEFAULT_COLORS, ...data.theme.colors },
-        spinnerStyle: { ...DEFAULT_SPINNER_STYLE, ...data.theme.spinnerStyle },
+        colorScheme: data.theme.colorScheme || 'system',
+        colors: { ...getDefaultColors(isDark), ...data.theme.colors },
+        spinnerStyle: { ...getDefaultSpinnerStyle(isDark), ...data.theme.spinnerStyle },
         branding: { ...DEFAULT_BRANDING, ...data.theme.branding },
         customCSS: data.theme.customCSS,
       };
       setTheme(loadedTheme);
+      updateEffectiveColorScheme(loadedTheme.colorScheme);
     }
   };
 
-  const applyThemeToDOM = (theme: ThemeSettings) => {
-    const root = document.documentElement;
-
-    // Apply color variables
-    root.style.setProperty('--theme-primary', theme.colors.primary);
-    root.style.setProperty('--theme-secondary', theme.colors.secondary);
-    root.style.setProperty('--theme-accent', theme.colors.accent);
-    root.style.setProperty('--theme-background', theme.colors.background);
-    root.style.setProperty('--theme-foreground', theme.colors.foreground);
-    root.style.setProperty('--theme-card', theme.colors.card);
-    root.style.setProperty('--theme-card-foreground', theme.colors.cardForeground);
-    root.style.setProperty('--theme-winner', theme.colors.winner);
-    root.style.setProperty('--theme-winner-glow', theme.colors.winnerGlow);
-
-    // Apply spinner style variables
-    root.style.setProperty('--spinner-name-color', theme.spinnerStyle.nameColor);
-    root.style.setProperty('--spinner-ticket-color', theme.spinnerStyle.ticketColor);
-    root.style.setProperty('--spinner-bg-color', theme.spinnerStyle.backgroundColor);
-    root.style.setProperty('--spinner-border-color', theme.spinnerStyle.borderColor);
-    root.style.setProperty('--spinner-highlight-color', theme.spinnerStyle.highlightColor);
-
-    // Apply font sizes
-    const nameSizes: Record<string, string> = {
-      small: '14px',
-      medium: '16px',
-      large: '20px',
-      'extra-large': '24px',
-    };
-    const ticketSizes: Record<string, string> = {
-      small: '18px',
-      medium: '24px',
-      large: '32px',
-      'extra-large': '40px',
-    };
-
-    root.style.setProperty('--spinner-name-size', nameSizes[theme.spinnerStyle.nameSize]);
-    root.style.setProperty('--spinner-ticket-size', ticketSizes[theme.spinnerStyle.ticketSize]);
-
-    if (theme.spinnerStyle.fontFamily) {
-      root.style.setProperty('--spinner-font-family', theme.spinnerStyle.fontFamily);
+  const determineIsDark = (scheme?: ColorScheme): boolean => {
+    if (!scheme || scheme === 'system') {
+      return getSystemColorScheme() === 'dark';
     }
+    return scheme === 'dark';
+  };
 
-    // Apply custom CSS if provided
-    if (theme.customCSS) {
-      let styleElement = document.getElementById('custom-theme-styles');
-      if (!styleElement) {
-        styleElement = document.createElement('style');
-        styleElement.id = 'custom-theme-styles';
-        document.head.appendChild(styleElement);
-      }
-      styleElement.textContent = theme.customCSS;
-    }
+  const saveTheme = async (newTheme: ThemeSettings) => {
+    const result = await chrome.storage.local.get('data');
+    const data = result.data || {};
+    await chrome.storage.local.set({
+      data: { ...data, theme: newTheme },
+    });
   };
 
   const updateColors = async (colors: Partial<ThemeColors>) => {
@@ -200,12 +128,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       colors: { ...theme.colors, ...colors },
     };
     setTheme(newTheme);
-
-    const result = await chrome.storage.local.get('data');
-    const data = result.data || {};
-    await chrome.storage.local.set({
-      data: { ...data, theme: newTheme },
-    });
+    await saveTheme(newTheme);
   };
 
   const updateSpinnerStyle = async (style: Partial<SpinnerStyle>) => {
@@ -214,12 +137,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       spinnerStyle: { ...theme.spinnerStyle, ...style },
     };
     setTheme(newTheme);
-
-    const result = await chrome.storage.local.get('data');
-    const data = result.data || {};
-    await chrome.storage.local.set({
-      data: { ...data, theme: newTheme },
-    });
+    await saveTheme(newTheme);
   };
 
   const updateBranding = async (branding: Partial<BrandingSettings>) => {
@@ -228,33 +146,33 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       branding: { ...theme.branding, ...branding },
     };
     setTheme(newTheme);
+    await saveTheme(newTheme);
+  };
 
-    const result = await chrome.storage.local.get('data');
-    const data = result.data || {};
-    await chrome.storage.local.set({
-      data: { ...data, theme: newTheme },
-    });
+  const updateColorScheme = async (scheme: ColorScheme) => {
+    const isDark = determineIsDark(scheme);
+    const newTheme = {
+      ...theme,
+      colorScheme: scheme,
+      colors: getDefaultColors(isDark),
+      spinnerStyle: getDefaultSpinnerStyle(isDark),
+    };
+    setTheme(newTheme);
+    updateEffectiveColorScheme(scheme);
+    await saveTheme(newTheme);
   };
 
   const resetTheme = async () => {
-    setTheme(DEFAULT_THEME);
-
-    const result = await chrome.storage.local.get('data');
-    const data = result.data || {};
-    await chrome.storage.local.set({
-      data: { ...data, theme: DEFAULT_THEME },
-    });
+    const defaultTheme = getDefaultTheme();
+    setTheme(defaultTheme);
+    updateEffectiveColorScheme('system');
+    await saveTheme(defaultTheme);
   };
 
   const applyCustomCSS = async (css: string) => {
     const newTheme = { ...theme, customCSS: css };
     setTheme(newTheme);
-
-    const result = await chrome.storage.local.get('data');
-    const data = result.data || {};
-    await chrome.storage.local.set({
-      data: { ...data, theme: newTheme },
-    });
+    await saveTheme(newTheme);
   };
 
   return (
@@ -264,8 +182,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         updateColors,
         updateSpinnerStyle,
         updateBranding,
+        updateColorScheme,
         resetTheme,
         applyCustomCSS,
+        effectiveColorScheme,
       }}
     >
       {children}

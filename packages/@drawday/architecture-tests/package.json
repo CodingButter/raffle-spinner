@@ -1,0 +1,17 @@
+{
+  "name": "@drawday/architecture-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Architectural boundary and dependency tests",
+  "scripts": {
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:ci": "vitest --run"
+  },
+  "devDependencies": {
+    "@drawday/typescript-config": "workspace:*",
+    "vitest": "^1.6.0",
+    "typescript": "^5.5.4",
+    "glob": "^10.3.10"
+  }
+}

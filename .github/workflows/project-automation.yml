@@ -1,0 +1,168 @@
+name: GitHub Project Automation
+
+on:
+  issues:
+    types: [opened, reopened]
+  pull_request:
+    types: [opened, reopened]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in dry-run mode (no changes made)'
+        required: false
+        default: 'false'
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  add-to-project:
+    name: Add to Project with Status
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+        continue-on-error: true
+
+      - name: Set token
+        id: set-token
+        run: |
+          if [ -n "${{ steps.generate-token.outputs.token }}" ]; then
+            echo "token=${{ steps.generate-token.outputs.token }}" >> $GITHUB_OUTPUT
+            echo "Using GitHub App token"
+          elif [ -n "${{ secrets.PROJECT_PAT }}" ]; then
+            echo "token=${{ secrets.PROJECT_PAT }}" >> $GITHUB_OUTPUT
+            echo "Using PROJECT_PAT"
+          else
+            echo "token=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_OUTPUT
+            echo "Warning: Using GITHUB_TOKEN - may have limited permissions"
+          fi
+
+      - name: Add Issue to Project
+        if: github.event_name == 'issues'
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/users/CodingButter/projects/9
+          github-token: ${{ steps.set-token.outputs.token }}
+        id: add-issue
+
+      - name: Add PR to Project
+        if: github.event_name == 'pull_request'
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/users/CodingButter/projects/9
+          github-token: ${{ steps.set-token.outputs.token }}
+        id: add-pr
+
+      - name: Get Project Data
+        id: project-data
+        env:
+          GH_TOKEN: ${{ steps.set-token.outputs.token }}
+        run: |
+          # Get the item ID from previous step
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            ITEM_ID="${{ steps.add-issue.outputs.itemId }}"
+          else
+            ITEM_ID="${{ steps.add-pr.outputs.itemId }}"
+          fi
+          
+          echo "item_id=$ITEM_ID" >> $GITHUB_OUTPUT
+          
+          # Get project field IDs
+          PROJECT_DATA=$(gh api graphql -f query='
+            {
+              user(login: "CodingButter") {
+                projectV2(number: 9) {
+                  id
+                  fields(first: 20) {
+                    nodes {
+                      ... on ProjectV2SingleSelectField {
+                        id
+                        name
+                        options {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }')
+          
+          # Extract field and option IDs
+          PROJECT_ID=$(echo "$PROJECT_DATA" | jq -r '.data.user.projectV2.id')
+          STATUS_FIELD_ID=$(echo "$PROJECT_DATA" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .id')
+          BACKLOG_OPTION_ID=$(echo "$PROJECT_DATA" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "Backlog") | .id')
+          
+          echo "project_id=$PROJECT_ID" >> $GITHUB_OUTPUT
+          echo "status_field_id=$STATUS_FIELD_ID" >> $GITHUB_OUTPUT
+          echo "backlog_option_id=$BACKLOG_OPTION_ID" >> $GITHUB_OUTPUT
+          
+          # Debug output
+          echo "Project ID: $PROJECT_ID"
+          echo "Status Field ID: $STATUS_FIELD_ID"
+          echo "Backlog Option ID: $BACKLOG_OPTION_ID"
+          echo "Item ID: $ITEM_ID"
+
+      - name: Set Status to Backlog
+        if: steps.project-data.outputs.item_id != ''
+        env:
+          GH_TOKEN: ${{ steps.set-token.outputs.token }}
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "DRY RUN: Would set status to Backlog for item ${{ steps.project-data.outputs.item_id }}"
+            exit 0
+          fi
+          
+          # Set the status to Backlog
+          RESPONSE=$(gh api graphql -f query='
+            mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+              updateProjectV2ItemFieldValue(
+                input: {
+                  projectId: $projectId
+                  itemId: $itemId
+                  fieldId: $fieldId
+                  value: { singleSelectOptionId: $optionId }
+                }
+              ) {
+                projectV2Item {
+                  id
+                }
+              }
+            }' \
+            -F projectId="${{ steps.project-data.outputs.project_id }}" \
+            -F itemId="${{ steps.project-data.outputs.item_id }}" \
+            -F fieldId="${{ steps.project-data.outputs.status_field_id }}" \
+            -F optionId="${{ steps.project-data.outputs.backlog_option_id }}")
+          
+          echo "Status update response: $RESPONSE"
+          
+          # Check if the update was successful
+          if echo "$RESPONSE" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null; then
+            echo "✅ Successfully set status to Backlog"
+          else
+            echo "❌ Failed to set status to Backlog"
+            echo "$RESPONSE"
+            exit 1
+          fi
+
+      - name: Report Status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ Automation completed successfully"
+            if [ "${{ github.event_name }}" = "issues" ]; then
+              echo "Issue #${{ github.event.issue.number }} added to project with Backlog status"
+            else
+              echo "PR #${{ github.event.pull_request.number }} added to project with Backlog status"
+            fi
+          else
+            echo "⚠️ Automation encountered issues - manual intervention may be required"
+            echo "Check the logs above for details"
+          fi

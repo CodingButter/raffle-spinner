@@ -102,8 +102,8 @@ async function createOrUpdateSubscriptionInDirectus(
       status: subscription.status,
       starts_at: new Date(subscription.created * 1000).toISOString(),
       expires_at:
-        subscription.status === 'active' && subscription.current_period_end
-          ? new Date(subscription.current_period_end * 1000).toISOString()
+        subscription.status === 'active' && (subscription as any).current_period_end
+          ? new Date((subscription as any).current_period_end * 1000).toISOString()
           : null,
       stripe_subscription_id: subscription.id,
       raffle_count: 0, // Reset or preserve existing count
@@ -193,7 +193,19 @@ export async function handleSubscriptionUpdate(subscription: Stripe.Subscription
     // Determine tier from price ID
     const priceId = subscription.items.data[0]?.price.id;
     const tier = getTierFromPriceId(priceId);
-    console.log(`Updating ${customer.email} to ${tier} tier`);
+
+    // Check if this is a plan change
+    const changeType = subscription.metadata?.change_type;
+    const changeTimestamp = subscription.metadata?.change_timestamp;
+
+    if (changeType && changeTimestamp) {
+      console.log(`Processing ${changeType} for ${customer.email} to ${tier} tier`);
+
+      // Log the plan change for audit trail
+      await logPlanChange(customer.email, subscription, changeType, tier);
+    } else {
+      console.log(`Updating ${customer.email} to ${tier} tier`);
+    }
 
     // Create subscription in our new collections system
     await createOrUpdateSubscriptionInDirectus(customer.email, subscription, tier);
@@ -212,6 +224,11 @@ export async function handleSubscriptionUpdate(subscription: Stripe.Subscription
     });
 
     console.log(`Successfully updated subscription for ${customer.email} to ${tier}`);
+
+    // Send notification for plan changes
+    if (changeType) {
+      await sendPlanChangeNotification(customer.email, changeType, tier);
+    }
   } catch (error) {
     console.error('Failed to update subscription:', error);
   }
@@ -308,5 +325,63 @@ export async function handlePaymentFailed(invoice: Stripe.Invoice) {
     } catch (error) {
       console.error('Failed to update payment failed status:', error);
     }
+  }
+}
+
+// Helper function to log plan changes for audit trail
+async function logPlanChange(
+  userEmail: string,
+  subscription: Stripe.Subscription,
+  changeType: string,
+  newTier: string
+) {
+  try {
+    const token = await getAdminToken();
+
+    // Create audit log entry (assuming we have an audit_logs collection)
+    const auditData = {
+      user_email: userEmail,
+      action: 'subscription_plan_change',
+      details: {
+        subscription_id: subscription.id,
+        change_type: changeType,
+        new_tier: newTier,
+        change_timestamp: subscription.metadata?.change_timestamp,
+        scheduled_change: subscription.metadata?.scheduled_change === 'true',
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    // Note: This assumes an audit_logs collection exists
+    // If not, this will fail silently and just log to console
+    await fetch(`${DIRECTUS_URL}/items/audit_logs`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(auditData),
+    });
+
+    console.log(`Logged ${changeType} for ${userEmail} to ${newTier}`);
+  } catch (error) {
+    console.log('Note: Could not create audit log (collection may not exist):', error instanceof Error ? error.message : String(error));
+  }
+}
+
+// Helper function to send plan change notifications
+async function sendPlanChangeNotification(userEmail: string, changeType: string, newTier: string) {
+  try {
+    // TODO: Implement email notification system
+    // This could integrate with your email service (SendGrid, Mailgun, etc.)
+    console.log(`Plan change notification needed: ${changeType} to ${newTier} for ${userEmail}`);
+
+    // For now, just log the notification
+    // In a production system, you would:
+    // 1. Send email notification to user
+    // 2. Create in-app notification
+    // 3. Update user's notification preferences
+  } catch (error) {
+    console.error('Failed to send plan change notification:', error);
   }
 }

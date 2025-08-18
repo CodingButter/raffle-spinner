@@ -19,6 +19,7 @@ export type {
 
   // Configuration Types
   SpinnerSettings,
+  SpinnerSettings as Settings, // Alias for backward compatibility
   ColumnMapping,
   SavedMapping,
 
@@ -30,6 +31,11 @@ export type {
   SpinnerStyle,
   BrandingSettings,
   ThemeSettings,
+  ColorScheme,
+
+  // Session Types
+  SessionWinner,
+  SpinnerSession,
 
   // Storage Types
   StorageData,

@@ -4,6 +4,15 @@ import { twMerge } from 'tailwind-merge';
 // Export logger
 export { logger, LogLevel, type LogContext, type LoggerConfig } from './logger';
 
+// Export theme utilities
+export {
+  type SpinnerTheme,
+  type InternalThemeSettings,
+  adjustBrightness,
+  hexToRgb,
+  convertTheme,
+} from './theme-utils';
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -54,3 +63,6 @@ export function extractNumericTicket(ticket: string): string | null {
 export function isNumericTicket(ticket: string): boolean {
   return /^\d+$/.test(ticket.trim());
 }
+
+// URL utilities
+export * from './url-utils';

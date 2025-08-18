@@ -9,15 +9,11 @@ export default defineConfig({
     'src/alert.ts',
     'src/card.ts',
     'src/badge.ts',
+    'src/dialog.ts',
+    'src/radio-group.ts',
   ],
   format: ['cjs', 'esm'],
-  dts: {
-    resolve: true,
-    compilerOptions: {
-      jsx: 'react-jsx',
-      moduleResolution: 'bundler',
-    },
-  },
+  dts: true,
   clean: true,
   external: ['react', 'react-dom', '@drawday/utils'],
   sourcemap: true,

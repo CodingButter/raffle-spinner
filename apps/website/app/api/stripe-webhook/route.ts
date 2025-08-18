@@ -8,13 +8,20 @@ import {
   handlePaymentSucceeded,
   handlePaymentFailed,
 } from '@/lib/stripe-webhook-handlers';
+import { isEventProcessed, markEventCompleted } from '@/lib/webhook-idempotency';
+import { recordWebhookMetric, recordError } from '@/lib/metrics-collector';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(request: NextRequest) {
   if (!webhookSecret) {
+    console.error('🚨 Webhook secret not configured');
     return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
   }
+
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const startTime = Date.now();
+  console.log(`📥 Webhook request received: ${requestId}`);
 
   try {
     const stripe = getStripe();
@@ -22,6 +29,7 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get('stripe-signature');
 
     if (!signature) {
+      console.error(`❌ No signature provided: ${requestId}`);
       return NextResponse.json({ error: 'No signature provided' }, { status: 400 });
     }
 
@@ -29,9 +37,21 @@ export async function POST(request: NextRequest) {
     let event: Stripe.Event;
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+      console.log(`✅ Signature verified for ${event.type}: ${event.id}`);
     } catch (err) {
-      console.error('Webhook signature verification failed:', err);
+      console.error(`❌ Webhook signature verification failed: ${requestId}`, err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    }
+
+    // CRITICAL: Check idempotency - prevent duplicate processing
+    const alreadyProcessed = await isEventProcessed(event.id);
+    if (alreadyProcessed) {
+      console.log(`✅ Event ${event.id} already processed - skipping (idempotency)`);
+      return NextResponse.json({ 
+        received: true, 
+        event_id: event.id,
+        duplicate: true 
+      });
     }
 
     // Handle the event
@@ -68,12 +88,74 @@ export async function POST(request: NextRequest) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        console.log(`ℹ️ Unhandled event type: ${event.type}`);
     }
 
-    return NextResponse.json({ received: true });
+    // Mark event as completed for idempotency
+    await markEventCompleted(event.id);
+
+    // Record successful webhook processing metrics
+    const processingTime = Date.now() - startTime;
+    await recordWebhookMetric({
+      event_id: event.id,
+      event_type: event.type,
+      processing_time: processingTime,
+      status: 'success',
+      timestamp: new Date().toISOString()
+    });
+
+    console.log(`✅ Webhook processed successfully: ${event.type} (${event.id}) in ${processingTime}ms`);
+    return NextResponse.json({ 
+      received: true, 
+      event_id: event.id,
+      processed_at: new Date().toISOString(),
+      processing_time: processingTime
+    });
+    
   } catch (error) {
-    console.error('Webhook error:', error);
-    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+    console.error(`💥 Critical webhook error: ${requestId}`, error);
+    
+    // Record failed webhook processing metrics
+    const processingTime = Date.now() - startTime;
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
+    // Try to get event details for metrics, but don't fail if we can't
+    let eventId = requestId;
+    let eventType = 'unknown';
+    try {
+      const body = await request.clone().text();
+      const signature = request.headers.get('stripe-signature');
+      if (signature && webhookSecret) {
+        const stripe = getStripe();
+        const event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+        eventId = event.id;
+        eventType = event.type;
+      }
+    } catch (metricError) {
+      // Ignore errors when trying to extract event details for metrics
+    }
+    
+    await recordWebhookMetric({
+      event_id: eventId,
+      event_type: eventType,
+      processing_time: processingTime,
+      status: 'failed',
+      error_message: errorMessage,
+      timestamp: new Date().toISOString()
+    });
+    
+    await recordError({
+      service: 'stripe-webhook',
+      error_type: 'critical',
+      message: errorMessage,
+      stack_trace: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString(),
+      request_id: requestId
+    });
+    
+    return NextResponse.json({ 
+      error: 'Critical webhook processing failure',
+      request_id: requestId 
+    }, { status: 500 });
   }
 }
