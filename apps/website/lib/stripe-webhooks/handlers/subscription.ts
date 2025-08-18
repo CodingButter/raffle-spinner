@@ -180,14 +180,14 @@ export const handleCheckoutCompleted = withErrorHandling(
     console.log('Processing checkout completion:', session.id);
 
     // Get full session details with expanded data
-    const fullSession = await executeWithRetry(
+    const fullSession = (await executeWithRetry(
       () =>
         stripe.checkout.sessions.retrieve(session.id, {
           expand: ['line_items', 'subscription'],
         }),
       { max_attempts: 2 },
       session.id
-    );
+    )) as any; // Type assertion needed due to executeWithRetry return type
 
     if (fullSession.subscription && fullSession.customer_email) {
       const subscription = fullSession.subscription as Stripe.Subscription;

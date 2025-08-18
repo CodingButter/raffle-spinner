@@ -61,11 +61,11 @@ export const handlePaymentFailed = withErrorHandling(
     const subscriptionId = (invoice as any).subscription as string;
 
     // Get subscription details to update status
-    const subscription = await executeWithRetry(
+    const subscription = (await executeWithRetry(
       () => stripe.subscriptions.retrieve(subscriptionId),
       { max_attempts: 2 },
       invoice.id
-    );
+    )) as any; // Type assertion needed due to executeWithRetry return type
 
     // Update subscription status to past_due
     const directusAdmin = createAdminClient();
@@ -77,7 +77,7 @@ export const handlePaymentFailed = withErrorHandling(
           subscription_status: 'past_due',
           subscription_tier: getTierFromPriceId(subscription.items.data[0]?.price.id),
           subscription_current_period_end: new Date(
-            (subscription as any).current_period_end * 1000
+            subscription.current_period_end * 1000
           ).toISOString(),
           subscription_cancel_at_period_end: subscription.cancel_at_period_end,
         }),

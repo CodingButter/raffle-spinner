@@ -100,7 +100,7 @@ export async function executeWithRetry<T>(
   eventId?: string
 ): Promise<T> {
   const retryConfig = { ...DEFAULT_RETRY_CONFIG, ...config };
-  let lastError: WebhookError;
+  let lastError: WebhookError | undefined;
 
   for (let attempt = 1; attempt <= retryConfig.max_attempts; attempt++) {
     try {
@@ -131,7 +131,7 @@ export async function executeWithRetry<T>(
     }
   }
 
-  throw lastError;
+  throw lastError || new Error('Operation failed without error details');
 }
 
 /**
