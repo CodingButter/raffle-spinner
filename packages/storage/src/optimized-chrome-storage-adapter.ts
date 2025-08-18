@@ -59,7 +59,7 @@ interface WriteOperation {
  * Optimized Chrome Storage Adapter with caching and batching
  */
 export class OptimizedChromeStorageAdapter implements StorageAdapter {
-  private cache = new Map<string, CacheEntry<any>>();
+  private cache = new Map<string, CacheEntry<unknown>>();
   private writeQueue: WriteOperation[] = [];
   private writeTimeout: NodeJS.Timeout | null = null;
   private isProcessingWrites = false;
