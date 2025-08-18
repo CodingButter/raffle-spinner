@@ -27,7 +27,7 @@
   "devDependencies": {
     "@drawday/eslint-config": "workspace:*",
     "@drawday/typescript-config": "workspace:*",
-    "@types/chrome": "^0.0.270",
+    "@types/chrome": "^0.1.4",
     "tsup": "^8.2.4",
     "typescript": "^5.5.4"
   }
