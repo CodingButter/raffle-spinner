@@ -6,7 +6,7 @@
  */
 
 import { expect } from 'vitest';
-import type { Competition, Participant, Winner, SpinnerSettings } from '@raffle-spinner/storage';
+import type { Competition, Participant, SpinnerSettings } from '@raffle-spinner/storage';
 
 /**
  * Assert that storage was called with expected data
@@ -80,13 +80,22 @@ export const expectValidWinner = (winner: Winner) => {
  */
 export const expectValidSettings = (settings: SpinnerSettings) => {
   expect(settings).toHaveProperty('minSpinDuration');
-  expect(settings).toHaveProperty('maxSpinDuration');
   expect(settings).toHaveProperty('decelerationRate');
-  expect(settings).toHaveProperty('soundEnabled');
-  expect(settings).toHaveProperty('confettiEnabled');
-  expect(settings).toHaveProperty('wheelColors');
-  expect(Array.isArray(settings.wheelColors)).toBe(true);
-  expect(settings.wheelColors.length).toBeGreaterThan(0);
+  expect(settings.decelerationRate).toMatch(/^(slow|medium|fast)$/);
+  expect(typeof settings.minSpinDuration).toBe('number');
+  expect(settings.minSpinDuration).toBeGreaterThan(0);
+  
+  if (settings.spinRotations) {
+    expect(typeof settings.spinRotations).toBe('number');
+    expect(settings.spinRotations).toBeGreaterThan(0);
+  }
+  
+  if (settings.bezierCurve) {
+    expect(settings.bezierCurve).toHaveProperty('x1');
+    expect(settings.bezierCurve).toHaveProperty('y1');
+    expect(settings.bezierCurve).toHaveProperty('x2');
+    expect(settings.bezierCurve).toHaveProperty('y2');
+  }
 };
 
 /**
@@ -106,9 +115,9 @@ export const expectSpinnerAnimation = (element: HTMLElement, isSpinning: boolean
   
   if (isSpinning) {
     expect(transform).toContain('rotate');
-    expect(element).toHaveClass('spinning');
+    expect(element.classList.contains('spinning')).toBe(true);
   } else {
-    expect(element).not.toHaveClass('spinning');
+    expect(element.classList.contains('spinning')).toBe(false);
   }
 };
 

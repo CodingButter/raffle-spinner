@@ -1,0 +1,206 @@
+{
+  "timestamp": "2025-08-18T19:22:57.956Z",
+  "testConfig": {
+    "targets": {
+      "FPS_TARGET": 60,
+      "FRAME_TIME_TARGET": 16.67,
+      "INPUT_LATENCY_TARGET": 100,
+      "MEMORY_TARGET_MB": 200,
+      "JANK_THRESHOLD": 50
+    },
+    "scenarios": [
+      {
+        "name": "Small Dataset",
+        "participants": 100,
+        "expectedFps": 60
+      },
+      {
+        "name": "Medium Dataset",
+        "participants": 1000,
+        "expectedFps": 60
+      },
+      {
+        "name": "Large Dataset",
+        "participants": 5000,
+        "expectedFps": 60
+      },
+      {
+        "name": "Stress Test",
+        "participants": 10000,
+        "expectedFps": 55
+      }
+    ]
+  },
+  "results": [
+    {
+      "scenario": "Small Dataset",
+      "participants": 100,
+      "performance": {
+        "totalFrames": 2040,
+        "duration": 34008.09999999404,
+        "averageFps": 59.98570928691569,
+        "minFrameTime": 3.0999999940395355,
+        "maxFrameTime": 34.80000001192093,
+        "p50FrameTime": 16.69999998807907,
+        "p95FrameTime": 17.5,
+        "p99FrameTime": 17.80000001192093,
+        "jankFrames": 0,
+        "jankPercentage": 0,
+        "passed": false,
+        "inputLatency": 30005.29999998212
+      },
+      "memory": {
+        "initial": {
+          "usedJSHeapSize": 944586,
+          "totalJSHeapSize": 1576230,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "peak": {
+          "usedJSHeapSize": 1426935,
+          "totalJSHeapSize": 2354759,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "final": {
+          "usedJSHeapSize": 1434487,
+          "totalJSHeapSize": 2354759,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "peakUsageMB": 1.3608312606811523,
+        "cleanup": -0.5292462515811862,
+        "passed": true
+      }
+    },
+    {
+      "scenario": "Medium Dataset",
+      "participants": 1000,
+      "performance": {
+        "totalFrames": 2039,
+        "duration": 34005.70000001788,
+        "averageFps": 59.96053602775205,
+        "minFrameTime": 7.800000011920929,
+        "maxFrameTime": 25.099999994039536,
+        "p50FrameTime": 16.69999998807907,
+        "p95FrameTime": 17.30000001192093,
+        "p99FrameTime": 17.700000017881393,
+        "jankFrames": 0,
+        "jankPercentage": 0,
+        "passed": false,
+        "inputLatency": 30001.90000000596
+      },
+      "memory": {
+        "initial": {
+          "usedJSHeapSize": 944670,
+          "totalJSHeapSize": 1576230,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "peak": {
+          "usedJSHeapSize": 1762711,
+          "totalJSHeapSize": 2637383,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "final": {
+          "usedJSHeapSize": 1770275,
+          "totalJSHeapSize": 2637383,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "peakUsageMB": 1.6810522079467773,
+        "cleanup": -0.4291117488913384,
+        "passed": true
+      }
+    },
+    {
+      "scenario": "Large Dataset",
+      "participants": 5000,
+      "performance": {
+        "totalFrames": 2041,
+        "duration": 34008.19999998808,
+        "averageFps": 60.014937573900276,
+        "minFrameTime": 10.300000011920929,
+        "maxFrameTime": 19.099999994039536,
+        "p50FrameTime": 16.69999998807907,
+        "p95FrameTime": 17.5,
+        "p99FrameTime": 17.700000017881393,
+        "jankFrames": 0,
+        "jankPercentage": 0,
+        "passed": false,
+        "inputLatency": 30004.09999999404
+      },
+      "memory": {
+        "initial": {
+          "usedJSHeapSize": 944646,
+          "totalJSHeapSize": 1576230,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "peak": {
+          "usedJSHeapSize": 3272611,
+          "totalJSHeapSize": 4300359,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "final": {
+          "usedJSHeapSize": 3280223,
+          "totalJSHeapSize": 4300359,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "peakUsageMB": 3.121005058288574,
+        "cleanup": -0.23259715254883637,
+        "passed": true
+      }
+    },
+    {
+      "scenario": "Stress Test",
+      "participants": 10000,
+      "performance": {
+        "totalFrames": 2041,
+        "duration": 34007.20000001788,
+        "averageFps": 60.016702345354126,
+        "minFrameTime": 7,
+        "maxFrameTime": 25.69999998807907,
+        "p50FrameTime": 16.69999998807907,
+        "p95FrameTime": 17.5,
+        "p99FrameTime": 17.799999982118607,
+        "jankFrames": 0,
+        "jankPercentage": 0,
+        "passed": false,
+        "inputLatency": 30002.5
+      },
+      "memory": {
+        "initial": {
+          "usedJSHeapSize": 944658,
+          "totalJSHeapSize": 1576230,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "peak": {
+          "usedJSHeapSize": 5164267,
+          "totalJSHeapSize": 5942855,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "final": {
+          "usedJSHeapSize": 5171867,
+          "totalJSHeapSize": 5942855,
+          "jsHeapSizeLimit": 4294705152
+        },
+        "peakUsageMB": 4.9250288009643555,
+        "cleanup": -0.14716512527334472,
+        "passed": true
+      }
+    }
+  ],
+  "summary": {
+    "totalTests": 4,
+    "passed": 0,
+    "failed": 4,
+    "averageFps": 59.99447130848054,
+    "peakMemoryMB": 4.9250288009643555,
+    "recommendations": [
+      {
+        "type": "fps_optimization",
+        "priority": "high",
+        "message": "2 scenarios failed FPS target. Consider optimizing animation loop or reducing rendering complexity.",
+        "affectedScenarios": [
+          "Small Dataset",
+          "Medium Dataset"
+        ]
+      }
+    ]
+  }
+}

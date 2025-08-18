@@ -15,8 +15,8 @@ export const mockCompetitions: Record<string, Competition> = {
       { firstName: 'Jane', lastName: 'Smith', ticketNumber: 'T002' },
       { firstName: 'Bob', lastName: 'Johnson', ticketNumber: 'T003' },
     ],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
+    createdAt: Date.parse('2024-01-01T00:00:00Z'),
+    updatedAt: Date.parse('2024-01-01T00:00:00Z'),
   },
   
   large: {
@@ -27,16 +27,16 @@ export const mockCompetitions: Record<string, Competition> = {
       lastName: `Last${i}`,
       ticketNumber: `T${String(i + 1).padStart(4, '0')}`,
     })),
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
+    createdAt: Date.parse('2024-01-01T00:00:00Z'),
+    updatedAt: Date.parse('2024-01-01T00:00:00Z'),
   },
 
   empty: {
     id: 'comp-3',
     name: 'Empty Competition',
     participants: [],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
+    createdAt: Date.parse('2024-01-01T00:00:00Z'),
+    updatedAt: Date.parse('2024-01-01T00:00:00Z'),
   },
 
   duplicates: {
@@ -48,8 +48,8 @@ export const mockCompetitions: Record<string, Competition> = {
       { firstName: 'Eve', lastName: 'Wilson', ticketNumber: 'T001' }, // Duplicate
       { firstName: 'Frank', lastName: 'Miller', ticketNumber: 'T003' },
     ],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
+    createdAt: Date.parse('2024-01-01T00:00:00Z'),
+    updatedAt: Date.parse('2024-01-01T00:00:00Z'),
   },
 };
 

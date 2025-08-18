@@ -312,7 +312,7 @@ async function measureInputLatency(page) {
     // Simulate clicking the spin button
     const spinButton = document.querySelector('[data-testid="spin-button"]') || 
                       document.querySelector('button[aria-label*="Spin"]') ||
-                      document.querySelector('button:has-text("Spin")');
+                      Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Spin'));
     
     if (spinButton) {
       spinButton.click();

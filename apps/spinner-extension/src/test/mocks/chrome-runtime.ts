@@ -86,7 +86,7 @@ export class ChromeRuntimeMock {
 
   openOptionsPage = vi.fn(() => Promise.resolve());
 
-  setUninstallURL = vi.fn((url: string) => Promise.resolve());
+  setUninstallURL = vi.fn((_url: string) => Promise.resolve());
 
   // Test utilities
   _simulateMessage(message: any, sender?: any) {

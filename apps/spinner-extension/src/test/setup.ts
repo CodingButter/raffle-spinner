@@ -7,7 +7,7 @@
  * in a Node.js environment without requiring Chrome installation.
  */
 
-import { vi } from 'vitest';
+import { vi, beforeEach } from 'vitest';
 import { chromeStorageMock } from './mocks/chrome-storage';
 import { chromeRuntimeMock } from './mocks/chrome-runtime';
 import { chromeTabsMock } from './mocks/chrome-tabs';

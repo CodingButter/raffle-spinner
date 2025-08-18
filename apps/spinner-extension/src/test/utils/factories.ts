@@ -5,7 +5,7 @@
  * with realistic variations for comprehensive testing.
  */
 
-import type { Competition, Participant, Winner, Session } from '@raffle-spinner/storage';
+import type { Competition, Participant } from '@raffle-spinner/storage';
 import type { SpinnerSettings } from '@raffle-spinner/storage';
 
 /**
@@ -63,10 +63,10 @@ export class CompetitionFactory {
 
   static create(overrides?: Partial<Competition>): Competition {
     this.counter++;
-    const now = new Date().toISOString();
+    const now = Date.now();
     
     return {
-      id: `comp-${this.counter}-${Date.now()}`,
+      id: `comp-${this.counter}-${now}`,
       name: `Competition ${this.counter}`,
       participants: ParticipantFactory.createMany(10),
       createdAt: now,
@@ -167,13 +167,14 @@ export class SettingsFactory {
   static create(overrides?: Partial<SpinnerSettings>): SpinnerSettings {
     return {
       minSpinDuration: 3,
-      maxSpinDuration: 5,
-      decelerationRate: 0.98,
-      soundEnabled: true,
-      confettiEnabled: true,
-      wheelColors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A'],
-      backgroundColor: '#1a1a2e',
-      textColor: '#ffffff',
+      decelerationRate: 'medium',
+      spinRotations: 5,
+      bezierCurve: {
+        x1: 0.25,
+        y1: 0.1,
+        x2: 0.25,
+        y2: 1,
+      },
       ...overrides,
     };
   }
@@ -181,23 +182,22 @@ export class SettingsFactory {
   static createFast(): SpinnerSettings {
     return this.create({
       minSpinDuration: 1,
-      maxSpinDuration: 2,
-      decelerationRate: 0.95,
+      decelerationRate: 'fast',
+      spinRotations: 3,
     });
   }
 
   static createSlow(): SpinnerSettings {
     return this.create({
       minSpinDuration: 5,
-      maxSpinDuration: 10,
-      decelerationRate: 0.99,
+      decelerationRate: 'slow',
+      spinRotations: 8,
     });
   }
 
-  static createSilent(): SpinnerSettings {
+  static createCustomBezier(x1: number, y1: number, x2: number, y2: number): SpinnerSettings {
     return this.create({
-      soundEnabled: false,
-      confettiEnabled: false,
+      bezierCurve: { x1, y1, x2, y2 },
     });
   }
 }

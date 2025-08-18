@@ -30,6 +30,7 @@ export class ChromeTabsMock {
       discarded: false,
       autoDiscardable: true,
       groupId: -1,
+      highlighted: false,
     };
 
     this.tabs.set(tab.id!, tab);
@@ -182,10 +183,15 @@ export class ChromeTabsMock {
       discarded: tab.discarded || false,
       autoDiscardable: tab.autoDiscardable !== false,
       groupId: tab.groupId || -1,
+      highlighted: tab.highlighted || false,
     };
 
     this.tabs.set(fullTab.id!, fullTab);
     return fullTab;
+  }
+
+  _getActiveTabId() {
+    return this.activeTabId;
   }
 
   _reset() {

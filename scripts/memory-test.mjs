@@ -340,7 +340,7 @@ async function triggerSpinAnimation(page) {
       // Simulate button click
       const spinButton = document.querySelector('[data-testid="spin-button"]') ||
                         document.querySelector('button[aria-label*="Spin"]') ||
-                        document.querySelector('button:has-text("Spin")');
+                        Array.from(document.querySelectorAll('button')).find(btn => btn.textContent.includes('Spin'));
       if (spinButton) {
         spinButton.click();
       }

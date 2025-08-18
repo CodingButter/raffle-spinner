@@ -8,11 +8,10 @@
 import React from 'react';
 import { render as rtlRender, RenderOptions } from '@testing-library/react';
 import { vi } from 'vitest';
-import { CompetitionProvider } from '@raffle-spinner/contexts';
-import { SettingsProvider } from '@raffle-spinner/contexts';
-import { ThemeProvider } from '@raffle-spinner/contexts';
-import { SessionProvider } from '@raffle-spinner/contexts';
-import { SubscriptionProvider } from '@raffle-spinner/contexts';
+import { CompetitionProvider } from '../../contexts/CompetitionContext';
+import { SettingsProvider } from '../../contexts/SettingsContext';
+import { ThemeProvider } from '../../contexts/ThemeContext';
+import { SubscriptionProvider } from '../../contexts/SubscriptionContext';
 
 /**
  * Custom render options extending RTL's options
@@ -22,14 +21,12 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   initialCompetition?: any;
   initialSettings?: any;
   initialTheme?: any;
-  initialSession?: any;
   initialSubscription?: any;
   // Control which providers to include
   withProviders?: {
     competition?: boolean;
     settings?: boolean;
     theme?: boolean;
-    session?: boolean;
     subscription?: boolean;
   };
 }
@@ -45,7 +42,6 @@ const createWrapper = (options: CustomRenderOptions) => {
       competition: true,
       settings: true,
       theme: true,
-      session: true,
       subscription: true,
     };
 
@@ -54,14 +50,6 @@ const createWrapper = (options: CustomRenderOptions) => {
         <SubscriptionProvider>
           {wrapped}
         </SubscriptionProvider>
-      );
-    }
-
-    if (providers.session) {
-      wrapped = (
-        <SessionProvider>
-          {wrapped}
-        </SessionProvider>
       );
     }
 
