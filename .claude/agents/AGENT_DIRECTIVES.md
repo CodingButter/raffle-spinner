@@ -4,21 +4,39 @@
 > **Read order:** This file is **ALWAYS** read first in every session before taking any action.
 > **CRITICAL:** Every agent MUST read this file at session start. Failure to do so is a CRITICAL ERROR.
 
+## ⚠️ CRITICAL BRANCH PROTECTION POLICY ⚠️
+
+### ABSOLUTE RULE: NEVER PUSH TO MAIN
+- **MAIN BRANCH IS PROTECTED** - Only user (codingbutter) can merge to main
+- **ALL WORK GOES TO DEVELOPMENT** - Every PR, every merge, every push
+- **VIOLATION = IMMEDIATE FAILURE** - No exceptions, no excuses
+
 ## Core Protocol
 
 1. **Acknowledge** you have opened this file at the start of each session.
-2. **Summarize** 3–7 key rules from this file INCLUDING git worktree requirements.
-3. **Confirm compliance** and proceed only after summarizing.
+2. **Summarize** 3–7 key rules from this file INCLUDING git worktree requirements AND branch protection.
+3. **Confirm compliance** with branch protection rules.
 4. If this file cannot be read, **halt** and request it. Do **not** act without it.
 
 ## GIT WORKTREE REQUIREMENTS (MANDATORY FOR ALL AGENTS)
 
 ### CRITICAL: All Development MUST Use Git Worktrees
 
+### ⚠️ BRANCH PROTECTION RULES - ABSOLUTE REQUIREMENT ⚠️
+1. **NEVER PUSH TO MAIN BRANCH** - This is FORBIDDEN for all agents
+2. **ALWAYS BRANCH FROM DEVELOPMENT** - All work branches from 'development' branch
+3. **ONLY PUSH TO DEVELOPMENT** - All merges go to 'development', NEVER to 'main'
+4. **USER MERGES TO MAIN** - Only the user (codingbutter) can merge development→main
+5. **VIOLATION = CRITICAL FAILURE** - Pushing to main is immediate task failure
+
 1. **WORKTREE CREATION (START OF EVERY TASK)**
    ```bash
    # Navigate to project repository
    cd project
+   
+   # CRITICAL: Always branch from development, NEVER from main
+   git checkout development
+   git pull origin development
    
    # Create worktree in the worktrees directory (use descriptive branch names)
    git worktree add ../worktrees/[agent-name]-[task-description] -b [agent-name]/[task-description]
@@ -51,11 +69,18 @@
    - Ensure all changes are committed
    - Verify build passes without errors
    - Update Memento with findings
-   - Create PR if needed
+   - Create PR targeting DEVELOPMENT branch ONLY
+   - **CRITICAL**: Set PR base branch to 'development', NEVER 'main'
    - Clean up worktree:
      ```bash
      # Return to project directory
      cd ../../project
+     
+     # Push to origin targeting development branch
+     git push origin [agent-name]/[task-description]
+     
+     # Create PR via GitHub CLI targeting development
+     gh pr create --base development --title "Your title" --body "Your description"
      
      # Remove worktree after PR is created/merged
      git worktree remove ../worktrees/[agent-name]-[task-description]
@@ -79,6 +104,9 @@
    - ❌ Leaving worktrees after task completion
    - ❌ Marking task complete with failing builds
    - ❌ Not verifying quality checks pass
+   - ❌ **PUSHING TO MAIN BRANCH** - CRITICAL VIOLATION
+   - ❌ **Creating PR targeting main** - CRITICAL VIOLATION
+   - ❌ **Branching from main instead of development** - CRITICAL VIOLATION
 
 ## CRITICAL VERIFICATION REQUIREMENTS (MANDATORY)
 
@@ -109,6 +137,94 @@
      - API behaviors and quirks
      - User preferences and requirements
      - Team decisions and rationale
+
+## MEMENTO MCP USAGE GUIDE (MANDATORY)
+
+### PURPOSE: Collective Team Intelligence
+Memento is our shared knowledge graph - the team's collective brain. Every agent MUST contribute to and query from this shared memory to maintain consistency and avoid repeated work.
+
+### MEMENTO WORKFLOW (FOLLOW EVERY TIME)
+
+1. **BEFORE STARTING ANY TASK**
+   ```
+   - Search for existing knowledge: mcp__memento__search_nodes("your topic")
+   - Check semantic connections: mcp__memento__semantic_search("related concepts")
+   - Review entity history: mcp__memento__get_entity_history("entity_name")
+   ```
+
+2. **CREATE ENTITIES WITH RICH CONTEXT**
+   ```
+   - Entity = Important concept/component/decision
+   - Include observations (facts, decisions, context)
+   - Example: "SlotMachineWheel" entity with observations about performance, refactoring needs, etc.
+   ```
+
+3. **BUILD MEANINGFUL RELATIONS**
+   ```
+   - Relations connect entities with typed relationships
+   - Use active voice: "implements", "depends_on", "conflicts_with"
+   - Include confidence scores (0.0-1.0) for uncertainty
+   - Example: "Sarah Johnson" -> "manages" -> "Sprint Planning" (confidence: 1.0)
+   ```
+
+4. **KNOWLEDGE TYPES TO CAPTURE**
+   - **Technical Decisions**: Architecture choices with rationale
+   - **Bug Patterns**: Problem -> Solution mappings
+   - **Performance Insights**: Benchmarks and optimizations
+   - **Team Knowledge**: Who knows what, who decided what
+   - **Project Context**: Jamie's decisions, Sarah's priorities
+   - **Code Patterns**: Reusable solutions and approaches
+
+5. **MEMENTO BEST PRACTICES**
+   - **Entity Names**: Use consistent naming (PascalCase for components, lowercase for concepts)
+   - **Observations**: Be specific and factual, include dates/versions
+   - **Relations**: Describe directionality clearly (from -> to)
+   - **Metadata**: Add source, timestamp, confidence levels
+   - **Updates**: Don't delete, add new observations with timestamps
+
+6. **EXAMPLE MEMENTO OPERATIONS**
+   ```javascript
+   // Creating an entity with observations
+   mcp__memento__create_entities({
+     entities: [{
+       name: "579-line-refactor",
+       entityType: "technical_debt",
+       observations: [
+         "SlotMachineWheel.tsx is 579 lines, violates 200-line limit",
+         "Assigned to Emily and Michael for 2-day refactor sprint",
+         "Sarah marked as P1 blocker on 2025-08-18"
+       ]
+     }]
+   })
+   
+   // Creating relations between entities
+   mcp__memento__create_relations({
+     relations: [{
+       from: "Emily Davis",
+       to: "579-line-refactor",
+       relationType: "assigned_to",
+       confidence: 1.0,
+       metadata: { priority: "P1", deadline: "2025-08-20" }
+     }]
+   })
+   
+   // Searching for knowledge
+   mcp__memento__search_nodes("refactor")
+   mcp__memento__semantic_search({ query: "performance optimization" })
+   ```
+
+7. **JAMIE'S DECISIONS IN MEMENTO**
+   - **ALWAYS** store Jamie's decisions as entities
+   - Create "Decision" type entities with Jamie as relation
+   - Include full context and rationale in observations
+   - Example: "Jamie" -> "decided" -> "Refactor-First-Policy"
+
+8. **FAILURE MODES (UNACCEPTABLE)**
+   - ❌ Not checking Memento before starting work
+   - ❌ Not updating Memento with findings
+   - ❌ Creating duplicate entities instead of updating
+   - ❌ Missing relations between connected concepts
+   - ❌ Not documenting Jamie's or Sarah's decisions
 
 4. **VERIFICATION CHECKLIST (USE EVERY TIME)**
    - [ ] Did I check Memento for existing knowledge?
@@ -198,6 +314,46 @@
 - Escalate blockers immediately with options and a recommendation.
 - **ALWAYS state when information is unverified or uncertain**
 - **NEVER present guesses as facts**
+
+## EXECUTIVE ESCALATION (SARAH → JAMIE)
+
+### JAMIE AS CHIEF PROJECT OFFICER
+- **Jamie** is the Chief Project Officer - final decision authority
+- **Sarah Johnson** (Project Manager) escalates strategic questions to Jamie
+- **All agents** respect Jamie's decisions as final
+
+### WHEN SARAH ESCALATES TO JAMIE
+1. **Budget/Resource Changes** - Team allocation, tool purchases
+2. **Timeline Modifications** - Sprint length, delivery dates
+3. **Feature Prioritization** - What ships, what waits
+4. **Architecture Approvals** - Major technical decisions
+5. **Conflict Resolution** - When team can't agree
+6. **Policy Changes** - Process or quality standard modifications
+
+### ESCALATION PROTOCOL
+1. Sarah identifies need for executive decision
+2. Sarah provides clear question with context and options
+3. Orchestrator facilitates using Sarah's voice (TTS)
+4. Jamie provides decision
+5. Decision is documented in Memento as authoritative
+6. Team proceeds with Jamie's direction
+
+### DOCUMENTING JAMIE'S DECISIONS
+```javascript
+// Always create Memento entity for Jamie's decisions
+mcp__memento__create_entities({
+  entities: [{
+    name: "Jamie-Decision-[Date]-[Topic]",
+    entityType: "executive_decision",
+    observations: [
+      "Decision: [What Jamie decided]",
+      "Context: [Why this was needed]",
+      "Impact: [What this changes]",
+      "Date: [When decided]"
+    ]
+  }]
+})
+```
 
 ## VOICE COMMUNICATION PROTOCOL (MANDATORY)
 

@@ -369,6 +369,38 @@ Access voice IDs from /home/codingbutter/.claude/CLAUDE.md:
 - Sarah Johnson: pYoradXlkTYyi4t1seaG
 - Robert Wilson: Pm8sNh7UCvKbh4OlsQyO
 
+### JAMIE - CHIEF PROJECT OFFICER PROTOCOL (MANDATORY)
+
+#### Executive Escalation Process
+1. **JAMIE'S ROLE**
+   - Jamie is the Chief Project Officer
+   - Makes final decisions on all project matters
+   - Sarah Johnson (Project Manager) escalates questions to Jamie
+   - All strategic decisions require Jamie's approval
+
+2. **ESCALATION WORKFLOW**
+   - Sarah identifies question/blocker requiring executive decision
+   - Sarah provides question as text to Orchestrator
+   - Orchestrator converts Sarah's question to speech using her voice
+   - Orchestrator prompts Jamie for response
+   - Jamie provides decision/guidance
+   - Orchestrator relays decision back to team
+
+3. **FACILITATION REQUIREMENTS**
+   - ALWAYS use TTS for Sarah's questions to Jamie
+   - Clearly identify when Sarah needs Jamie's input
+   - Format: "[Sarah needs Jamie's decision on:]" followed by the question
+   - Wait for Jamie's response before proceeding
+   - Document decisions in Memento for team reference
+
+4. **DECISION TYPES REQUIRING JAMIE**
+   - Budget/resource allocation changes
+   - Timeline/deadline modifications
+   - Feature prioritization conflicts
+   - Technical architecture approvals
+   - Team/role adjustments
+   - Any question Sarah cannot resolve independently
+
 ### Sprint Management Process
 
 1. **Daily Operations**
