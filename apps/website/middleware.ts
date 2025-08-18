@@ -102,7 +102,7 @@ export function middleware(request: NextRequest) {
     form-action 'self' https://checkout.stripe.com;
     frame-ancestors 'none';
     frame-src 'self' https://js.stripe.com https://checkout.stripe.com;
-    connect-src 'self' https://api.stripe.com https://checkout.stripe.com ${directusUrl};
+    connect-src 'self' https://api.stripe.com https://checkout.stripe.com ${directusUrl} ${isDevelopment ? 'http://localhost:* ws://localhost:*' : ''};
     worker-src 'self' blob:;
     manifest-src 'self';
     ${!isDevelopment ? 'upgrade-insecure-requests;' : ''}
@@ -148,10 +148,11 @@ export function middleware(request: NextRequest) {
       ? [...productionOrigins, ...developmentOrigins]
       : productionOrigins;
 
-    // Validate Chrome extension with specific ID
+    // Validate Chrome extension with specific ID or allow all chrome-extension origins in development
     const chromeExtensionId = process.env.CHROME_EXTENSION_ID;
     const isChromeExtension =
-      chromeExtensionId && origin === `chrome-extension://${chromeExtensionId}`;
+      (chromeExtensionId && origin === `chrome-extension://${chromeExtensionId}`) ||
+      (isDevelopment && origin?.startsWith('chrome-extension://'));
 
     // Check if origin is allowed
     const isAllowed = origin && (allowedOrigins.includes(origin) || isChromeExtension);
