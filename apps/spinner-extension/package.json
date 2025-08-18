@@ -72,7 +72,7 @@
     "jsdom": "^23.0.0",
     "node-zip-dir": "^1.0.2",
     "sharp": "^0.34.3",
-    "tailwindcss": "^4.0.0-alpha.30",
+    "tailwindcss": "^4.1.12",
     "typescript": "^5.5.4",
     "vite": "^5.4.0",
     "vitest": "^1.0.0"
