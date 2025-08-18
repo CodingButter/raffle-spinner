@@ -1,0 +1,23 @@
+{
+  "name": "@drawday/security",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Security utilities for DrawDay platform",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist .turbo",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8",
+    "jose": "^5.2.0"
+  },
+  "devDependencies": {
+    "@drawday/typescript-config": "workspace:*",
+    "tsup": "^8.0.1",
+    "typescript": "^5.5.4"
+  }
+}
