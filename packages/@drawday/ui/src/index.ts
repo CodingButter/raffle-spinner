@@ -15,7 +15,7 @@ export * from './components/card';
 export * from './components/input';
 export * from './components/label';
 export * from './components/select';
-export * from './radio-group';
+export * from './components/radio-group';
 
 // Dialog components
 export * from './components/dialog';

@@ -26,7 +26,6 @@ import { TicketConversionDialog } from '@/components/options/TicketConversionDia
 import { SpinnerSettings } from '@/components/options/SpinnerSettings';
 import { SpinnerCustomization } from '@/components/options/SpinnerCustomization';
 import { ThemeColors } from '@/components/options/ThemeColors';
-import { ColorSchemeSelector } from '@/components/options/ColorSchemeSelector';
 import { BrandingSettings } from '@/components/options/BrandingSettings';
 import { SavedMappingsManager } from '@/components/options/SavedMappingsManager';
 import { Alert, AlertDescription } from '@/components/ui/alert';

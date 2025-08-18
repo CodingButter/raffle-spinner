@@ -365,7 +365,7 @@ async function logPlanChange(
 
     console.log(`Logged ${changeType} for ${userEmail} to ${newTier}`);
   } catch (error) {
-    console.log('Note: Could not create audit log (collection may not exist):', error.message);
+    console.log('Note: Could not create audit log (collection may not exist):', error instanceof Error ? error.message : String(error));
   }
 }
 

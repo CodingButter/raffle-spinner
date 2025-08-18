@@ -50,7 +50,7 @@ interface SessionState {
 
 export function useSessionPersistence(options: UseSessionPersistenceOptions = {}) {
   const { onSessionRestore, onSessionExpired, onError } = options;
-  const saveTimeoutRef = useRef<number | null>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sessionStartTimeRef = useRef<number | null>(null);
 
 

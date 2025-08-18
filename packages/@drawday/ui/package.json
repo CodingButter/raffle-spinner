@@ -40,6 +40,16 @@
       "import": "./dist/badge.mjs",
       "require": "./dist/badge.js"
     },
+    "./dialog": {
+      "types": "./dist/dialog.d.ts",
+      "import": "./dist/dialog.mjs",
+      "require": "./dist/dialog.js"
+    },
+    "./radio-group": {
+      "types": "./dist/radio-group.d.ts",
+      "import": "./dist/radio-group.mjs",
+      "require": "./dist/radio-group.js"
+    },
     "./styles": "./src/styles/globals.css"
   },
   "scripts": {

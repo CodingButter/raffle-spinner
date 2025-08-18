@@ -272,17 +272,6 @@ function PlanCard({
       }}
       onUpgrade={buttonProps.onClick}
       onManage={undefined}
-      customButton={
-        <Button
-          variant={buttonProps.variant}
-          className="w-full"
-          onClick={buttonProps.onClick}
-          disabled={!buttonProps.onClick}
-        >
-          {buttonProps.icon}
-          {buttonProps.text}
-        </Button>
-      }
     />
   );
 }
