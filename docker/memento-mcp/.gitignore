@@ -1,0 +1,24 @@
+# Memento MCP Git Ignore
+
+# Environment files with sensitive data
+.env
+
+# Neo4j data and logs
+neo4j-data/
+neo4j-logs/
+neo4j-import/
+neo4j-plugins/
+neo4j-backup/
+
+# Backup files
+backups/
+*.backup.*
+
+# Temporary files
+restore-temp/
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
