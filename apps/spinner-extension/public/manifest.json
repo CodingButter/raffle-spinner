@@ -19,5 +19,8 @@
   },
   "action": {
     "default_title": "Open DrawDay Spinner"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'none'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'self' https://admin.drawday.app https://api.stripe.com;"
   }
 }
