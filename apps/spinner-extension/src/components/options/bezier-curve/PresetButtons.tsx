@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { BezierCurve } from './types';
 import { PRESETS } from './constants';

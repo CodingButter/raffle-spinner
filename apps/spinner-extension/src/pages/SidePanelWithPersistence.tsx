@@ -269,7 +269,7 @@ function SidePanelContent() {
                 settings={settings}
                 isSpinning={isSpinning}
                 onSpinComplete={handleSpinComplete}
-                onError={(error) => {
+                onError={(error: string) => {
                   setError(error);
                   setIsSpinning(false);
                 }}

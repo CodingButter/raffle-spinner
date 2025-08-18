@@ -1,4 +1,3 @@
-import React from 'react';
 import { Slider } from '@/components/ui/slider';
 import { BezierCurve } from './types';
 

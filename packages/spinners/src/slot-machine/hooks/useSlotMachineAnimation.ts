@@ -182,9 +182,9 @@ export function useSlotMachineAnimation({
         hasTriggeredMaxVelocity = true;
 
         // Store the current position before the swap for continuity
-        const currentPosition =
-          recalculatedPhysics.startPosition +
-          recalculatedPhysics.totalDistance * (1 - Math.pow(1 - progress, 3));
+        // const currentPosition =
+        //   recalculatedPhysics.startPosition +
+        //   recalculatedPhysics.totalDistance * (1 - Math.pow(1 - progress, 3));
 
         const newWinnerIndex = onMaxVelocity();
 
@@ -230,7 +230,7 @@ export function useSlotMachineAnimation({
 
           // Continue from current position but add more rotations to land exactly
           // We keep the animation smooth by continuing forward
-          const _continuePosition = currentPosition;
+          // Continue position would be currentPosition
 
           // After subset swap, we need to land exactly at the position that centers the winner
           // The winner is at newWinnerIndex, center is at visual position 2
@@ -240,7 +240,7 @@ export function useSlotMachineAnimation({
           const remainingDistance = remainingRotations * updatedCircumference + exactFinalPosition;
 
           // Verify the winner is actually at index 0 (our new subset structure)
-          const _verifyWinner = updatedParticipants[0]; // Winner is always at index 0
+          // Winner is always at index 0 in updatedParticipants
           // Physics after subset swap
 
           // Reset to a clean coordinate system after subset swap
@@ -283,19 +283,20 @@ export function useSlotMachineAnimation({
         onPositionUpdate(finalExactPosition);
 
         // Verify what's actually at the center
-        const finalParticipants = getParticipants ? getParticipants() : currentParticipants;
-        const finalWheelCircumference = finalParticipants.length * itemHeight;
-        const normalizedFinalPos =
-          ((finalExactPosition % finalWheelCircumference) + finalWheelCircumference) %
-          finalWheelCircumference;
-        const topIndex = Math.floor(normalizedFinalPos / itemHeight);
-        const centerIndex = (topIndex + 2) % finalParticipants.length; // Center is 2 items down from top
-        const actualCenterTicket = finalParticipants[centerIndex]?.ticketNumber;
+        // const finalParticipants = getParticipants ? getParticipants() : currentParticipants;
+        // const finalWheelCircumference = finalParticipants.length * itemHeight;
+        // const normalizedFinalPos =
+        //   ((finalExactPosition % finalWheelCircumference) + finalWheelCircumference) %
+        //   finalWheelCircumference;
+        // Verify final position calculation
+        // const topIndex = Math.floor(normalizedFinalPos / itemHeight);
+        // const centerIndex = (topIndex + 2) % finalParticipants.length; // Center is 2 items down from top
+        // const actualCenterTicket = finalParticipants[centerIndex]?.ticketNumber;
 
         // Normalize ticket numbers for proper comparison (e.g., "018" vs "18")
-        const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
-        const normalizedCenter = normalizeTicketNumber(actualCenterTicket || '');
-        const _isCorrect = normalizedCenter === normalizedTarget;
+        // const normalizedTarget = normalizeTicketNumber(targetTicketNumber);
+        // const normalizedCenter = normalizeTicketNumber(actualCenterTicket || '');
+        // Check if correct: normalizedCenter === normalizedTarget
 
         // Animation complete
 
