@@ -7,7 +7,7 @@
  */
 export function sanitizeErrorMessage(error: unknown): string {
   const errorMessage = error instanceof Error ? error.message : String(error);
-  
+
   // Common patterns to sanitize
   const sensitivePatterns = [
     /connection refused/i,
@@ -21,10 +21,10 @@ export function sanitizeErrorMessage(error: unknown): string {
     /secret/i,
     /password/i,
     /token/i,
-    /\/[\w\-]+\/[\w\-]+\//g, // File paths
+    /\/[\w-]+\/[\w-]+\//g, // File paths
     /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/g, // IP addresses
   ];
-  
+
   // Check for sensitive information
   for (const pattern of sensitivePatterns) {
     if (pattern.test(errorMessage)) {
@@ -41,12 +41,12 @@ export function sanitizeErrorMessage(error: unknown): string {
       return 'An error occurred';
     }
   }
-  
+
   // Truncate long error messages
   if (errorMessage.length > 100) {
     return 'An error occurred';
   }
-  
+
   return errorMessage;
 }
 
@@ -69,7 +69,7 @@ export function sanitizeObject<T extends Record<string, any>>(
   fieldsToSanitize: string[] = []
 ): T {
   const sanitized = { ...obj };
-  
+
   for (const key in sanitized) {
     if (fieldsToSanitize.includes(key) || fieldsToSanitize.length === 0) {
       if (typeof sanitized[key] === 'string') {
@@ -79,7 +79,7 @@ export function sanitizeObject<T extends Record<string, any>>(
       }
     }
   }
-  
+
   return sanitized;
 }
 
@@ -91,11 +91,11 @@ export function removeSensitiveFields<T extends Record<string, any>>(
   sensitiveFields: string[] = ['password', 'token', 'secret', 'api_key', 'credit_card']
 ): Partial<T> {
   const cleaned = { ...obj };
-  
+
   for (const field of sensitiveFields) {
     delete cleaned[field];
   }
-  
+
   return cleaned;
 }
 
@@ -106,7 +106,7 @@ export function maskSensitiveValue(value: string, visibleChars: number = 4): str
   if (value.length <= visibleChars) {
     return '***';
   }
-  
+
   const visible = value.slice(0, visibleChars);
   const masked = '*'.repeat(Math.min(value.length - visibleChars, 20));
   return `${visible}${masked}`;
