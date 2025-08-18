@@ -16,7 +16,11 @@
     "quality": "pnpm lint && pnpm format:check && pnpm typecheck",
     "quality:fix": "pnpm lint:fix && pnpm format",
     "prepush": "pnpm quality && pnpm build",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "pnpm -r test",
+    "test:run": "pnpm -r test:run",
+    "test:e2e": "pnpm -r test:e2e",
+    "fix:testing": "node scripts/fix-testing-infrastructure.mjs"
   },
   "devDependencies": {
     "@drawday/eslint-config": "workspace:*",
