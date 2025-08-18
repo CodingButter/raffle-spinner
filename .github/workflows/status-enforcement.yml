@@ -1,0 +1,260 @@
+name: Project Status Enforcement
+
+on:
+  schedule:
+    # Run every hour
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in dry-run mode (no changes made)'
+        required: false
+        default: 'false'
+      verbose:
+        description: 'Enable verbose logging'
+        required: false
+        default: 'true'
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  enforce-status:
+    name: Enforce Project Status
+    runs-on: ubuntu-latest
+    outputs:
+      fixed_count: ${{ steps.enforce.outputs.fixed_count }}
+      issues_fixed: ${{ steps.enforce.outputs.issues_fixed }}
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+        continue-on-error: true
+
+      - name: Set token
+        id: set-token
+        run: |
+          if [ -n "${{ steps.generate-token.outputs.token }}" ]; then
+            echo "token=${{ steps.generate-token.outputs.token }}" >> $GITHUB_OUTPUT
+            echo "Using GitHub App token"
+          elif [ -n "${{ secrets.PROJECT_PAT }}" ]; then
+            echo "token=${{ secrets.PROJECT_PAT }}" >> $GITHUB_OUTPUT
+            echo "Using PROJECT_PAT"
+          else
+            echo "token=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_OUTPUT
+            echo "Warning: Using GITHUB_TOKEN - may have limited permissions"
+          fi
+
+      - name: Check and Fix Missing Status
+        id: enforce
+        env:
+          GH_TOKEN: ${{ steps.set-token.outputs.token }}
+        run: |
+          echo "🔍 Checking for items without status..."
+          
+          # Get all project items and their status
+          PROJECT_DATA=$(gh api graphql -f query='
+            {
+              user(login: "CodingButter") {
+                projectV2(number: 9) {
+                  id
+                  fields(first: 20) {
+                    nodes {
+                      ... on ProjectV2SingleSelectField {
+                        id
+                        name
+                        options {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                  items(first: 100) {
+                    nodes {
+                      id
+                      content {
+                        ... on Issue {
+                          number
+                          title
+                        }
+                        ... on PullRequest {
+                          number
+                          title
+                        }
+                      }
+                      fieldValues(first: 10) {
+                        nodes {
+                          ... on ProjectV2ItemFieldSingleSelectValue {
+                            name
+                            field {
+                              ... on ProjectV2SingleSelectField {
+                                name
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }')
+          
+          # Extract necessary IDs
+          PROJECT_ID=$(echo "$PROJECT_DATA" | jq -r '.data.user.projectV2.id')
+          STATUS_FIELD_ID=$(echo "$PROJECT_DATA" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .id')
+          BACKLOG_OPTION_ID=$(echo "$PROJECT_DATA" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "Backlog") | .id')
+          
+          # Find items without status
+          ITEMS_WITHOUT_STATUS=$(echo "$PROJECT_DATA" | jq -r '
+            .data.user.projectV2.items.nodes[] |
+            select(
+              (.fieldValues.nodes | map(select(.field.name == "Status")) | length) == 0
+            ) |
+            {
+              id: .id,
+              number: .content.number,
+              title: .content.title
+            }
+          ')
+          
+          FIXED_COUNT=0
+          ISSUES_FIXED=""
+          
+          if [ -z "$ITEMS_WITHOUT_STATUS" ]; then
+            echo "✅ All items have a status assigned!"
+          else
+            echo "⚠️ Found items without status:"
+            echo "$ITEMS_WITHOUT_STATUS" | jq -r '. | "  - #\(.number): \(.title)"'
+            
+            if [ "${{ inputs.dry_run }}" = "true" ]; then
+              echo ""
+              echo "🏃 DRY RUN MODE - No changes will be made"
+              COUNT=$(echo "$ITEMS_WITHOUT_STATUS" | jq -s 'length')
+              echo "Would fix $COUNT items"
+            else
+              echo ""
+              echo "🔧 Fixing items by setting status to Backlog..."
+              
+              # Process each item
+              echo "$ITEMS_WITHOUT_STATUS" | jq -c '.' | while read -r item; do
+                ITEM_ID=$(echo "$item" | jq -r '.id')
+                ITEM_NUMBER=$(echo "$item" | jq -r '.number')
+                ITEM_TITLE=$(echo "$item" | jq -r '.title')
+                
+                if [ "${{ inputs.verbose }}" = "true" ]; then
+                  echo "  Updating item #$ITEM_NUMBER..."
+                fi
+                
+                # Update the status
+                UPDATE_RESPONSE=$(gh api graphql -f query='
+                  mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                    updateProjectV2ItemFieldValue(
+                      input: {
+                        projectId: $projectId
+                        itemId: $itemId
+                        fieldId: $fieldId
+                        value: { singleSelectOptionId: $optionId }
+                      }
+                    ) {
+                      projectV2Item {
+                        id
+                      }
+                    }
+                  }' \
+                  -F projectId="$PROJECT_ID" \
+                  -F itemId="$ITEM_ID" \
+                  -F fieldId="$STATUS_FIELD_ID" \
+                  -F optionId="$BACKLOG_OPTION_ID" 2>&1)
+                
+                if echo "$UPDATE_RESPONSE" | jq -e '.data.updateProjectV2ItemFieldValue.projectV2Item.id' > /dev/null 2>&1; then
+                  echo "  ✅ Fixed #$ITEM_NUMBER: $ITEM_TITLE"
+                  FIXED_COUNT=$((FIXED_COUNT + 1))
+                  if [ -z "$ISSUES_FIXED" ]; then
+                    ISSUES_FIXED="#$ITEM_NUMBER"
+                  else
+                    ISSUES_FIXED="$ISSUES_FIXED, #$ITEM_NUMBER"
+                  fi
+                else
+                  echo "  ❌ Failed to fix #$ITEM_NUMBER: $ITEM_TITLE"
+                  if [ "${{ inputs.verbose }}" = "true" ]; then
+                    echo "     Error: $UPDATE_RESPONSE"
+                  fi
+                fi
+              done
+            fi
+          fi
+          
+          echo "fixed_count=$FIXED_COUNT" >> $GITHUB_OUTPUT
+          echo "issues_fixed=$ISSUES_FIXED" >> $GITHUB_OUTPUT
+          
+          # Summary
+          echo ""
+          echo "📊 Summary:"
+          echo "  - Items checked: $(echo "$PROJECT_DATA" | jq '.data.user.projectV2.items.nodes | length')"
+          echo "  - Items without status: $(echo "$ITEMS_WITHOUT_STATUS" | jq -s 'length')"
+          echo "  - Items fixed: $FIXED_COUNT"
+          if [ -n "$ISSUES_FIXED" ]; then
+            echo "  - Issues fixed: $ISSUES_FIXED"
+          fi
+
+      - name: Create Issue Report
+        if: steps.enforce.outputs.fixed_count != '0' && inputs.dry_run != 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.set-token.outputs.token }}
+          script: |
+            const fixedCount = '${{ steps.enforce.outputs.fixed_count }}';
+            const issuesFixed = '${{ steps.enforce.outputs.issues_fixed }}';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            
+            const body = `## 🔧 Project Status Enforcement Report
+            
+            The automated status enforcement workflow has detected and fixed items without status.
+            
+            ### Summary
+            - **Items Fixed**: ${fixedCount}
+            - **Issue Numbers**: ${issuesFixed}
+            - **Default Status Applied**: Backlog
+            
+            ### Action Required
+            Please review the items that were automatically assigned to Backlog and update their status if needed:
+            - ${issuesFixed.split(', ').map(num => `[${num}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/issues/${num.replace('#', '')})`).join('\n- ')}
+            
+            ### Why Did This Happen?
+            Items can end up without status due to:
+            - Manual project board manipulation
+            - API errors during issue/PR creation
+            - GitHub Actions workflow failures
+            - Direct GraphQL API usage without status assignment
+            
+            ### Workflow Run
+            [View the enforcement run](${runUrl})
+            
+            ---
+            *This is an automated report from the status enforcement workflow.*`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[Automation] Fixed ${fixedCount} items without project status`,
+              body: body,
+              labels: ['automation', 'project-management']
+            });
+
+      - name: Report Results
+        if: always()
+        run: |
+          echo "🎯 Status Enforcement Complete"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "This was a DRY RUN - no changes were made"
+          elif [ "${{ steps.enforce.outputs.fixed_count }}" = "0" ]; then
+            echo "No items needed fixing - all items have proper status!"
+          else
+            echo "Fixed ${{ steps.enforce.outputs.fixed_count }} items"
+          fi

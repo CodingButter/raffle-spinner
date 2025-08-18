@@ -12,8 +12,10 @@
 export * from './types';
 export * from './storage-adapter';
 export * from './chrome-storage-adapter';
+export * from './optimized-chrome-storage-adapter';
+export * from './storage-benchmark';
 
-import { ChromeStorageAdapter } from './chrome-storage-adapter';
+import { OptimizedChromeStorageAdapter } from './optimized-chrome-storage-adapter';
 
-// Default export for convenience
-export const storage = new ChromeStorageAdapter();
+// Default export for convenience - now using optimized adapter
+export const storage = new OptimizedChromeStorageAdapter();
