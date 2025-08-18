@@ -54,3 +54,22 @@ export function extractNumericTicket(ticket: string): string | null {
 export function isNumericTicket(ticket: string): boolean {
   return /^\d+$/.test(ticket.trim());
 }
+
+/**
+ * Adjusts the brightness of a hex color
+ * @param color - Hex color string (e.g., '#ffffff')
+ * @param percent - Amount to adjust (-255 to 255)
+ * @returns Adjusted hex color string
+ */
+export function adjustBrightness(color: string, percent: number): string {
+  // Handle hex colors
+  if (color.startsWith('#')) {
+    const num = parseInt(color.replace('#', ''), 16);
+    const r = Math.max(0, Math.min(255, ((num >> 16) & 255) + percent));
+    const g = Math.max(0, Math.min(255, ((num >> 8) & 255) + percent));
+    const b = Math.max(0, Math.min(255, (num & 255) + percent));
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+  }
+  // For non-hex colors, return with opacity adjustment
+  return color;
+}
