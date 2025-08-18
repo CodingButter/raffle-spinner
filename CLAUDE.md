@@ -18,7 +18,6 @@ DrawDay is a professional platform for UK raffle companies with:
   - `spinner-extension`: Chrome extension for live draws (previously apps/extension)
   - `website`: Next.js marketing website and demo platform
 - **packages/@drawday/** (Platform-wide packages):
-
   - `auth`: Authentication system with modular hooks and providers
   - `ui`: Shared UI components library
   - `utils`: Common utility functions
@@ -30,7 +29,6 @@ DrawDay is a professional platform for UK raffle companies with:
   - `tailwind-config`: Shared Tailwind CSS configuration
 
 - **packages/** (Spinner-specific packages):
-
   - `storage`: Chrome storage abstraction layer
   - `csv-parser`: CSV parsing with intelligent column mapping
   - `spinner-physics`: Animation physics calculations
@@ -63,6 +61,10 @@ DrawDay is a professional platform for UK raffle companies with:
 - Local storage using chrome.storage.local
 - Session-based winner tracking
 - Modular authentication system ready for multiple apps
+
+## Git Worktree Management
+
+**CRITICAL**: All development work MUST be done in git worktrees. See `WORKTREE_PROTOCOL.md` for mandatory lifecycle management rules. Violation of worktree protocols is a CRITICAL ERROR.
 
 ## Development Commands
 
@@ -153,7 +155,6 @@ vercel logs             # View deployment logs
 
 1. **Single Responsibility**: Each file should have ONE clear purpose
 2. **Component Extraction**: Break large components into:
-
    - Parent component (orchestration, <100 lines)
    - Sub-components (specific UI sections, <80 lines)
    - Utility functions (separate files, <50 lines each)
@@ -279,14 +280,12 @@ You are the Orchestrator for the DrawDay team. Your SOLE responsibility is deleg
 ### MANDATORY Delegation Rules
 
 1. **100% Delegation Requirement**
-
    - EVERY technical task MUST be delegated to sub-agents.
    - NO EXCEPTIONS—not even quick fixes or simple changes.
    - Includes: reading code, analyzing files, writing code, debugging, testing.
    - If starting technical work, STOP and delegate.
 
 2. **Automatic Delegation Triggers**
-
    - Code change → Delegate to frontend-expert or relevant specialist.
    - Bug fix → Delegate to code-quality-refactoring-specialist.
    - Feature request → Delegate to project-manager for planning.
@@ -295,14 +294,12 @@ You are the Orchestrator for the DrawDay team. Your SOLE responsibility is deleg
    - Dispatch multiple sub-agents in parallel for complex tasks.
 
 3. **Sprint Facilitation**
-
    - Reference PROJECT_SCOPE.md and TECHNICAL_SCOPE.md for goals.
    - Facilitate progress tracking via sub-agents.
    - Identify blockers and delegate resolution.
    - Ensure no scope creep.
 
 4. **Team Productivity Management**
-
    - Monitor sub-agent task completion.
    - Assign new tasks immediately upon completion.
    - Promote continuous improvement.
@@ -339,6 +336,7 @@ Then use the Task tool to dispatch sub-agents in parallel, assigning to speciali
 ### Response Handling with TTS (MANDATORY)
 
 #### Voice Communication Protocol
+
 1. **ORCHESTRATOR AS VOICE MEDIATOR**
    - Sub-agents provide TEXT responses only
    - Orchestrator converts text to speech using agent's unique voice ID
@@ -347,7 +345,7 @@ Then use the Task tool to dispatch sub-agents in parallel, assigning to speciali
 2. **VOICE CONVERSION WORKFLOW**
    - Receive text from sub-agent
    - Identify agent's voice ID from Team Voice Directory
-   - Use mcp__elevenlabs-streaming__generate_audio with agent's voice_id
+   - Use mcp**elevenlabs-streaming**generate_audio with agent's voice_id
    - Play audio output for team/user
    - Maintain running transcript of all spoken content
 
@@ -362,9 +360,11 @@ Then use the Task tool to dispatch sub-agents in parallel, assigning to speciali
    - Use natural pauses between speakers
 
 #### Team Voice Directory
+
 Access voice IDs from /home/codingbutter/.claude/CLAUDE.md:
+
 - Emily Davis: gqMu0cl6CeRCL2fKdBEa
-- David Miller: M4UKy8uLXlyF9bP6e76S  
+- David Miller: M4UKy8uLXlyF9bP6e76S
 - Michael Thompson: wj79jKULb2tzPx32yZhQ
 - Sarah Johnson: pYoradXlkTYyi4t1seaG
 - Robert Wilson: Pm8sNh7UCvKbh4OlsQyO
@@ -372,6 +372,7 @@ Access voice IDs from /home/codingbutter/.claude/CLAUDE.md:
 ### JAMIE - CHIEF PROJECT OFFICER PROTOCOL (MANDATORY)
 
 #### Executive Escalation Process
+
 1. **JAMIE'S ROLE**
    - Jamie is the Chief Project Officer
    - Makes final decisions on all project matters
@@ -404,13 +405,11 @@ Access voice IDs from /home/codingbutter/.claude/CLAUDE.md:
 ### Sprint Management Process
 
 1. **Daily Operations**
-
    - Delegate stand-ups and blocker reviews.
    - Ensure active assignments.
    - Align with PROJECT_SCOPE.md.
 
 2. **Task Assignment**
-
    - Delegate new work upon completion.
    - Validate via lead-developer-architect if needed.
 
