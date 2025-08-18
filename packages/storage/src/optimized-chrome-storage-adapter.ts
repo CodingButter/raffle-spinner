@@ -63,53 +63,49 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
   private writeQueue: WriteOperation[] = [];
   private writeTimeout: ReturnType<typeof setTimeout> | null = null;
   private isProcessingWrites = false;
-  
+
   // Cache TTL in milliseconds (5 minutes)
   private readonly CACHE_TTL = 5 * 60 * 1000;
-  
+
   // Write debounce delay in milliseconds
   private readonly WRITE_DEBOUNCE_DELAY = 50;
-  
+
   // Batch size for write operations
   private readonly BATCH_SIZE = 10;
 
   /**
    * Get data from cache or storage with automatic cache management
    */
-  private async getCachedData<T>(
-    key: string,
-    defaultValue: T,
-    forceRefresh = false
-  ): Promise<T> {
+  private async getCachedData<T>(key: string, defaultValue: T, forceRefresh = false): Promise<T> {
     const cacheEntry = this.cache.get(key);
     const now = Date.now();
-    
+
     // Return cached data if valid and not forced to refresh
     if (
       !forceRefresh &&
       cacheEntry &&
-      (now - cacheEntry.timestamp) < this.CACHE_TTL &&
+      now - cacheEntry.timestamp < this.CACHE_TTL &&
       !cacheEntry.dirty
     ) {
       return cacheEntry.data as T;
     }
-    
+
     try {
       // Fetch from storage
       const result = await chrome.storage.local.get(key);
       const data = result[key] ?? defaultValue;
-      
+
       // Update cache
       this.cache.set(key, {
         data,
         timestamp: now,
         dirty: false,
       });
-      
+
       return data;
     } catch (error) {
       console.error(`Failed to get ${key} from storage:`, error);
-      
+
       // Return cached data if available, otherwise default
       if (cacheEntry) {
         return cacheEntry.data as T;
@@ -128,10 +124,10 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
       timestamp: Date.now(),
       dirty: true,
     });
-    
+
     // Remove any existing write for this key to avoid duplicates
-    this.writeQueue = this.writeQueue.filter(op => op.key !== key);
-    
+    this.writeQueue = this.writeQueue.filter((op) => op.key !== key);
+
     // Add new write operation
     this.writeQueue.push({
       key,
@@ -139,7 +135,7 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
       priority,
       timestamp: Date.now(),
     });
-    
+
     // Schedule batch write
     this.scheduleBatchWrite();
   }
@@ -151,11 +147,11 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
     if (this.writeTimeout) {
       clearTimeout(this.writeTimeout);
     }
-    
+
     // For high priority writes, process immediately
-    const hasHighPriority = this.writeQueue.some(op => op.priority === 'high');
+    const hasHighPriority = this.writeQueue.some((op) => op.priority === 'high');
     const delay = hasHighPriority ? 0 : this.WRITE_DEBOUNCE_DELAY;
-    
+
     this.writeTimeout = setTimeout(() => {
       this.processBatchWrites();
     }, delay);
@@ -168,9 +164,9 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
     if (this.isProcessingWrites || this.writeQueue.length === 0) {
       return;
     }
-    
+
     this.isProcessingWrites = true;
-    
+
     try {
       // Sort by priority and timestamp
       this.writeQueue.sort((a, b) => {
@@ -180,34 +176,33 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
         }
         return a.timestamp - b.timestamp;
       });
-      
+
       // Process in batches
       while (this.writeQueue.length > 0) {
         const batch = this.writeQueue.splice(0, this.BATCH_SIZE);
         const writeObject: { [key: string]: unknown } = {};
-        
+
         // Prepare batch write object
-        batch.forEach(op => {
+        batch.forEach((op) => {
           writeObject[op.key] = op.data;
         });
-        
+
         try {
           // Perform batched write
           await chrome.storage.local.set(writeObject);
-          
+
           // Mark cache entries as clean
-          batch.forEach(op => {
+          batch.forEach((op) => {
             const cacheEntry = this.cache.get(op.key);
             if (cacheEntry) {
               cacheEntry.dirty = false;
             }
           });
-          
         } catch (error) {
           console.error('Batch write failed:', error);
-          
+
           // Re-queue failed operations with lower priority
-          batch.forEach(op => {
+          batch.forEach((op) => {
             this.writeQueue.push({
               ...op,
               priority: 'low',
@@ -215,16 +210,15 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
             });
           });
         }
-        
+
         // Small delay between batches to prevent blocking
         if (this.writeQueue.length > 0) {
-          await new Promise(resolve => setTimeout(resolve, 5));
+          await new Promise((resolve) => setTimeout(resolve, 5));
         }
       }
-      
     } finally {
       this.isProcessingWrites = false;
-      
+
       // If more writes were queued during processing, schedule another batch
       if (this.writeQueue.length > 0) {
         this.scheduleBatchWrite();
@@ -240,7 +234,7 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
       clearTimeout(this.writeTimeout);
       this.writeTimeout = null;
     }
-    
+
     return this.processBatchWrites();
   }
 
@@ -327,9 +321,9 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
 
     // Check if we're deleting the default mapping
     const defaultMappingId = await this.getCachedData(STORAGE_KEYS.DEFAULT_MAPPING_ID, undefined);
-    
+
     this.queueWrite(STORAGE_KEYS.SAVED_MAPPINGS, filtered, 'normal');
-    
+
     if (defaultMappingId === id) {
       this.queueWrite(STORAGE_KEYS.DEFAULT_MAPPING_ID, undefined, 'normal');
     }
@@ -362,10 +356,10 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
   async incrementRaffleCount(): Promise<number> {
     const currentCount = await this.getRaffleCount();
     const newCount = currentCount + 1;
-    
+
     // High priority for live session operations
     this.queueWrite(STORAGE_KEYS.RAFFLE_COUNT, newCount, 'high');
-    
+
     return newCount;
   }
 
@@ -389,7 +383,7 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
         ...session,
         lastActivity: Date.now(),
       };
-      
+
       // High priority for live session updates
       this.queueWrite(STORAGE_KEYS.SESSION, updatedSession, 'high');
     } catch (error) {
@@ -411,12 +405,12 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
   async clear(): Promise<void> {
     this.cache.clear();
     this.writeQueue.length = 0;
-    
+
     if (this.writeTimeout) {
       clearTimeout(this.writeTimeout);
       this.writeTimeout = null;
     }
-    
+
     await chrome.storage.local.clear();
   }
 
@@ -442,7 +436,7 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
    */
   invalidateCache(keys?: string[]) {
     if (keys) {
-      keys.forEach(key => this.cache.delete(key));
+      keys.forEach((key) => this.cache.delete(key));
     } else {
       this.cache.clear();
     }
