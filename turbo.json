@@ -1,0 +1,51 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "build/**", "lib/**"],
+      "env": ["NODE_ENV"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "outputs": [],
+      "dependsOn": []
+    },
+    "typecheck": {
+      "outputs": [],
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "outputs": [],
+      "dependsOn": ["build"],
+      "env": ["NODE_ENV"]
+    },
+    "format": {
+      "outputs": [],
+      "cache": false
+    },
+    "size-limit": {
+      "dependsOn": ["build"],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    }
+  },
+  "globalEnv": [
+    "NEXT_PUBLIC_*",
+    "VITE_*",
+    "DIRECTUS_URL",
+    "DIRECTUS_ADMIN_EMAIL",
+    "DIRECTUS_ADMIN_PASSWORD",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET"
+  ],
+  "globalDependencies": [
+    "tsconfig.json",
+    "turbo.json"
+  ]
+}
