@@ -4,9 +4,9 @@
  * Exports all components and hooks related to the slot machine spinner
  */
 
-// Export the original implementation that looks correct
-export { SlotMachineWheel } from './SlotMachineWheelFixed';
-export type { SlotMachineWheelProps } from './SlotMachineWheelFixed';
+// Export the clean, properly refactored implementation
+export { SlotMachineWheel } from './SlotMachineWheel';
+export type { SlotMachineWheelProps } from './SlotMachineWheel';
 
 // Keep the simple implementation available for future use
 export { SlotMachineSimple } from './SlotMachineSimple';

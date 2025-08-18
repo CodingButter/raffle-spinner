@@ -16,7 +16,7 @@
  */
 
 import { useRef, useEffect } from 'react';
-import { convertTheme, type InternalThemeSettings, type SpinnerTheme } from '@drawday/utils';
+import { convertTheme, type InternalThemeSettings } from '@drawday/utils';
 import { useSlotMachineAnimation } from './hooks/useSlotMachineAnimation';
 import { useWheelRenderer } from './hooks/useWheelRenderer';
 import { useSubsetManager } from './hooks/useSubsetManager';
@@ -28,7 +28,6 @@ const FRAME_BORDER_WIDTH = 8;
 const CANVAS_WIDTH = 350 + FRAME_BORDER_WIDTH * 2; // WHEEL_WIDTH + borders
 const CANVAS_HEIGHT = 5 * 80 + FRAME_BORDER_WIDTH * 2; // VIEWPORT_HEIGHT + borders
 
-
 export interface SlotMachineWheelProps extends BaseSpinnerProps {
   /** Optional width for the canvas */
   canvasWidth?: number;
@@ -37,7 +36,6 @@ export interface SlotMachineWheelProps extends BaseSpinnerProps {
   /** Show debug info (dev only) */
   showDebug?: boolean;
 }
-
 
 /**
  * SlotMachineWheel Component
