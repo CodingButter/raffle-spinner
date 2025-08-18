@@ -10,7 +10,7 @@
 
 // Environment-based base URL detection (cached for performance)
 const BASE_URL =
-  typeof import !== 'undefined' && import.meta?.env?.MODE === 'production'
+  typeof window !== 'undefined' && window.location.hostname === 'www.drawday.app'
     ? 'https://www.drawday.app'
     : 'http://localhost:3000';
 
@@ -23,7 +23,7 @@ export interface AutoLoginOptions {
 
 /**
  * Generates an auto-login URL for seamless extension-to-website authentication
- * 
+ *
  * @param options - Auto-login configuration
  * @returns Complete auto-login URL
  */
@@ -33,7 +33,7 @@ export function createAutoLoginUrl({ accessToken, returnUrl }: AutoLoginOptions)
 
 /**
  * Creates dashboard URL with auto-login
- * 
+ *
  * @param accessToken - User's access token
  * @returns Dashboard auto-login URL
  */
@@ -46,7 +46,7 @@ export function createDashboardUrl(accessToken: string): string {
 
 /**
  * Creates subscription upgrade URL with auto-login
- * 
+ *
  * @param accessToken - User's access token
  * @returns Subscription upgrade auto-login URL
  */
@@ -59,7 +59,7 @@ export function createUpgradeUrl(accessToken: string): string {
 
 /**
  * Opens URL in new tab (Chrome Extension safe)
- * 
+ *
  * @param url - URL to open
  */
 export function openInNewTab(url: string): void {
