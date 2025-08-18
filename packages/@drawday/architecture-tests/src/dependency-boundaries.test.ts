@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, readdirSync as fsReaddirSync } from 'fs';
 import { join, resolve } from 'path';
 import { findFilesRecursively } from './test-utils';
 
@@ -11,7 +11,13 @@ interface DependencyViolation {
   violation: string;
 }
 
-function getPackageJson(packagePath: string): any {
+interface PackageJson {
+  name?: string;
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+}
+
+function getPackageJson(packagePath: string): PackageJson | null {
   const path = join(packagePath, 'package.json');
   if (!existsSync(path)) return null;
   
@@ -20,6 +26,30 @@ function getPackageJson(packagePath: string): any {
   } catch {
     return null;
   }
+}
+
+function validateDrawdayImports(importPath: string): string | null {
+  if (importPath.startsWith('@raffle-spinner/')) {
+    return `@drawday package importing from @raffle-spinner: ${importPath}`;
+  }
+  if (importPath.includes('apps/')) {
+    return `@drawday package importing from apps: ${importPath}`;
+  }
+  return null;
+}
+
+function validateRaffleSpinnerImports(importPath: string): string | null {
+  if (importPath.includes('apps/')) {
+    return `@raffle-spinner package importing from apps: ${importPath}`;
+  }
+  return null;
+}
+
+function validateAppImports(importPath: string): string | null {
+  if (importPath.includes('apps/') && !importPath.startsWith('.') && !importPath.startsWith('~')) {
+    return `App importing from another app: ${importPath}`;
+  }
+  return null;
 }
 
 function checkImports(filePath: string, packageName: string): string[] {
@@ -32,32 +62,18 @@ function checkImports(filePath: string, packageName: string): string[] {
     let match;
     while ((match = importRegex.exec(content)) !== null) {
       const importPath = match[1];
+      let violation: string | null = null;
       
-      // Check for forbidden imports based on package boundaries
       if (packageName.startsWith('@drawday/')) {
-        // @drawday packages should not import from @raffle-spinner
-        if (importPath.startsWith('@raffle-spinner/')) {
-          violations.push(`@drawday package importing from @raffle-spinner: ${importPath}`);
-        }
-        
-        // @drawday packages should not import from apps
-        if (importPath.includes('apps/')) {
-          violations.push(`@drawday package importing from apps: ${importPath}`);
-        }
+        violation = validateDrawdayImports(importPath);
+      } else if (packageName.startsWith('@raffle-spinner/')) {
+        violation = validateRaffleSpinnerImports(importPath);
+      } else if (packageName.includes('apps/')) {
+        violation = validateAppImports(importPath);
       }
       
-      if (packageName.startsWith('@raffle-spinner/')) {
-        // @raffle-spinner packages can import from @drawday
-        // but should not import from apps
-        if (importPath.includes('apps/')) {
-          violations.push(`@raffle-spinner package importing from apps: ${importPath}`);
-        }
-      }
-      
-      // No package should import from another app
-      if (packageName.includes('apps/') && importPath.includes('apps/') && 
-          !importPath.startsWith('.') && !importPath.startsWith('~')) {
-        violations.push(`App importing from another app: ${importPath}`);
+      if (violation) {
+        violations.push(violation);
       }
     }
   } catch (error) {
@@ -178,9 +194,8 @@ describe('Architecture: Dependency Boundaries', () => {
 
 // Export helper for reuse
 export function readdirSync(dir: string): string[] {
-  const fs = require('fs');
   try {
-    return fs.readdirSync(dir);
+    return fsReaddirSync(dir);
   } catch {
     return [];
   }
