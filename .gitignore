@@ -1,0 +1,73 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+RaffleSpinner/
+DrawDaySpinner/
+*.local
+.next/
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Local settings
+.claude/settings.local.json
+*.local.json
+
+# Logs
+logs
+*.log
+
+# OS files
+Thumbs.db
+*.Zone.Identifier
+desktop.ini
+
+# Chrome extension specific
+*.pem
+*.crx
+*.zip
+apps/extension/DrawDaySpinner/
+apps/extension/RaffleSpinner/
+
+# Wiki (separate repository)
+wiki/
+.vercel
+
+# Backend / Directus
+backend/database/*
+!backend/database/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/extensions/*
+!backend/extensions/.gitkeep
+backend/.env
+backend/*.backup
+backend/*.sql
+backend/*.dump

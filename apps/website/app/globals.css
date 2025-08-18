@@ -1,0 +1,23 @@
+/**
+ * Global Styles for Raffle Spinner Website
+ * 
+ * Imports shared Tailwind configuration and applies
+ * website-specific customizations.
+ */
+
+/* Import Tailwind CSS v4 */
+@import 'tailwindcss';
+
+/* Import shared Tailwind base configuration */
+@import '@drawday/tailwind-config/base';
+
+/* Import shared animations */
+@import '@drawday/tailwind-config/animations';
+
+/* Import shared utilities */
+@import '@drawday/tailwind-config/utilities';
+
+/* Website-specific customizations */
+@layer utilities {
+  /* Additional website-specific utilities can be added here */
+}

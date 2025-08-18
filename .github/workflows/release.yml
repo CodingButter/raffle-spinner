@@ -1,0 +1,115 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Run quality checks
+        run: pnpm quality
+      
+      - name: Build all packages
+        run: pnpm build
+      
+      - name: Generate changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-version-file: true
+          output-file: false
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{ steps.changelog.outputs.clean_changelog }}
+          files: |
+            apps/extension/raffle-spinner-extension.zip
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload to Chrome Web Store
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        continue-on-error: true
+        run: |
+          echo "Chrome Web Store upload would happen here"
+          echo "Requires CHROME_EXTENSION_ID and CHROME_CLIENT_ID secrets"
+          # Uncomment when ready:
+          # npx chrome-webstore-upload-cli@latest upload \
+          #   --extension-id ${{ secrets.CHROME_EXTENSION_ID }} \
+          #   --client-id ${{ secrets.CHROME_CLIENT_ID }} \
+          #   --refresh-token ${{ secrets.CHROME_REFRESH_TOKEN }} \
+          #   --source apps/extension/raffle-spinner-extension.zip
+
+  publish-docs:
+    name: Publish Documentation
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Build documentation site
+        run: |
+          mkdir -p docs-site
+          cp README.md docs-site/index.md
+          cp -r packages/*/README.md docs-site/
+          cp -r apps/*/README.md docs-site/
+          echo "theme: jekyll-theme-cayman" > docs-site/_config.yml
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs-site

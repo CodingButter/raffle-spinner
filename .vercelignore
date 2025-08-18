@@ -1,0 +1,29 @@
+# Backend - not needed for website deployment
+backend/
+
+# Documentation
+docs/
+wiki/
+*.md
+
+# Development files
+scripts/
+samples/
+
+# Extension - separate deployment
+apps/extension/
+
+# Git
+.git/
+.github/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
