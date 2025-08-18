@@ -63,3 +63,6 @@ export function extractNumericTicket(ticket: string): string | null {
 export function isNumericTicket(ticket: string): boolean {
   return /^\d+$/.test(ticket.trim());
 }
+
+// URL utilities
+export * from './url-utils';
