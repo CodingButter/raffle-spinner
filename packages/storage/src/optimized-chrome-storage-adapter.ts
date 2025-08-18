@@ -61,7 +61,7 @@ interface WriteOperation {
 export class OptimizedChromeStorageAdapter implements StorageAdapter {
   private cache = new Map<string, CacheEntry<unknown>>();
   private writeQueue: WriteOperation[] = [];
-  private writeTimeout: NodeJS.Timeout | null = null;
+  private writeTimeout: ReturnType<typeof setTimeout> | null = null;
   private isProcessingWrites = false;
   
   // Cache TTL in milliseconds (5 minutes)
@@ -91,7 +91,7 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
       (now - cacheEntry.timestamp) < this.CACHE_TTL &&
       !cacheEntry.dirty
     ) {
-      return cacheEntry.data;
+      return cacheEntry.data as T;
     }
     
     try {
@@ -112,7 +112,7 @@ export class OptimizedChromeStorageAdapter implements StorageAdapter {
       
       // Return cached data if available, otherwise default
       if (cacheEntry) {
-        return cacheEntry.data;
+        return cacheEntry.data as T;
       }
       return defaultValue;
     }
