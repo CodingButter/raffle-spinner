@@ -4,7 +4,7 @@
  * Robert Wilson - Integration Health Dashboard
  */
 
-import { getDirectusAdmin } from './directus-admin';
+import { createAdminClient } from './directus-admin';
 
 interface WebhookMetric {
   event_id: string;
@@ -39,7 +39,7 @@ interface ErrorMetric {
  */
 export async function recordWebhookMetric(metric: WebhookMetric): Promise<void> {
   try {
-    const directus = await getDirectusAdmin();
+    const directus = createAdminClient();
     
     await directus.items('webhook_metrics').createOne({
       event_id: metric.event_id,
@@ -63,7 +63,7 @@ export async function recordWebhookMetric(metric: WebhookMetric): Promise<void> 
  */
 export async function recordApiMetric(metric: ApiMetric): Promise<void> {
   try {
-    const directus = await getDirectusAdmin();
+    const directus = createAdminClient();
     
     await directus.items('api_metrics').createOne({
       service: metric.service,
@@ -87,7 +87,7 @@ export async function recordApiMetric(metric: ApiMetric): Promise<void> {
  */
 export async function recordError(error: ErrorMetric): Promise<void> {
   try {
-    const directus = await getDirectusAdmin();
+    const directus = createAdminClient();
     
     await directus.items('error_logs').createOne({
       service: error.service,
@@ -186,7 +186,7 @@ export async function withApiMetrics<T>(
  */
 export async function getHealthMetrics() {
   try {
-    const directus = await getDirectusAdmin();
+    const directus = createAdminClient();
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     
     // Get webhook metrics
