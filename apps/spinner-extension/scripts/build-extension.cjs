@@ -34,7 +34,7 @@ try {
   console.log('📦 Building extension...');
   const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development';
   console.log(`📦 Building in ${mode} mode...`);
-  execSync(`tsc --noEmit && vite build --mode ${mode}`, { stdio: 'inherit', cwd: path.resolve(__dirname, '..') });
+  execSync(`npx tsc --noEmit && npx vite build --mode ${mode}`, { stdio: 'inherit', cwd: path.resolve(__dirname, '..') });
 
   // Copy manifest and icons to DrawDaySpinner
   console.log('📋 Copying manifest and icons...');

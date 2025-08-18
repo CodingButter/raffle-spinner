@@ -21,12 +21,12 @@ import { CollapsibleStateProvider } from '@/contexts/CollapsibleStateContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { useAuth } from '@drawday/auth';
-import { UserInfoBar } from '@drawday/ui';
+import { UserInfoBar, Alert, AlertDescription } from '@drawday/ui';
+import { CheckCircle } from 'lucide-react';
 import { useCSVImport } from '@/hooks/useCSVImport';
 import { useOptionsPageHandlers } from '@/hooks/useOptionsPageHandlers';
 import { OptionsPageContent } from '@/components/options/OptionsPageContent';
 import { OptionsPageModals } from '@/components/options/OptionsPageModals';
-import { OptionsPageLayout } from '@/components/options/OptionsPageLayout';
 
 function OptionsContent() {
   const { competitions, addCompetition, deleteCompetition, updateCompetitionBanner } =
@@ -106,10 +106,7 @@ function OptionsContent() {
             </Alert>
           )}
 
-          <SubscriptionStatus 
-            currentContestants={competitions.reduce((total, comp) => total + comp.participants.length, 0)}
-            onUpgradeClick={handleUpgradeClick}
-          />
+          {/* TODO: Add SubscriptionStatus component */}
 
           <OptionsPageContent
             competitions={competitions}
