@@ -24,7 +24,8 @@
     "test:e2e:ui": "pnpm --filter @drawday/spinner-extension test:e2e:ui",
     "test:e2e:debug": "pnpm --filter @drawday/spinner-extension test:e2e:debug",
     "storybook": "pnpm --filter @drawday/spinner-extension storybook",
-    "dev:standalone": "pnpm --filter @drawday/spinner-extension dev:standalone"
+    "dev:standalone": "pnpm --filter @drawday/spinner-extension dev:standalone",
+    "fix:testing": "node scripts/fix-testing-infrastructure.mjs"
   },
   "devDependencies": {
     "@drawday/eslint-config": "workspace:*",
