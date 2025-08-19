@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension Routes Iframe Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .test-container {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .test-container h2 {
+            color: #1e293b;
+            margin-top: 0;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+        .info {
+            background-color: #f1f5f9;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+    <h1>DrawDay Extension Routes - Iframe Test</h1>
+    <p>This page tests the iframe embedding of the extension routes created in the website.</p>
+    
+    <div class="test-container">
+        <h2>Sidepanel Route Test</h2>
+        <div class="info">
+            Testing: <code>/extension/sidepanel</code><br>
+            Expected: Spinner interface with iframe-friendly layout
+        </div>
+        <iframe 
+            src="http://localhost:3000/extension/sidepanel" 
+            title="Extension Sidepanel">
+        </iframe>
+    </div>
+    
+    <div class="test-container">
+        <h2>Options Route Test</h2>
+        <div class="info">
+            Testing: <code>/extension/options</code><br>
+            Expected: Configuration interface without website navigation
+        </div>
+        <iframe 
+            src="http://localhost:3000/extension/options" 
+            title="Extension Options">
+        </iframe>
+    </div>
+    
+    <div class="test-container">
+        <h2>Test Results</h2>
+        <div class="info">
+            ✅ If both iframes load without X-Frame-Options errors, the iframe architecture is working<br>
+            ✅ Check that neither iframe shows website header/footer navigation<br>
+            ✅ Verify that the layouts are minimal and extension-friendly
+        </div>
+    </div>
+    
+    <script>
+        // Log iframe load events
+        document.querySelectorAll('iframe').forEach((iframe, index) => {
+            iframe.addEventListener('load', () => {
+                console.log(`Iframe ${index + 1} loaded successfully:`, iframe.src);
+            });
+            iframe.addEventListener('error', (e) => {
+                console.error(`Iframe ${index + 1} failed to load:`, iframe.src, e);
+            });
+        });
+    </script>
+</body>
+</html>
