@@ -17,9 +17,14 @@
     "quality:fix": "pnpm lint:fix && pnpm format",
     "prepush": "pnpm quality && pnpm build",
     "prepare": "husky",
-    "test": "pnpm -r test",
-    "test:run": "pnpm -r test:run",
-    "test:e2e": "pnpm -r test:e2e",
+    "test": "pnpm --filter @drawday/spinner-extension test",
+    "test:run": "pnpm --filter @drawday/spinner-extension test:run",
+    "test:coverage": "pnpm --filter @drawday/spinner-extension test:coverage",
+    "test:e2e": "pnpm --filter @drawday/spinner-extension test:e2e",
+    "test:e2e:ui": "pnpm --filter @drawday/spinner-extension test:e2e:ui",
+    "test:e2e:debug": "pnpm --filter @drawday/spinner-extension test:e2e:debug",
+    "storybook": "pnpm --filter @drawday/spinner-extension storybook",
+    "dev:standalone": "pnpm --filter @drawday/spinner-extension dev:standalone",
     "fix:testing": "node scripts/fix-testing-infrastructure.mjs"
   },
   "devDependencies": {

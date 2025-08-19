@@ -91,9 +91,16 @@ pnpm format       # Format with Prettier
 pnpm typecheck    # TypeScript type checking
 pnpm quality      # Run all quality checks
 
+# Testing
+pnpm test              # Run unit/integration tests
+pnpm test:coverage     # Run tests with coverage
+pnpm test:e2e         # Run E2E tests
+pnpm storybook        # Start component playground
+pnpm dev:standalone   # Start standalone dev mode
+
 # Package-specific commands
-pnpm --filter @raffle-spinner/extension dev
-pnpm --filter @raffle-spinner/csv-parser test
+pnpm --filter @drawday/spinner-extension dev
+pnpm --filter @drawday/csv-parser test
 ```
 
 ### Technology Stack
@@ -172,6 +179,139 @@ Optimized for large-scale raffles:
 - 60fps spinner animation
 - Efficient memory usage
 - Fast winner selection
+
+## Testing
+
+DrawDay implements a comprehensive multi-layered testing infrastructure for reliable, maintainable code.
+
+### Testing Architecture
+
+```
+┌─────────────────────────────────────────┐
+│            E2E Tests (Playwright)       │
+├─────────────────────────────────────────┤
+│     Component Tests (Storybook)         │
+├─────────────────────────────────────────┤
+│    Integration Tests (Vitest + RTL)     │
+├─────────────────────────────────────────┤
+│        Unit Tests (Vitest)              │
+├─────────────────────────────────────────┤
+│     Chrome API Mock Layer               │
+└─────────────────────────────────────────┘
+```
+
+### Quick Testing Commands
+
+```bash
+# Run all tests
+pnpm test                    # Run unit and integration tests
+pnpm test:coverage          # Run tests with coverage report
+pnpm test:watch             # Run tests in watch mode
+
+# E2E Testing
+pnpm --filter @drawday/spinner-extension test:e2e        # Run E2E tests
+pnpm --filter @drawday/spinner-extension test:e2e:ui     # Interactive mode
+pnpm --filter @drawday/spinner-extension test:e2e:debug  # Debug mode
+
+# Component Testing
+pnpm --filter @drawday/spinner-extension storybook       # Visual component playground
+
+# Development Testing
+pnpm --filter @drawday/spinner-extension dev:standalone   # Standalone dev mode
+```
+
+### Test Types & Coverage
+
+- **Unit Tests**: Individual functions and utilities (>90% coverage target)
+- **Component Tests**: React components with Chrome API mocks (>85% coverage)
+- **Integration Tests**: Context providers and storage sync (>80% coverage)
+- **E2E Tests**: Full user workflows and Chrome extension behavior
+- **Performance Tests**: Animation frame rates, large dataset handling
+- **Accessibility Tests**: Keyboard navigation, screen reader support
+
+### Development Testing Modes
+
+#### 1. Standalone Mode
+Test components outside Chrome with hot reload:
+```bash
+pnpm --filter @drawday/spinner-extension dev:standalone
+# Access at: http://localhost:5173/src/dev/standalone.html
+```
+
+#### 2. Storybook Playground
+Visual component development and testing:
+```bash
+pnpm --filter @drawday/spinner-extension storybook
+# Access at: http://localhost:6006
+```
+
+#### 3. Chrome Extension Testing
+Full extension testing in Chrome:
+```bash
+pnpm build
+# Load unpacked extension from apps/spinner-extension/DrawDaySpinner
+```
+
+### Testing Best Practices
+
+- **Chrome API Mocking**: All Chrome APIs are mocked for consistent testing
+- **Provider Testing**: Components tested with full provider context
+- **Performance Monitoring**: Critical animations tested for 60fps
+- **Accessibility First**: Keyboard and screen reader testing required
+- **Error Boundaries**: Error handling tested thoroughly
+
+### Coverage Requirements
+
+- **Critical Path**: 90%+ coverage for winner selection, data import
+- **UI Components**: 85%+ coverage for user interface elements  
+- **Business Logic**: 95%+ coverage for calculations and validations
+- **Integration**: 80%+ coverage for storage and context operations
+
+### CI/CD Integration
+
+Tests run automatically on all PRs:
+- Lint and type checking
+- Unit and integration tests
+- Build verification
+- E2E smoke tests
+- Bundle size checks
+
+### Troubleshooting Testing Issues
+
+#### Chrome APIs Not Available
+```bash
+# Ensure test setup is imported
+import '@/test/setup';
+```
+
+#### Storage Operations Failing
+```javascript
+// Reset mocks between tests
+beforeEach(() => {
+  chromeStorageMock._reset();
+});
+```
+
+#### E2E Tests Not Loading Extension
+```bash
+# Build first, then test
+pnpm build
+pnpm --filter @drawday/spinner-extension test:e2e
+```
+
+#### Storybook Won't Start
+```bash
+# Reinstall dependencies
+pnpm install
+pnpm --filter @drawday/spinner-extension storybook
+```
+
+### Documentation
+
+📚 **Comprehensive testing guides available:**
+- [Testing Guide](./docs/testing/TESTING_GUIDE.md) - Complete testing documentation
+- [Testing Patterns](./docs/testing/TESTING_PATTERNS.md) - Best practices and examples
+- [ADR-003](./docs/architecture/decisions/003-testing-infrastructure.md) - Architecture decisions
 
 ## Privacy & Security
 
