@@ -5,6 +5,15 @@
   "description": "DrawDay - Professional Solutions for UK Raffle Companies",
   "scripts": {
     "dev": "pnpm -r --parallel dev",
+    "dev:all": "concurrently -n \"WEBSITE,EXTENSION,BACKEND\" -c \"cyan,yellow,magenta\" \"pnpm dev:website\" \"pnpm dev:extension\" \"pnpm dev:backend\"",
+    "dev:website": "pnpm --filter @drawday/website dev",
+    "dev:extension": "pnpm --filter @drawday/spinner-extension dev:standalone",
+    "dev:backend": "cd backend && docker-compose up",
+    "dev:frontend": "concurrently -n \"WEBSITE,EXTENSION\" -c \"cyan,yellow\" \"pnpm dev:website\" \"pnpm dev:extension\"",
+    "backend:start": "cd backend && docker-compose up -d",
+    "backend:stop": "cd backend && docker-compose down",
+    "backend:logs": "cd backend && docker-compose logs -f",
+    "backend:reset": "cd backend && docker-compose down -v && docker-compose up -d",
     "build": "pnpm -r --filter='!@drawday/spinner-extension' build && pnpm --filter @drawday/spinner-extension build",
     "build:website": "pnpm -r --filter='!@drawday/spinner-extension' build",
     "clean": "pnpm -r clean",
@@ -30,6 +39,7 @@
   "devDependencies": {
     "@drawday/eslint-config": "workspace:*",
     "@drawday/prettier-config": "workspace:*",
+    "concurrently": "^9.2.0",
     "eslint": "^8.57.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
