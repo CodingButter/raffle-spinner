@@ -52,7 +52,7 @@ const mockApiResponses = {
 class AuthService {
   private accessToken: string | null = null;
   private refreshToken: string | null = null;
-  private user: any = null;
+  private _user: any = null;
   private refreshTimer: NodeJS.Timeout | null = null;
 
   async login(email: string, password: string) {
@@ -75,7 +75,7 @@ class AuthService {
 
       return { success: true, user: data.user };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
