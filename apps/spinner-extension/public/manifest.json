@@ -1,15 +1,15 @@
 {
   "manifest_version": 3,
   "name": "DrawDay Spinner",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Professional live draw spinner for competitions - conduct fair, transparent raffles with style",
   "permissions": ["storage", "sidePanel"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background-simple.js"
   },
-  "options_page": "options.html",
+  "options_page": "options-iframe.html",
   "side_panel": {
-    "default_path": "sidepanel.html"
+    "default_path": "sidepanel-iframe.html"
   },
   "icons": {
     "16": "icon-16.png",
@@ -21,6 +21,6 @@
     "default_title": "Open DrawDay Spinner"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'none'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'self' http://localhost:3000 https://admin.drawday.app https://www.drawday.app https://*.drawday.app https://api.stripe.com;"
+    "extension_pages": "script-src 'self'; object-src 'none'; style-src 'self' 'unsafe-inline'; frame-src http://localhost:3000 https://www.drawday.app https://*.drawday.app;"
   }
 }
