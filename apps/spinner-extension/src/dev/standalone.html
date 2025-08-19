@@ -191,100 +191,72 @@
     </div>
   </div>
   
+  <!-- Setup Chrome API mocks BEFORE React loads -->
   <script type="module">
-    // Setup Chrome API mocks before loading the app
-    import { chromeStorageMock } from '../test/mocks/chrome-storage.js';
-    import { chromeRuntimeMock } from '../test/mocks/chrome-runtime.js';
-    import { chromeTabsMock } from '../test/mocks/chrome-tabs.js';
+    // Import and setup mocks immediately
+    import './setup-mocks.js';
     
-    window.chrome = {
-      storage: {
-        local: chromeStorageMock,
-        sync: chromeStorageMock,
-        managed: chromeStorageMock,
-        session: chromeStorageMock,
-      },
-      runtime: chromeRuntimeMock,
-      tabs: chromeTabsMock,
-      sidePanel: {
-        open: () => Promise.resolve(),
-        setOptions: () => Promise.resolve(),
-        setPanelBehavior: () => Promise.resolve(),
-      },
-      action: {
-        onClicked: {
-          addListener: () => {},
-          removeListener: () => {},
-        },
-        setBadgeText: () => Promise.resolve(),
-        setBadgeBackgroundColor: () => Promise.resolve(),
-      },
-    };
-    
-    // Global functions for dev controls
-    window.clearStorage = () => {
-      chromeStorageMock._reset();
-      refreshStorage();
-      console.log('Storage cleared');
-    };
-    
-    window.loadMockData = () => {
-      chromeStorageMock._setData({
-        competitions: [{
-          id: 'dev-comp-1',
-          name: 'Dev Test Competition',
-          participants: [
-            { firstName: 'Alice', lastName: 'Developer', ticketNumber: 'DEV001' },
-            { firstName: 'Bob', lastName: 'Tester', ticketNumber: 'DEV002' },
-            { firstName: 'Charlie', lastName: 'Designer', ticketNumber: 'DEV003' },
-            { firstName: 'Diana', lastName: 'Manager', ticketNumber: 'DEV004' },
-          ],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        }],
-        currentCompetitionId: 'dev-comp-1',
-        settings: {
-          minSpinDuration: 3,
-          maxSpinDuration: 5,
-          decelerationRate: 0.98,
-          soundEnabled: true,
-          confettiEnabled: true,
-          wheelColors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A'],
-          backgroundColor: '#1a1a2e',
-          textColor: '#ffffff',
-        },
+    // Wait for mocks to be ready
+    function waitForMocks() {
+      return new Promise((resolve) => {
+        if (window.__chromeMocksReady) {
+          resolve();
+        } else {
+          const checkInterval = setInterval(() => {
+            if (window.__chromeMocksReady) {
+              clearInterval(checkInterval);
+              resolve();
+            }
+          }, 10);
+        }
       });
-      refreshStorage();
-      console.log('Mock data loaded');
-    };
+    }
     
-    window.toggleView = () => {
-      const optionsPanel = document.getElementById('options-panel');
-      const debugPanel = document.getElementById('debug-panel');
+    // Setup dev controls after mocks are ready
+    waitForMocks().then(() => {
+      console.log('[Standalone] Chrome mocks are ready, setting up dev controls...');
       
-      if (optionsPanel.style.display === 'none') {
-        optionsPanel.style.display = '';
-        debugPanel.style.display = 'none';
-      } else {
-        optionsPanel.style.display = 'none';
-        debugPanel.style.display = '';
-      }
-    };
-    
-    window.refreshStorage = () => {
-      const storageContent = document.getElementById('storage-content');
-      const data = chromeStorageMock._getData();
-      storageContent.textContent = JSON.stringify(data, null, 2);
-    };
-    
-    // Listen for storage changes
-    chromeStorageMock.onChanged.addListener((changes, areaName) => {
-      console.log('Storage changed:', changes);
+      // Global functions for dev controls
+      window.clearStorage = () => {
+        window.__chromeMocks.clearStorage();
+        refreshStorage();
+      };
+      
+      window.loadMockData = () => {
+        window.__chromeMocks.loadMockData();
+        refreshStorage();
+      };
+      
+      window.toggleView = () => {
+        const optionsPanel = document.getElementById('options-panel');
+        const debugPanel = document.getElementById('debug-panel');
+        
+        if (optionsPanel.style.display === 'none') {
+          optionsPanel.style.display = '';
+          debugPanel.style.display = 'none';
+        } else {
+          optionsPanel.style.display = 'none';
+          debugPanel.style.display = '';
+        }
+      };
+      
+      window.refreshStorage = () => {
+        const storageContent = document.getElementById('storage-content');
+        const data = window.__chromeMocks.getStorageData();
+        storageContent.textContent = JSON.stringify(data, null, 2);
+      };
+      
+      // Listen for storage changes
+      window.chrome.storage.onChanged.addListener((changes, areaName) => {
+        console.log('[Standalone] Storage changed:', changes);
+        refreshStorage();
+      });
+      
+      // Initial storage refresh
       refreshStorage();
+      
+      console.log('[Standalone] Dev controls ready!');
     });
-    
-    // Initial storage refresh
-    refreshStorage();
   </script>
   
   <script type="module" src="/src/sidepanel.tsx"></script>
