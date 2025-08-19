@@ -12,13 +12,20 @@ const loginSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate input
     const validationResult = loginSchema.safeParse(body);
     if (!validationResult.success) {
       return NextResponse.json(
         { errors: [{ message: 'Invalid input', details: validationResult.error.flatten() }] },
-        { status: 400 }
+        {
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        }
       );
     }
 
@@ -35,29 +42,56 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       // Sanitize error messages - don't expose internal details
-      const sanitizedError = data.errors?.[0]?.message?.includes('Invalid user credentials') 
-        ? 'Invalid email or password' 
+      const sanitizedError = data.errors?.[0]?.message?.includes('Invalid user credentials')
+        ? 'Invalid email or password'
         : 'Login failed';
-      
+
       return NextResponse.json(
         { errors: [{ message: sanitizedError }] },
-        { status: response.status }
+        {
+          status: response.status,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        }
       );
     }
 
-    // Return the Directus response (CORS headers handled by middleware)
-    return NextResponse.json(data);
+    // Return the Directus response with CORS headers for extension support
+    return NextResponse.json(data, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
   } catch (error) {
     // Log error internally but don't expose details
     console.error('Login proxy error:', error);
     return NextResponse.json(
       { errors: [{ message: 'An error occurred during login' }] },
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      }
     );
   }
 }
 
-// OPTIONS handled by middleware
+// Add CORS headers for extension
 export async function OPTIONS(request: NextRequest) {
-  return new NextResponse(null, { status: 200 });
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }
