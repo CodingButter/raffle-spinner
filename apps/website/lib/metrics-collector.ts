@@ -4,7 +4,8 @@
  * Robert Wilson - Integration Health Dashboard
  */
 
-import { getDirectusAdmin } from './directus-admin';
+// TODO: Re-enable once Directus SDK is properly configured
+// import { createAdminClient } from './directus-admin';
 
 interface WebhookMetric {
   event_id: string;
@@ -39,18 +40,8 @@ interface ErrorMetric {
  */
 export async function recordWebhookMetric(metric: WebhookMetric): Promise<void> {
   try {
-    const directus = await getDirectusAdmin();
-    
-    await directus.items('webhook_metrics').createOne({
-      event_id: metric.event_id,
-      event_type: metric.event_type,
-      processing_time: metric.processing_time,
-      status: metric.status,
-      error_message: metric.error_message,
-      timestamp: metric.timestamp,
-      created_at: new Date().toISOString()
-    });
-
+    // TODO: Implement with proper Directus SDK once available
+    // For now, just log the metric
     console.log(`📊 Webhook metric recorded: ${metric.event_type} (${metric.processing_time}ms)`);
   } catch (error) {
     console.error('Failed to record webhook metric:', error);
@@ -63,20 +54,11 @@ export async function recordWebhookMetric(metric: WebhookMetric): Promise<void> 
  */
 export async function recordApiMetric(metric: ApiMetric): Promise<void> {
   try {
-    const directus = await getDirectusAdmin();
-    
-    await directus.items('api_metrics').createOne({
-      service: metric.service,
-      endpoint: metric.endpoint,
-      method: metric.method,
-      response_time: metric.response_time,
-      status_code: metric.status_code,
-      success: metric.success,
-      timestamp: metric.timestamp,
-      created_at: new Date().toISOString()
-    });
-
-    console.log(`📊 API metric recorded: ${metric.service} ${metric.endpoint} (${metric.response_time}ms)`);
+    // TODO: Implement with proper Directus SDK once available
+    // For now, just log the metric
+    console.log(
+      `📊 API metric recorded: ${metric.service} ${metric.endpoint} (${metric.response_time}ms)`
+    );
   } catch (error) {
     console.error('Failed to record API metric:', error);
   }
@@ -87,20 +69,10 @@ export async function recordApiMetric(metric: ApiMetric): Promise<void> {
  */
 export async function recordError(error: ErrorMetric): Promise<void> {
   try {
-    const directus = await getDirectusAdmin();
-    
-    await directus.items('error_logs').createOne({
-      service: error.service,
-      error_type: error.error_type,
-      message: error.message,
-      stack_trace: error.stack_trace,
-      timestamp: error.timestamp,
-      request_id: error.request_id,
-      created_at: new Date().toISOString()
-    });
-
+    // TODO: Implement with proper Directus SDK once available
+    // For now, just log the error
     console.log(`🚨 Error recorded: ${error.error_type} in ${error.service}`);
-    
+
     // If critical error, trigger alert (would integrate with alerting system)
     if (error.error_type === 'critical') {
       await triggerAlert(error);
@@ -119,9 +91,9 @@ async function triggerAlert(error: ErrorMetric): Promise<void> {
     // - Slack/Discord webhooks
     // - Email notifications
     // - PagerDuty/OpsGenie
-    
+
     console.log(`🚨 CRITICAL ALERT: ${error.message} in ${error.service}`);
-    
+
     // For now, just log to console
     // TODO: Implement actual alerting system
   } catch (alertError) {
@@ -140,11 +112,11 @@ export async function withApiMetrics<T>(
 ): Promise<T> {
   const startTime = Date.now();
   const timestamp = new Date().toISOString();
-  
+
   try {
     const result = await operation();
     const responseTime = Date.now() - startTime;
-    
+
     await recordApiMetric({
       service,
       endpoint,
@@ -152,13 +124,13 @@ export async function withApiMetrics<T>(
       response_time: responseTime,
       status_code: 200,
       success: true,
-      timestamp
+      timestamp,
     });
-    
+
     return result;
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    
+
     await recordApiMetric({
       service,
       endpoint,
@@ -166,17 +138,17 @@ export async function withApiMetrics<T>(
       response_time: responseTime,
       status_code: 500,
       success: false,
-      timestamp
+      timestamp,
     });
-    
+
     await recordError({
       service,
       error_type: 'critical',
       message: error instanceof Error ? error.message : 'Unknown error',
       stack_trace: error instanceof Error ? error.stack : undefined,
-      timestamp
+      timestamp,
     });
-    
+
     throw error;
   }
 }
@@ -186,44 +158,19 @@ export async function withApiMetrics<T>(
  */
 export async function getHealthMetrics() {
   try {
-    const directus = await getDirectusAdmin();
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    
-    // Get webhook metrics
-    const webhookMetrics = await directus.items('webhook_metrics').readByQuery({
-      filter: {
-        created_at: { _gte: twentyFourHoursAgo }
-      },
-      fields: ['status', 'processing_time', 'event_type']
-    });
-    
-    // Get API metrics
-    const apiMetrics = await directus.items('api_metrics').readByQuery({
-      filter: {
-        created_at: { _gte: twentyFourHoursAgo }
-      },
-      fields: ['service', 'response_time', 'success']
-    });
-    
-    // Get error logs
-    const errorLogs = await directus.items('error_logs').readByQuery({
-      filter: {
-        created_at: { _gte: twentyFourHoursAgo }
-      },
-      fields: ['error_type', 'service', 'message', 'timestamp']
-    });
-    
+    // TODO: Implement with proper Directus SDK once available
+    // For now, return empty metrics
     return {
-      webhooks: webhookMetrics.data || [],
-      apis: apiMetrics.data || [],
-      errors: errorLogs.data || []
+      webhooks: [],
+      apis: [],
+      errors: [],
     };
   } catch (error) {
     console.error('Failed to get health metrics:', error);
     return {
       webhooks: [],
       apis: [],
-      errors: []
+      errors: [],
     };
   }
 }

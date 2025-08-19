@@ -24,7 +24,7 @@ interface OptionsPageModalsProps {
   savedMappings: SavedMapping[];
   suggestedMappingId: string | null | undefined;
   onMapperModalClose: () => void;
-  onMappingConfirm: (mapping: ColumnMapping, saveName?: string) => void;
+  onMappingConfirm: (mapping: ColumnMapping, savedMapping?: SavedMapping) => void;
   
   // Duplicate Handler Modal
   showDuplicateModal: boolean;

@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-08-18T19:14:54.186Z",
+  "suite": "Complete Performance Tests",
+  "tests": {
+    "storage": {
+      "status": "FAILED",
+      "message": "Storage performance targets not met",
+      "error": "Command failed: node scripts/perf-test.mjs"
+    },
+    "animation": {
+      "status": "FAILED",
+      "message": "Animation tests failed to run",
+      "error": "page.evaluate: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Spin\")' is not a valid selector.\n    at eval (eval at evaluate (:291:30), <anonymous>:6:32)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+    },
+    "memory": {
+      "status": "FAILED",
+      "message": "Memory tests failed to run",
+      "error": "page.evaluate: SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"Spin\")' is not a valid selector.\n    at eval (eval at evaluate (:291:30), <anonymous>:9:34)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+    },
+    "bundleSize": {
+      "status": "FAILED",
+      "message": "Bundle size validation failed",
+      "error": "Command failed: pnpm --filter @drawday/spinner-extension build\nnpm warn Unknown env config \"auto-install-peers\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"recursive\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"shamefully-hoist\". This will stop working in the next major version of npm.\n❌ Build failed: Command failed: npx tsc --noEmit && npx vite build --mode development\n"
+    }
+  },
+  "summary": {
+    "duration": "5.47s",
+    "totalTests": 4,
+    "passed": 0,
+    "failed": 4,
+    "overallResult": "FAILED"
+  }
+}

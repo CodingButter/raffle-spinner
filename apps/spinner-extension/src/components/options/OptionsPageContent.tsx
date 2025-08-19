@@ -40,6 +40,13 @@ export function OptionsPageContent({
   const { collapsedSections, toggleSection } = useCollapsibleState();
   const { settings, updateSettings } = useSettings();
 
+  // Type-safe wrapper for toggleSection
+  const handleToggle = (sectionKey: string) => {
+    if (sectionKey in collapsedSections) {
+      toggleSection(sectionKey as keyof typeof collapsedSections);
+    }
+  };
+
   return (
     <>
       <CollapsibleCard
@@ -47,7 +54,7 @@ export function OptionsPageContent({
         title="Competition Management"
         description="Import and manage raffle competitions"
         isCollapsed={collapsedSections.competitions}
-        onToggle={toggleSection}
+        onToggle={handleToggle}
       >
         <CompetitionManagementContent
           competitions={competitions}
@@ -66,7 +73,7 @@ export function OptionsPageContent({
         title="Spinner Settings"
         description="Configure spin duration and physics"
         isCollapsed={collapsedSections.settings}
-        onToggle={toggleSection}
+        onToggle={handleToggle}
       >
         <SpinnerSettings settings={settings} onUpdate={updateSettings} />
       </CollapsibleCard>
@@ -76,7 +83,7 @@ export function OptionsPageContent({
         title="Spinner Appearance"
         description={isPro ? 'Customize the look of your spinner' : 'Upgrade to Pro to customize appearance'}
         isCollapsed={collapsedSections.theme}
-        onToggle={toggleSection}
+        onToggle={handleToggle}
         disabled={!isPro}
         proBadge={!isPro ? 'PRO' : undefined}
         onDisabledClick={onUpgradeClick}
@@ -92,7 +99,7 @@ export function OptionsPageContent({
         title="Branding"
         description={isPro ? 'Add your logo and company information' : 'Upgrade to Pro to add custom branding'}
         isCollapsed={collapsedSections.branding}
-        onToggle={toggleSection}
+        onToggle={handleToggle}
         disabled={!isPro}
         proBadge={!isPro ? 'PRO' : undefined}
         onDisabledClick={onUpgradeClick}
@@ -105,7 +112,7 @@ export function OptionsPageContent({
         title="CSV Column Mappings"
         description="Manage saved column mapping templates"
         isCollapsed={collapsedSections.help}
-        onToggle={toggleSection}
+        onToggle={handleToggle}
       >
         <SavedMappingsManager />
       </CollapsibleCard>

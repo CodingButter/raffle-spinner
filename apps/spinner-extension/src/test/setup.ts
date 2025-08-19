@@ -2,28 +2,47 @@
  * Vitest Test Setup
  *
  * Purpose: Configure test environment and global mocks for Chrome extension testing.
+ * 
+ * This setup provides comprehensive Chrome API mocking for testing the extension
+ * in a Node.js environment without requiring Chrome installation.
  */
 
-import { vi } from 'vitest';
+import { vi, beforeEach } from 'vitest';
+import { chromeStorageMock } from './mocks/chrome-storage';
+import { chromeRuntimeMock } from './mocks/chrome-runtime';
+import { chromeTabsMock } from './mocks/chrome-tabs';
 
-// Mock Chrome API
+// Configure Chrome API mocks
 global.chrome = {
   storage: {
-    local: {
-      get: vi.fn(),
-      set: vi.fn(),
-      remove: vi.fn(),
-      clear: vi.fn(),
-    },
+    local: chromeStorageMock,
+    sync: chromeStorageMock, // Use same mock for sync
+    managed: chromeStorageMock, // Use same mock for managed
+    session: chromeStorageMock, // Use same mock for session
   },
-  runtime: {
-    id: 'test-extension-id',
-    getManifest: vi.fn(() => ({
-      version: '1.0.0',
-      name: 'DrawDay Spinner Extension',
-    })),
+  runtime: chromeRuntimeMock,
+  tabs: chromeTabsMock,
+  sidePanel: {
+    open: vi.fn(() => Promise.resolve()),
+    setOptions: vi.fn(() => Promise.resolve()),
+    setPanelBehavior: vi.fn(() => Promise.resolve()),
+  },
+  action: {
+    onClicked: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
+    setBadgeText: vi.fn(() => Promise.resolve()),
+    setBadgeBackgroundColor: vi.fn(() => Promise.resolve()),
   },
 } as unknown as typeof chrome;
+
+// Reset all mocks before each test
+beforeEach(() => {
+  chromeStorageMock._reset();
+  chromeRuntimeMock._reset();
+  chromeTabsMock._reset();
+});
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {

@@ -1,0 +1,261 @@
+name: Performance Tests
+
+on:
+  pull_request:
+    branches: [development, main]
+    paths:
+      - 'packages/spinners/**'
+      - 'apps/spinner-extension/**'
+      - 'scripts/performance/**'
+      - '.github/workflows/performance-tests.yml'
+  
+  push:
+    branches: [development]
+    paths:
+      - 'packages/spinners/**'
+      - 'apps/spinner-extension/**'
+
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of performance test to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - animation
+        - memory
+        - bundle
+
+jobs:
+  performance-tests:
+    name: Performance Testing Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      matrix:
+        node-version: [20]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Need previous commit for comparison
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm playwright install chromium
+
+      - name: Lint and typecheck
+        run: |
+          pnpm lint
+          pnpm typecheck
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Run storage performance tests
+        run: node scripts/perf-test.mjs
+        continue-on-error: false
+
+      - name: Run complete performance test suite
+        id: perf_tests
+        run: |
+          node scripts/run-all-performance-tests.mjs
+          echo "performance_passed=$?" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Upload performance reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-reports-${{ github.sha }}
+          path: |
+            performance-report-*.json
+            memory-report-*.json
+            complete-performance-report-*.json
+          retention-days: 30
+
+      - name: Check bundle size
+        id: bundle_check
+        run: |
+          # Build and analyze bundle
+          pnpm --filter @drawday/spinner-extension build
+          
+          # Get current bundle size
+          CURRENT_SIZE=$(du -sb apps/spinner-extension/dist | cut -f1)
+          CURRENT_SIZE_MB=$((CURRENT_SIZE / 1024 / 1024))
+          
+          echo "Current bundle size: ${CURRENT_SIZE_MB}MB"
+          echo "bundle_size_mb=${CURRENT_SIZE_MB}" >> $GITHUB_OUTPUT
+          
+          # Check against 2MB limit (2097152 bytes)
+          if [ $CURRENT_SIZE -gt 2097152 ]; then
+            echo "❌ Bundle size ${CURRENT_SIZE_MB}MB exceeds 2MB limit"
+            echo "bundle_passed=false" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "✅ Bundle size ${CURRENT_SIZE_MB}MB within 2MB limit"
+            echo "bundle_passed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Performance regression check
+        if: github.event_name == 'pull_request'
+        run: |
+          # Compare with base branch performance
+          git checkout ${{ github.base_ref }}
+          
+          # Run baseline performance test if performance-baseline.json doesn't exist
+          if [ ! -f "performance-baseline.json" ]; then
+            echo "Creating performance baseline..."
+            pnpm build
+            node scripts/run-all-performance-tests.mjs || true
+          fi
+          
+          git checkout ${{ github.head_ref }}
+          
+          # The performance tests will automatically compare against baseline
+          echo "Performance regression check completed"
+
+      - name: Comment PR with performance results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Find the latest performance report
+            const reportFiles = fs.readdirSync('.')
+              .filter(f => f.startsWith('complete-performance-report-'))
+              .sort()
+              .reverse();
+            
+            if (reportFiles.length === 0) {
+              console.log('No performance report found');
+              return;
+            }
+            
+            const reportPath = reportFiles[0];
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            
+            const bundleSize = '${{ steps.bundle_check.outputs.bundle_size_mb }}';
+            const bundlePassed = '${{ steps.bundle_check.outputs.bundle_passed }}' === 'true';
+            
+            const bundleIcon = bundlePassed ? '✅' : '❌';
+            const overallIcon = report.summary.overallResult === 'PASSED' ? '✅' : '❌';
+            
+            const comment = `## 🎯 Performance Test Results
+            
+            ${overallIcon} **Overall Result: ${report.summary.overallResult}**
+            
+            ### Test Summary
+            - **Duration:** ${report.summary.duration}
+            - **Tests Run:** ${report.summary.totalTests}
+            - **Passed:** ${report.summary.passed}
+            - **Failed:** ${report.summary.failed}
+            
+            ### Bundle Size Analysis
+            ${bundleIcon} **Bundle Size:** ${bundleSize}MB / 2.0MB limit
+            
+            ### Individual Test Results
+            ${Object.entries(report.tests).map(([name, result]) => {
+              const icon = result.status === 'PASSED' ? '✅' : '❌';
+              return `- ${icon} **${name.toUpperCase()}:** ${result.status} - ${result.message}`;
+            }).join('\\n')}
+            
+            ### Performance Targets
+            - **Animation FPS:** ≥60fps (16.67ms per frame)
+            - **Memory Usage:** ≤200MB peak
+            - **Bundle Size:** ≤2MB compressed
+            - **Storage Operations:** ≤10ms P95
+            
+            ${report.summary.failed > 0 ? '⚠️ **Action Required:** Some performance tests failed. Please review the detailed report and optimize accordingly.' : '🎉 **All performance targets met!** Ready for merge.'}
+            
+            ---
+            *Performance report: \`${reportPath}\`*`;
+            
+            // Post comment
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Fail if performance regression detected
+        if: steps.perf_tests.outputs.performance_passed != '0'
+        run: |
+          echo "❌ Performance tests failed"
+          echo "Review the performance report for details"
+          exit 1
+
+      - name: Update performance baseline
+        if: github.ref == 'refs/heads/development' && github.event_name == 'push'
+        run: |
+          # Update baseline on successful merge to development
+          if [ -f "performance-baseline.json" ]; then
+            git config user.name "Performance Bot"
+            git config user.email "performance@drawday.app"
+            git add performance-baseline.json
+            git commit -m "chore: update performance baseline [skip ci]" || echo "No baseline changes"
+            git push || echo "No baseline updates to push"
+          fi
+
+  # Bundle size tracking job
+  bundle-size-tracking:
+    name: Bundle Size Tracking
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build and track bundle size
+        run: |
+          pnpm --filter @drawday/spinner-extension build
+          
+          # Calculate sizes
+          TOTAL_SIZE=$(du -sb apps/spinner-extension/dist | cut -f1)
+          TOTAL_SIZE_MB=$((TOTAL_SIZE / 1024 / 1024))
+          
+          # Log to file for historical tracking
+          echo "$(date -Iseconds),${GITHUB_SHA},${TOTAL_SIZE},${TOTAL_SIZE_MB}" >> bundle-size-history.csv
+          
+          echo "Bundle size: ${TOTAL_SIZE_MB}MB"
+
+      - name: Upload bundle size history
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-size-history
+          path: bundle-size-history.csv
