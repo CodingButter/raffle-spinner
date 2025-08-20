@@ -93,8 +93,8 @@
     }
   }
   
-  // Handle messages from the iframe (for future extension API bridge)
-  window.addEventListener('message', (event) => {
+  // Handle messages from the iframe (Extension API Bridge)
+  window.addEventListener('message', async (event) => {
     // Only accept messages from our known origins
     const allowedOrigins = [CONFIG.DEV_URL, CONFIG.PROD_URL];
     if (!allowedOrigins.includes(event.origin)) {
@@ -103,27 +103,102 @@
     
     const { type, payload, id } = event.data;
     
+    // Helper to send response back to iframe
+    const sendResponse = (result, error = null) => {
+      event.source.postMessage({ 
+        id, 
+        result, 
+        error,
+        timestamp: Date.now()
+      }, event.origin);
+    };
+    
     // Handle specific message types
-    switch (type) {
-      case 'openTab':
-        if (payload && payload.url) {
-          chrome.tabs.create({ url: payload.url });
-        }
-        break;
+    try {
+      switch (type) {
+        // Tab APIs
+        case 'tabs.create':
+          if (payload && payload.url) {
+            const tab = await chrome.tabs.create(payload);
+            sendResponse(tab);
+          } else {
+            sendResponse(null, 'URL is required');
+          }
+          break;
         
-      case 'getVersion':
-        const version = chrome.runtime.getManifest().version;
-        event.source.postMessage({ id, result: version }, event.origin);
-        break;
-        
-      case 'setDevMode':
-        chrome.storage.local.set({ [CONFIG.STORAGE_KEY]: payload }, () => {
-          event.source.postMessage({ id, result: true }, event.origin);
-        });
-        break;
-        
-      default:
-        console.log('Unknown message type:', type);
+        // Runtime APIs
+        case 'runtime.getManifest':
+          const manifest = chrome.runtime.getManifest();
+          sendResponse(manifest);
+          break;
+          
+        // Storage APIs
+        case 'storage.get':
+          chrome.storage.local.get(payload.keys || null, (result) => {
+            if (chrome.runtime.lastError) {
+              sendResponse(null, chrome.runtime.lastError.message);
+            } else {
+              sendResponse(result);
+            }
+          });
+          break;
+          
+        case 'storage.set':
+          chrome.storage.local.set(payload.items || {}, () => {
+            if (chrome.runtime.lastError) {
+              sendResponse(null, chrome.runtime.lastError.message);
+            } else {
+              sendResponse(true);
+            }
+          });
+          break;
+          
+        case 'storage.remove':
+          chrome.storage.local.remove(payload.keys || [], () => {
+            if (chrome.runtime.lastError) {
+              sendResponse(null, chrome.runtime.lastError.message);
+            } else {
+              sendResponse(true);
+            }
+          });
+          break;
+          
+        case 'storage.clear':
+          chrome.storage.local.clear(() => {
+            if (chrome.runtime.lastError) {
+              sendResponse(null, chrome.runtime.lastError.message);
+            } else {
+              sendResponse(true);
+            }
+          });
+          break;
+          
+        // Legacy support
+        case 'openTab':
+          if (payload && payload.url) {
+            chrome.tabs.create({ url: payload.url });
+            sendResponse(true);
+          }
+          break;
+          
+        case 'getVersion':
+          const version = chrome.runtime.getManifest().version;
+          sendResponse(version);
+          break;
+          
+        case 'setDevMode':
+          chrome.storage.local.set({ [CONFIG.STORAGE_KEY]: payload }, () => {
+            sendResponse(true);
+          });
+          break;
+          
+        default:
+          console.warn('Unknown message type:', type);
+          sendResponse(null, `Unknown message type: ${type}`);
+      }
+    } catch (error) {
+      console.error('Error handling message:', error);
+      sendResponse(null, error.message);
     }
   });
   
