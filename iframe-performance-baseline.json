@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-08-20T08:31:15.407Z",
+  "baseline": {
+    "tti": 1392.0800243678232,
+    "fps": 11.650576134880138,
+    "messageLatency": 33.3595160250975,
+    "analysis": {
+      "totalLines": 132,
+      "configConstants": {
+        "timeout": 10000,
+        "retryAttempts": 3,
+        "retryDelay": 1000
+      },
+      "performanceBottlenecks": [
+        {
+          "type": "excessive_timeout",
+          "severity": "low",
+          "description": "Timeout of 10000ms may delay error detection"
+        },
+        {
+          "type": "dom_manipulation",
+          "severity": "medium",
+          "description": "DOM manipulation in loops can cause performance issues"
+        }
+      ],
+      "optimizationOpportunities": [
+        {
+          "type": "preload_resources",
+          "impact": "high",
+          "description": "Add resource preloading for faster iframe initialization"
+        },
+        {
+          "type": "response_caching",
+          "impact": "medium",
+          "description": "Implement response caching to reduce repeated requests"
+        },
+        {
+          "type": "connection_reuse",
+          "impact": "medium",
+          "description": "Enable connection reuse for better resource loading"
+        },
+        {
+          "type": "progressive_loading",
+          "impact": "high",
+          "description": "Implement progressive loading for better perceived performance"
+        }
+      ]
+    }
+  },
+  "optimized": {},
+  "improvements": {}
+}
