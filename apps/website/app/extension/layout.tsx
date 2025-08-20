@@ -4,10 +4,7 @@ export const metadata: Metadata = {
   title: 'DrawDay Extension',
   description: 'DrawDay Chrome Extension Interface',
   robots: 'noindex, nofollow',
-  other: {
-    'X-Frame-Options': 'SAMEORIGIN',
-    'Content-Security-Policy': "frame-ancestors 'self' chrome-extension:// moz-extension://",
-  },
+  // Security headers handled by middleware.ts for proper CSP and framing control
 };
 
 export default function ExtensionLayout({ children }: { children: React.ReactNode }) {

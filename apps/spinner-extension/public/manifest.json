@@ -21,6 +21,6 @@
     "default_title": "Open DrawDay Spinner"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'none'; style-src 'self' 'unsafe-inline'; frame-src http://localhost:3000 https://www.drawday.app https://*.drawday.app;"
+    "extension_pages": "script-src 'self'; object-src 'none'; style-src 'self' 'unsafe-inline'; frame-src 'self' http://localhost:3000 https://www.drawday.app https://*.drawday.app;"
   }
 }
