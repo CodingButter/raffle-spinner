@@ -8,7 +8,7 @@
  * - FR-2.1: Side Panel Interface
  * - FR-2.2: Winner Selection and Animation
  * - Data Layer: Session persistence across page refreshes
- * 
+ *
  * Architecture:
  * - Refactored to maintain <200 line file size limit
  * - Components extracted for single responsibility
@@ -26,6 +26,7 @@ import { BrandingHeader } from '@/components/sidepanel/BrandingHeader';
 import { CompetitionSelector } from '@/components/sidepanel/CompetitionSelector';
 import { SpinnerArea } from '@/components/sidepanel/SpinnerArea';
 import { Card, CardContent } from '@/components/ui/card';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { useSessionPersistence } from '@/hooks/useSessionPersistence';
 import { useSpinHandler } from '@/hooks/useSpinHandler';
 
@@ -33,8 +34,9 @@ function SidePanelContent() {
   const { competitions, selectedCompetition, selectCompetition } = useCompetitions();
   const { settings } = useSettings();
   const { theme } = useTheme();
-  const { canConductRaffle, incrementRaffleCount, getRemainingRaffles, hasBranding } = useSubscription();
-  
+  const { canConductRaffle, incrementRaffleCount, getRemainingRaffles, hasBranding } =
+    useSubscription();
+
   // Use extracted spin handler hook
   const {
     ticketNumber,
@@ -58,7 +60,7 @@ function SidePanelContent() {
   const { saveSession, initializeSession } = useSessionPersistence({
     onSessionRestore: (session) => {
       if (session.selectedCompetitionId) {
-        const competition = competitions.find(c => c.id === session.selectedCompetitionId);
+        const competition = competitions.find((c) => c.id === session.selectedCompetitionId);
         if (competition) {
           selectCompetition(session.selectedCompetitionId);
         }
@@ -72,7 +74,7 @@ function SidePanelContent() {
     },
     onError: (errorMessage) => {
       console.error('Session persistence error:', errorMessage);
-    }
+    },
   });
 
   // Save session state whenever it changes
@@ -82,15 +84,24 @@ function SidePanelContent() {
       sessionWinners,
       currentTicketNumber: ticketNumber,
       isSpinning: false,
-      currentWinner: currentWinner ? {
-        firstName: currentWinner.firstName,
-        lastName: currentWinner.lastName,
-        ticketNumber: currentWinner.ticketNumber,
-      } : undefined,
+      currentWinner: currentWinner
+        ? {
+            firstName: currentWinner.firstName,
+            lastName: currentWinner.lastName,
+            ticketNumber: currentWinner.ticketNumber,
+          }
+        : undefined,
       spinTarget,
     };
     saveSession(sessionState);
-  }, [selectedCompetition?.id, sessionWinners, ticketNumber, currentWinner, spinTarget, saveSession]);
+  }, [
+    selectedCompetition?.id,
+    sessionWinners,
+    ticketNumber,
+    currentWinner,
+    spinTarget,
+    saveSession,
+  ]);
 
   // Initialize session on mount
   useEffect(() => {
@@ -98,45 +109,47 @@ function SidePanelContent() {
   }, [initializeSession]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <BrandingHeader 
-        competition={selectedCompetition}
-        branding={theme.branding}
-        hasBranding={hasBranding()}
-      />
-
-      <div className="max-w-2xl mx-auto space-y-4 p-4">
-        <CompetitionSelector
-          competitions={competitions}
-          selectedCompetition={selectedCompetition}
-          onSelectCompetition={selectCompetition}
+    <TooltipProvider>
+      <div className="min-h-screen bg-background">
+        <BrandingHeader
+          competition={selectedCompetition}
+          branding={theme.branding}
+          hasBranding={hasBranding()}
         />
 
-        {selectedCompetition && (
-          <SpinnerArea
-            competition={selectedCompetition}
-            settings={settings}
-            theme={theme}
-            ticketNumber={ticketNumber}
-            spinTarget={spinTarget}
-            isSpinning={isSpinning}
-            currentWinner={currentWinner}
-            error={error}
-            onTicketChange={setTicketNumber}
-            onSpin={handleSpin}
-            onSpinComplete={handleSpinComplete}
+        <div className="max-w-2xl mx-auto space-y-4 p-4">
+          <CompetitionSelector
+            competitions={competitions}
+            selectedCompetition={selectedCompetition}
+            onSelectCompetition={selectCompetition}
           />
-        )}
 
-        {sessionWinners.length > 0 && (
-          <Card className="bg-card/80 border-border">
-            <CardContent className="p-4">
-              <SessionWinners winners={sessionWinners} />
-            </CardContent>
-          </Card>
-        )}
+          {selectedCompetition && (
+            <SpinnerArea
+              competition={selectedCompetition}
+              settings={settings}
+              theme={theme}
+              ticketNumber={ticketNumber}
+              spinTarget={spinTarget}
+              isSpinning={isSpinning}
+              currentWinner={currentWinner}
+              error={error}
+              onTicketChange={setTicketNumber}
+              onSpin={handleSpin}
+              onSpinComplete={handleSpinComplete}
+            />
+          )}
+
+          {sessionWinners.length > 0 && (
+            <Card className="bg-card/80 border-border">
+              <CardContent className="p-4">
+                <SessionWinners winners={sessionWinners} />
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
 

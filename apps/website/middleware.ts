@@ -112,7 +112,20 @@ export function middleware(request: NextRequest) {
 
   // Enhanced Security headers
   response.headers.set('Content-Security-Policy', cspHeader);
-  response.headers.set('X-Frame-Options', 'DENY');
+
+  // Allow iframe embedding for extension routes from chrome-extension origins
+  if (request.nextUrl.pathname.startsWith('/extension/')) {
+    response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+    // Also add frame-ancestors to CSP for extension routes
+    const extensionCspHeader = cspHeader.replace(
+      "frame-ancestors 'none';",
+      "frame-ancestors 'self' chrome-extension:// moz-extension://;"
+    );
+    response.headers.set('Content-Security-Policy', extensionCspHeader);
+  } else {
+    response.headers.set('X-Frame-Options', 'DENY');
+  }
+
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('X-XSS-Protection', '1; mode=block');
@@ -150,8 +163,11 @@ export function middleware(request: NextRequest) {
 
     // Validate Chrome extension with specific ID
     const chromeExtensionId = process.env.CHROME_EXTENSION_ID;
+    // For development, also allow the current dev extension ID
+    const devExtensionId = 'gkpfednkcgnglpidfmbfdcjnnbbliepb';
     const isChromeExtension =
-      chromeExtensionId && origin === `chrome-extension://${chromeExtensionId}`;
+      (chromeExtensionId && origin === `chrome-extension://${chromeExtensionId}`) ||
+      (isDevelopment && origin === `chrome-extension://${devExtensionId}`);
 
     // Check if origin is allowed
     const isAllowed = origin && (allowedOrigins.includes(origin) || isChromeExtension);

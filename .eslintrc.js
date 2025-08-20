@@ -48,4 +48,6 @@ module.exports = {
     ],
     complexity: ['warn', 10],
   },
+  // Apply quality override configuration for gradual refactoring
+  overrides: require('./.eslintrc.quality-override.js').overrides,
 };

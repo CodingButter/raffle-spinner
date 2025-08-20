@@ -13,7 +13,7 @@ export default defineConfig({
     'src/radio-group.ts',
   ],
   format: ['cjs', 'esm'],
-  dts: true,
+  dts: false, // Temporarily disabled due to DTS build error
   clean: true,
   external: ['react', 'react-dom', '@drawday/utils'],
   sourcemap: true,

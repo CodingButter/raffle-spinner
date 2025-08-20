@@ -22,7 +22,8 @@
     "@raffle-spinner/storage": "workspace:*",
     "@raffle-spinner/spinner-physics": "workspace:*",
     "@drawday/utils": "workspace:*",
-    "@drawday/hooks": "workspace:*"
+    "@drawday/hooks": "workspace:*",
+    "@drawday/types": "workspace:*"
   },
   "devDependencies": {
     "@drawday/typescript-config": "workspace:*",
