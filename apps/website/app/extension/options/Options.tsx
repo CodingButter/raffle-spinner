@@ -18,7 +18,6 @@ import { CompetitionProvider } from '@/contexts/CompetitionContext';
 import { SettingsProvider } from '@/contexts/SettingsContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
-import { AuthGuard } from '@/components/auth/AuthGuard';
 import { useState, useRef } from 'react';
 import { useCompetitions } from '@/contexts/CompetitionContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@drawday/ui/card';
@@ -248,15 +247,13 @@ function OptionsContent() {
 export function Options() {
   return (
     <ThemeProvider>
-      <AuthGuard>
-        <CompetitionProvider>
-          <SettingsProvider>
-            <SubscriptionProvider>
-              <OptionsContent />
-            </SubscriptionProvider>
-          </SettingsProvider>
-        </CompetitionProvider>
-      </AuthGuard>
+      <CompetitionProvider>
+        <SettingsProvider>
+          <SubscriptionProvider>
+            <OptionsContent />
+          </SubscriptionProvider>
+        </SettingsProvider>
+      </CompetitionProvider>
     </ThemeProvider>
   );
 }

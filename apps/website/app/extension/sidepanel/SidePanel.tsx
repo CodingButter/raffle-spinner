@@ -18,7 +18,6 @@ import { CompetitionProvider } from '@/contexts/CompetitionContext';
 import { SettingsProvider } from '@/contexts/SettingsContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
-import { AuthGuard } from '@/components/auth/AuthGuard';
 import { useCompetitions } from '@/contexts/CompetitionContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@drawday/ui/card';
 import { Button } from '@drawday/ui/button';
@@ -265,15 +264,13 @@ function SidePanelContent() {
 export function SidePanel() {
   return (
     <ThemeProvider>
-      <AuthGuard>
-        <CompetitionProvider>
-          <SettingsProvider>
-            <SubscriptionProvider>
-              <SidePanelContent />
-            </SubscriptionProvider>
-          </SettingsProvider>
-        </CompetitionProvider>
-      </AuthGuard>
+      <CompetitionProvider>
+        <SettingsProvider>
+          <SubscriptionProvider>
+            <SidePanelContent />
+          </SubscriptionProvider>
+        </SettingsProvider>
+      </CompetitionProvider>
     </ThemeProvider>
   );
 }
