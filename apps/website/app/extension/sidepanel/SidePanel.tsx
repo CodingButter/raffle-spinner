@@ -14,8 +14,8 @@ import { useState, useRef } from 'react';
 import { CompetitionProvider, useCompetitions } from '@/contexts/CompetitionContext';
 import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
+import { SubscriptionProvider, useSubscription } from '@/contexts/SubscriptionContext';
 import { AuthGuard } from '@/components/auth/AuthGuard';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { SlotMachineWheel } from '@raffle-spinner/spinners';
 import type { SpinnerTheme } from '@raffle-spinner/spinners';
 import { SessionWinners, Winner } from '@/components/sidepanel/SessionWinners';
@@ -306,13 +306,15 @@ function SidePanelContent() {
 export function SidePanel() {
   return (
     <ThemeProvider>
-      <AuthGuard>
-        <CompetitionProvider>
-          <SettingsProvider>
-            <SidePanelContent />
-          </SettingsProvider>
-        </CompetitionProvider>
-      </AuthGuard>
+      <SubscriptionProvider>
+        <AuthGuard>
+          <CompetitionProvider>
+            <SettingsProvider>
+              <SidePanelContent />
+            </SettingsProvider>
+          </CompetitionProvider>
+        </AuthGuard>
+      </SubscriptionProvider>
     </ThemeProvider>
   );
 }
