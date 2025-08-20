@@ -1,13 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { ExtensionAuthProvider } from './providers/auth-provider';
-import { OptionsPage } from './pages/OptionsPage';
-import './app.css';
+'use client';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <ExtensionAuthProvider>
+import React from 'react';
+import { OptionsPage } from './pages/OptionsPage';
+
+export function Options() {
+  return (
+    <React.StrictMode>
       <OptionsPage />
-    </ExtensionAuthProvider>
-  </React.StrictMode>
-);
+    </React.StrictMode>
+  );
+}
