@@ -13,9 +13,10 @@ export * from './types';
 export * from './storage-adapter';
 export * from './chrome-storage-adapter';
 export * from './optimized-chrome-storage-adapter';
+export * from './hybrid-storage-adapter';
 export * from './storage-benchmark';
 
-import { OptimizedChromeStorageAdapter } from './optimized-chrome-storage-adapter';
+import { HybridStorageAdapter } from './hybrid-storage-adapter';
 
-// Default export for convenience - now using optimized adapter
-export const storage = new OptimizedChromeStorageAdapter();
+// Default export for convenience - using hybrid adapter for development compatibility
+export const storage = new HybridStorageAdapter();

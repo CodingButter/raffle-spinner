@@ -34,23 +34,42 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     loadSettings();
 
     // Listen for storage changes from other contexts (like options page)
-    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
-      if (changes.data) {
-        const newData = changes.data.newValue;
-        if (newData?.settings) {
-          setSettings(newData.settings);
-        }
-        if (newData?.columnMapping !== undefined) {
-          setColumnMapping(newData.columnMapping);
-        }
-      }
-    };
+    // Only set up chrome.storage listener if in extension context
+    const isExtensionContext =
+      typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged;
 
-    chrome.storage.onChanged.addListener(handleStorageChange);
+    if (isExtensionContext) {
+      const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+        if (changes.data) {
+          const newData = changes.data.newValue;
+          if (newData?.settings) {
+            setSettings(newData.settings);
+          }
+          if (newData?.columnMapping !== undefined) {
+            setColumnMapping(newData.columnMapping);
+          }
+        }
+      };
 
-    return () => {
-      chrome.storage.onChanged.removeListener(handleStorageChange);
-    };
+      chrome.storage.onChanged.addListener(handleStorageChange);
+
+      return () => {
+        chrome.storage.onChanged.removeListener(handleStorageChange);
+      };
+    } else {
+      // In development, use localStorage event listener
+      const handleStorageChange = (event: StorageEvent) => {
+        if (event.key === 'spinnerData') {
+          loadSettings(); // Reload settings when localStorage changes
+        }
+      };
+
+      window.addEventListener('storage', handleStorageChange);
+
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+      };
+    }
   }, []);
 
   const loadSettings = async () => {

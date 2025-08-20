@@ -89,27 +89,46 @@ export function CompetitionProvider({ children }: { children: ReactNode }) {
     loadCompetitions();
 
     // Listen for storage changes from other contexts (like options page)
-    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
-      if (changes.data) {
-        const newData = changes.data.newValue;
-        if (newData?.competitions) {
-          setCompetitions(newData.competitions);
-          // Update selected competition if it still exists
-          if (selectedCompetition) {
-            const updatedComp = newData.competitions.find(
-              (c: Competition) => c.id === selectedCompetition.id
-            );
-            setSelectedCompetition(updatedComp || null);
+    // Only set up chrome.storage listener if in extension context
+    const isExtensionContext =
+      typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged;
+
+    if (isExtensionContext) {
+      const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+        if (changes.data) {
+          const newData = changes.data.newValue;
+          if (newData?.competitions) {
+            setCompetitions(newData.competitions);
+            // Update selected competition if it still exists
+            if (selectedCompetition) {
+              const updatedComp = newData.competitions.find(
+                (c: Competition) => c.id === selectedCompetition.id
+              );
+              setSelectedCompetition(updatedComp || null);
+            }
           }
         }
-      }
-    };
+      };
 
-    chrome.storage.onChanged.addListener(handleStorageChange);
+      chrome.storage.onChanged.addListener(handleStorageChange);
 
-    return () => {
-      chrome.storage.onChanged.removeListener(handleStorageChange);
-    };
+      return () => {
+        chrome.storage.onChanged.removeListener(handleStorageChange);
+      };
+    } else {
+      // In development, use localStorage event listener
+      const handleStorageChange = (event: StorageEvent) => {
+        if (event.key === 'competitions' || event.key === 'spinnerData') {
+          loadCompetitions(); // Reload competitions when localStorage changes
+        }
+      };
+
+      window.addEventListener('storage', handleStorageChange);
+
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+      };
+    }
   }, [selectedCompetition]);
 
   return (
