@@ -11,6 +11,7 @@ export default defineConfig({
     'src/badge.ts',
     'src/dialog.ts',
     'src/radio-group.ts',
+    'src/select.ts',
   ],
   format: ['cjs', 'esm'],
   dts: false, // Temporarily disabled due to DTS build error
