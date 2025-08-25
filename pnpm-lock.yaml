@@ -114,8 +114,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       lucide-react:
-        specifier: ^0.436.0
-        version: 0.436.0(react@18.3.1)
+        specifier: ^0.541.0
+        version: 0.541.0(react@18.3.1)
       playwright:
         specifier: ^1.54.2
         version: 1.54.2
@@ -274,8 +274,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       lucide-react:
-        specifier: ^0.539.0
-        version: 0.539.0(react@18.3.1)
+        specifier: ^0.541.0
+        version: 0.541.0(react@18.3.1)
       next:
         specifier: ^14.2.11
         version: 14.2.31(@playwright/test@1.54.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -501,8 +501,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       lucide-react:
-        specifier: ^0.539.0
-        version: 0.539.0(react@18.3.1)
+        specifier: ^0.541.0
+        version: 0.541.0(react@18.3.1)
       tailwind-merge:
         specifier: ^2.5.2
         version: 2.6.0
@@ -4187,13 +4187,8 @@ packages:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
 
-  lucide-react@0.436.0:
-    resolution: {integrity: sha512-N292bIxoqm1aObAg0MzFtvhYwgQE6qnIOWx/GLj5ONgcTPH6N0fD9bVq/GfdeC9ZORBXozt/XeEKDpiB3x3vlQ==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
-
-  lucide-react@0.539.0:
-    resolution: {integrity: sha512-VVISr+VF2krO91FeuCrm1rSOLACQUYVy7NQkzrOty52Y8TlTPcXcMdQFj9bYzBgXbWCiywlwSZ3Z8u6a+6bMlg==}
+  lucide-react@0.541.0:
+    resolution: {integrity: sha512-s0Vircsu5WaGv2KoJZ5+SoxiAJ3UXV5KqEM3eIFDHaHkcLIFdIWgXtZ412+Gh02UsdS7Was+jvEpBvPCWQISlg==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -9401,11 +9396,7 @@ snapshots:
     dependencies:
       yallist: 4.0.0
 
-  lucide-react@0.436.0(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
-  lucide-react@0.539.0(react@18.3.1):
+  lucide-react@0.541.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
