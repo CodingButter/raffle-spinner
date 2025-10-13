@@ -117,8 +117,8 @@ importers:
         specifier: ^0.436.0
         version: 0.436.0(react@18.3.1)
       playwright:
-        specifier: ^1.54.2
-        version: 1.54.2
+        specifier: ^1.56.0
+        version: 1.56.0
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -4530,8 +4530,18 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  playwright-core@1.56.0:
+    resolution: {integrity: sha512-1SXl7pMfemAMSDn5rkPeZljxOCYAmQnYLBTExuh6E8USHXGSX3dx6lYZN/xPpTz1vimXmPA9CDnILvmJaB8aSQ==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   playwright@1.54.2:
     resolution: {integrity: sha512-Hu/BMoA1NAdRUuulyvQC0pEqZ4vQbGfn8f7wPXcnqQmM+zct9UliKxsIkLNmz/ku7LElUNqmaiv1TG/aL5ACsw==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.56.0:
+    resolution: {integrity: sha512-X5Q1b8lOdWIE4KAoHpW3SE8HvUB+ZZsUoN64ZhjnN8dOb1UpujxBtENGiZFE+9F/yhzJwYa+ca3u43FeLbboHA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -9715,9 +9725,17 @@ snapshots:
 
   playwright-core@1.54.2: {}
 
+  playwright-core@1.56.0: {}
+
   playwright@1.54.2:
     dependencies:
       playwright-core: 1.54.2
+    optionalDependencies:
+      fsevents: 2.3.2
+
+  playwright@1.56.0:
+    dependencies:
+      playwright-core: 1.56.0
     optionalDependencies:
       fsevents: 2.3.2
 
