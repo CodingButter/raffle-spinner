@@ -28,6 +28,6 @@
     "@drawday/eslint-config": "workspace:*",
     "@drawday/typescript-config": "workspace:*",
     "tsup": "^8.2.4",
-    "typescript": "^5.5.4"
+    "typescript": "^5.9.3"
   }
 }
